@@ -1,6 +1,6 @@
 # Unchained Capital - Bitcoin Multisig Library
 
-![travis](https://travis-ci.com/unchained-capital/unchained-bitcoin.svg?branch=master)
+[![Build Status](https://travis-ci.com/unchained-capital/unchained-bitcoin.svg?branch=master)](https://travis-ci.com/unchained-capital/unchained-bitcoin)
 
 This library provides convenience functions for dealing with multisig addresses, transactions
 scripts and additional utility functions.  The goal is to provide developers with an easy path
