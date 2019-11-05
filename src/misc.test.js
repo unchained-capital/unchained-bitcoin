@@ -88,27 +88,24 @@ describe("test utils", () => {
 describe('Test transaction length calculations', () => {
     describe('Test estimateMultisigP2SHTransactionLength', () => {
         it('should properly estimate the transaction size in bytes for P2SH', () => {
-            const nin = 1;
-            const nout = 1;
-            const est = estimateMultisigP2SHTransactionLength(nin, nout);
-            expect(est).toBe(341)
+            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1};
+            const est = estimateMultisigP2SHTransactionLength(config);
+            expect(est).toBe(216)
         });
     });
 
     describe('Test estimateMultisigP2WSHTransactionLength', () => {
         it.skip('should properly estimate the transaction size in bytes for P2WSH', () => {
-            const nin = 1;
-            const nout = 1;
-            const est = estimateMultisigP2WSHTransactionLength(nin, nout);
+            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1}
+            const est = estimateMultisigP2WSHTransactionLength(cofig);
             expect(est).toBe(113) // actual value from bitcoin core for P2PKH out
         });
     });
 
     describe('Test estimateMultisigP2SHP2WSHTransactionLength', () => {
         it.skip('should properly estimate the transaction size in bytes for P2SH-P2WSH', () => {
-            const nin = 1;
-            const nout = 1;
-            const est = estimateMultisigP2SHP2WSHTransactionLength(nin, nout);
+            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1}
+            const est = estimateMultisigP2SHP2WSHTransactionLength(config);
             expect(est).toBe(148) // actual value from bitcoin core for P2PKH out
         });
     });

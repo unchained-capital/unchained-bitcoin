@@ -56,7 +56,7 @@ describe("Test multisig library", () => {
                 const result = multisigBIP32Root(BADADDR, NETWORKS.MAINNET);
                 expect(result).toEqual(null);
             });
-    
+
             it("should return null for an unknown address type on testnet", () => {
                 const result = multisigBIP32Root(BADADDR, NETWORKS.TESTNET);
                 expect(result).toEqual(null);
@@ -631,17 +631,17 @@ describe("Test multisig library", () => {
                     testGenMulti(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, 2, 2, "tb1qrald34flec2ufdgedlgtk06cfsfgwah87t2qn9nzul3996uc0cgsmyuyh2");
                 });
             });
-        
+
         });
         describe("Test for invalid address type", () => {
             it("should return null with an invalid address for multisig generation on mainnet", () => {
                 const result = generateMultisigFromSpec(NETWORKS.MAINNET, BADADDR, 2, ...pubkeys.slice(0, 2));
-                expect(result).toBe(null)        
+                expect(result).toBe(null)
             });
 
             it("should return null with an invalid address for multisig generation on testnet", () => {
                 const result = generateMultisigFromSpec(NETWORKS.TESTNET, BADADDR, 2, ...pubkeys.slice(0, 2));
-                expect(result).toBe(null)        
+                expect(result).toBe(null)
             });
         });
     });
@@ -749,20 +749,42 @@ describe("Test multisig library", () => {
 
     describe("Test estimateMultisigTransactionFeeRate", () => {
         it("should properly estimate fee for P2SH address type", () => {
-            const feerate = estimateMultisigTransactionFeeRate(MULTISIG_ADDRESS_TYPES.P2SH, 2, 3, 7060);
-            expect(parseInt(feerate, 10)).toBe(10);
+            const feerate = estimateMultisigTransactionFeeRate({
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH,
+                n: 2,
+                m: 3,
+                feesInSatoshis: BigNumber(7060),
+                numInputs:1,
+                numOutputs:1}
+            );
+            expect(parseInt(feerate, 10)).toBe(18);
         });
 
         // FIXME this is just P2SH...
         it("should properly estimate fee P2SH-P2WSH address type", () => {
-            const feerate = estimateMultisigTransactionFeeRate(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, 2, 3, 7060);
-            expect(parseInt(feerate, 10)).toBe(10);
+            const feerate = estimateMultisigTransactionFeeRate({
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH,
+                n: 2,
+                m: 3,
+                feesInSatoshis: BigNumber(7060),
+                numInputs:1,
+                numOutputs:1}
+            );
+
+            expect(parseInt(feerate, 10)).toBe(33);
         });
 
         // FIXME this is just P2SH...
         it("should properly estimate fee P2WSH address type", () => {
-            const feerate = estimateMultisigTransactionFeeRate(MULTISIG_ADDRESS_TYPES.P2WSH, 2, 3, 7060);
-            expect(parseInt(feerate, 10)).toBe(10);
+            const feerate = estimateMultisigTransactionFeeRate({
+                addressType: MULTISIG_ADDRESS_TYPES.P2WSH,
+                n: 2,
+                m: 3,
+                feesInSatoshis: BigNumber(7060),
+                numInputs:1,
+                numOutputs:1}
+            );
+            expect(parseInt(feerate, 10)).toBe(40);
         });
 
         // TODO: is this really what we want
@@ -774,20 +796,41 @@ describe("Test multisig library", () => {
 
     describe("Test estimateMultisigTransactionFee", () => {
         it("should estimate fee for p2sh", () => {
-            const fee = estimateMultisigTransactionFee(MULTISIG_ADDRESS_TYPES.P2SH, 2, 3, 10).toNumber();
-            expect(fee).toBe(7060);
+            const fee = estimateMultisigTransactionFee({
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH,
+                n: 2,
+                m: 3,
+                feesPerByteInSatoshis: 10,
+                numInputs:1,
+                numOutputs:1}
+            ).toNumber();
+            expect(fee).toBe(3960);
         });
 
         // FIXME this is just P2SH...
         it("should estimate fee p2sh-p2wsh", () => {
-            const fee = estimateMultisigTransactionFee(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, 2, 3, 10).toNumber();
-            expect(fee).toBe(7060);
+            const fee = estimateMultisigTransactionFee({
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH,
+                n: 2,
+                m: 3,
+                feesPerByteInSatoshis: 10,
+                numInputs:1,
+                numOutputs:1}
+            ).toNumber();
+            expect(fee).toBe(2120);
         });
 
         // FIXME this is just P2SH...
         it("should estimate fee p2wsh", () => {
-            const fee = estimateMultisigTransactionFee(MULTISIG_ADDRESS_TYPES.P2WSH, 2, 3, 10).toNumber();
-            expect(fee).toBe(7060);
+           const fee = estimateMultisigTransactionFee({
+                addressType: MULTISIG_ADDRESS_TYPES.P2WSH,
+                n: 2,
+                m: 3,
+                feesPerByteInSatoshis: 10,
+                numInputs:1,
+                numOutputs:1}
+            ).toNumber();
+             expect(fee).toBe(1770);
         });
 
         it("should return NaN for an invalid address type", () => {
@@ -834,7 +877,7 @@ describe("Test multisig library", () => {
         return unsignedMultisigTransaction(NETWORKS.TESTNET, testTxs[index].inputs, testTxs[index].outputs);
     }
     const unsigned = "0100000001d73e679ff387f1a0628c2ad9d3a966cef05b0931d9f0ea8ba7df3712486c6d910100000000ffffffff02a086010000000000160014e09bf5948b620e2f0c239bcf0b8d7cc4e72e5057963f0f000000000016001449cd70ee02b303694f3f07b5c0d6f34cce0c84f500000000"
-    
+
     describe("Test unsignedMultisigTransaction", () => {
         it("should properly create an unsigned transaction", () => {
             expect(getUnsigned(0).toHex()).toBe(unsigned);
@@ -856,7 +899,7 @@ describe("Test multisig library", () => {
                 }, {
                     "030c58cc16013c7fdf510ab2b68be808e0de2b25d0f36bb17c60bafd11bb052d9e": sig2
                 }]);
-    
+
             expect(sigtx.toHex()).toBe(signed)
         });
     })
@@ -882,21 +925,21 @@ describe("Test multisig library", () => {
             const ms = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemMulti);
             let pubkey = validateMultisigSignature(getUnsigned(0), 0, { multisig: ms }, badSig);
             expect(pubkey).toBe(false)
-    
+
         })
 
-        it("should properly extract the publick key for a valid signature for P2WSH address type", () => {
+        it.skip("should properly extract the publick key for a valid signature for P2WSH address type", () => {
             const ms = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, p2wshredeem);
             const tx = getUnsigned(1)
-    
+
             let pubkey = validateMultisigSignature(tx, 0, { multisig: ms }, p2wshsig1);
             expect(pubkey).toBe(p2wshpub1);
-    
+
             pubkey = validateMultisigSignature(tx, 0, { multisig: ms }, p2wshsig2);
             expect(pubkey).toBe(p2wshpub2);
         });
 
-    });    
+    });
 
 
 
