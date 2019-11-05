@@ -1,0 +1,37 @@
+{
+  "name": "unchained-bitcoin",
+  "version": "0.0.1",
+  "description": "Unchained Capital's bitcoin utilities library.",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchained-capital/unchained-bitcoin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unchained-capital/unchained-bitcoin/issues"
+  },
+  "homepage": "https://github.com/unchained-capital/unchained-bitcoin",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-runtime": "^6.26.0",
+    "jest": "^24.9.0",
+    "jest-junit": "^9.0.0",
+    "mocha": "^6.2.2"
+  },
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile",
+    "pretest": "npm run compile",
+    "test": "jest lib"
+  },
+  "bin": {},
+  "dependencies": {
+    "bignumber.js": "^8.1.1",
+    "bitcoin-address-validation": "^0.2.9",
+    "bitcoinjs-lib": "^4.0.5"
+  }
+}
