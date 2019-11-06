@@ -7,8 +7,8 @@
     "type": "git",
     "url": "git+https://github.com/unchained-capital/unchained-bitcoin.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Unchained Capital",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/unchained-capital/unchained-bitcoin/issues"
   },
@@ -34,5 +34,8 @@
     "bignumber.js": "^8.1.1",
     "bitcoin-address-validation": "^0.2.9",
     "bitcoinjs-lib": "^4.0.5"
+  },
+  "directories": {
+    "lib": "lib"
   }
 }
