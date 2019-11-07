@@ -7,7 +7,8 @@ This library builds on the excellent
 valuable but missing functionality for validation, HD wallets, block
 explorers, and especially multisig.
 
-Full API documentation can be found at [LINK](#).
+Full API documentation can be found at
+[unchained-bitcoin](https://unchained-capital.github.io/unchained-bitcoin).
 
 This library was built and is maintained by [Unchained
 Capital](https://www.unchained-capital.com).
@@ -24,7 +25,7 @@ $ npm install --save unchained-bitcoin
 ## Usage
 
 The library provides a functional API which builds upon data
-structures used by `bitcoinjs-lib`.  
+structures used by `bitcoinjs-lib`.
 
 In particular, many functions accept a `multisig` argument which is
 the kind of object returned by functions such as
@@ -32,7 +33,9 @@ the kind of object returned by functions such as
 `bitcoinjs-lib`.
 
 The examples below provide an initial idea of how to use this library,
-but see the [API documentation](#) for full details.
+but see the
+[API documentation](https://unchained-capital.github.io/unchained-bitcoin)
+for full details.
 
 ### Interacting with a multisig address.
 
@@ -48,7 +51,7 @@ the multisig address type (e.g. P2SH or P2WSH).
 
 ```javasacript
 import {
-	generateMultisigFromPublicKeys, 
+	generateMultisigFromPublicKeys,
 	P2SH,                      // or: P2SH_P2WSH, P2WSH
 	MAINNET,                   // or: TESTNET
 } from "unchained-bitcoin";
@@ -93,10 +96,10 @@ and provide a helpful error message otherwise.
 * `valdiateBIP32Path` -- understands absolute and relative BIP32
   paths, validates maximum BIP32 index values, and can optionally
   check for fully hardened or unhardened paths
-  
+
 * `validateExtendedPublicKey` -- understands network-dependent
   differences in encoding extended public keys
-  
+
 * `validatePublicKey` -- allows any hexadecimal value
 
 * `validateFeeRate` -- implements a reasonable maximum fee rate in
@@ -132,7 +135,7 @@ $ npm test
 
 ### Contributing
 
-Unchained Capital welcomes bug reports, new features, and better documentation for this library.  
+Unchained Capital welcomes bug reports, new features, and better documentation for this library.
 
 If you are fixing a bug or adding a feature, please first check the [GitHub issues page](https://github.com/unchained-capital/unchained-bitcoin/issues) to see if there is any existing discussion about it.
 
