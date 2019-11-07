@@ -88,6 +88,10 @@ export const MULTISIG_ADDRESS_TYPES = {
  * Retrieve the standard derivation path for a given multisig address type and network.
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - type from which to create the root path
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @example
+ * const p2sh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/45'/0'/0'
+ * const p2sh_p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET); // m/48'/0'/0'/1'
+ * const p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/48'/0'/0'/2'
  * @returns {string} full root derivation path
  */
 export function multisigBIP32Root(addressType, network) {
@@ -109,6 +113,10 @@ export function multisigBIP32Root(addressType, network) {
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - type from which to create the child path
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {number} index - completes the derivation path
+ * @example
+ * const p2sh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET, 0); // m/45'/0'/0'/0
+ * const p2sh_p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/1'/0
+ * const p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/2'/0
  * @returns {string} full child derivation path
  */
 export function multisigBIP32Path(addressType, network, index) {
@@ -122,6 +130,12 @@ export function multisigBIP32Path(addressType, network, index) {
 /**
  * Determine the multisig address type for a Multisig object.
  * @param {Multisig} multisig - derive the address type from this object
+ * @example
+ * const addressType = multisigAddressType(multisig);
+ * if (addressType == MULTISIG_ADDRESS_TYPES.P2SH) {
+ *  // handle P2SH here
+ * }
+ * // check other address types and handle
  * @returns {module:multisig.MULTISIG_ADDRESS_TYPES} the address type
  */
 export function multisigAddressType(multisig) {
@@ -141,6 +155,8 @@ export function multisigAddressType(multisig) {
 /**
  * Extract the number of required signers value from a Multisig object.
  * @param {Multisig} multisig - object to parse
+ * @example
+ * const m = multisigRequiredSigners(multisig); // m = 2 for a 2 of 3 multisig
  * @returns {number} number of signatures required to spend from a given multisig address
  */
 export function multisigRequiredSigners(multisig) {
@@ -150,6 +166,8 @@ export function multisigRequiredSigners(multisig) {
 /**
  * Extract the total number of signers value from a Multisig object.
  * @param {Multisig} multisig - object to parse
+ * @example
+ * const n = multisigTotalSigners(multisig); // n = 3 for a 2 of 3 multisig
  * @returns {number} number of keys available for signing for a given multisig address
  */
 export function multisigTotalSigners(multisig) {
@@ -159,6 +177,9 @@ export function multisigTotalSigners(multisig) {
 /**
  * Retrieve the Multisig object representing proper redeem script from a base Multisig object.
  * @param {Multisig} multisig - object to parse
+ * @example
+ * const redeemMultisig = multisigRedeemScript(multisig)
+ * console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...
  * @returns {Multisig|null} object for further parsing
  */
 export function multisigRedeemScript(multisig) {
@@ -177,6 +198,9 @@ export function multisigRedeemScript(multisig) {
 /**
  * Retrieve the Multisig object representing proper witness script from a base Multisig object.
  * @param {Multisig} multisig - object to parse
+ * @example
+ * const witnessScript = multisigWitnessScript(multisig)
+ * console.log(scriptToHex(witnessScript)) // 522102e326263c35e...
  * @returns {Multisig|null} object for further parsing
  */
 export function multisigWitnessScript(multisig) {
@@ -195,10 +219,21 @@ export function multisigWitnessScript(multisig) {
 /**
  * Extract the public keys from a given Multisig object.
  * @param {Multisig} multisig - object to parse
+ * @example
+ * const pubkeys = multisigPublicKeys(multisig);
  * @returns {string[]} the hex representation of the public keys used in the multisig address
  */
 export function multisigPublicKeys(multisig) {
   return ((multisigAddressType(multisig) === P2SH) ? multisigRedeemScript(multisig) : multisigWitnessScript(multisig)).pubkeys.map(toHexString);
+}
+
+/**
+ * Return the address for a given Multisig object.
+ * @param {Multisig} multisig - object to parse
+ * @returns {string} the address
+ */
+export function multisigAddress(multisig) {
+  return multisig.address;
 }
 
 /**
@@ -208,10 +243,10 @@ export function multisigPublicKeys(multisig) {
  * @param {number} requiredSigners - number of signers needed to spend funds
  * @param  {...string} publicKeys - list of hex string representation of public keys
  * @example
- * const result = generateMultisigFromSpec(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, 3, pubkey1, pubkey2, ..., pubkeyn);
+ * const multisig = generateMultisigFromSpec(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, 3, pubkey1, pubkey2, ..., pubkeyN);
  * @returns {Multisig} object for further parsing
  */
-export function generateMultisigFromSpec(network, addressType, requiredSigners, ...publicKeys) {
+export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
   const redeemScript = bitcoin.payments.p2ms({
     m: requiredSigners, 
     pubkeys: publicKeys.map((hex) => Buffer.from(hex, 'hex')),
@@ -227,7 +262,7 @@ export function generateMultisigFromSpec(network, addressType, requiredSigners, 
  * @param {string} redeemScriptHex - hex representation of the redeem script
  * @example
  * const redeemScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
- * const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemScript);
+ * const multisig = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemScript);
  * @returns {Multisig} object for further parsing
  */
 export function generateMultisigFromHex(network, addressType, redeemScriptHex) {
@@ -326,7 +361,9 @@ function estimateMultisigTransactionLength(config) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {UTXO[]} inputs - inputs used to create transaction
  * @param {Object[]} outputs - transaction recipients
- * @returns {Transaction} an unsigned [Transaction]{@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts} object
+ * @example
+ * const unsignedTransaction = unsignedMultisigTransaction(NETWORKS.MAINNET, inputs, outputs);
+ * @returns {Transaction} an unsigned {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
  */
 export function unsignedMultisigTransaction(network, inputs, outputs) {
   const transactionBuilder = new bitcoin.TransactionBuilder();
@@ -349,6 +386,13 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {number} inputIndex - the index where the input appears in the transaction
  * @param {UTXO} input - the object representing the input whose signature you wish to validate
  * @param {string} signerInputSignature - signature to validate
+ * @example
+ * const publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+ * if (publicKey) {
+ *   // is valid, do something with publicKey
+ * } else {
+ *   // not valid, handle here
+ * }
  * @returns {string|boolean} false if invalid or corresponding public key
  */
 export function validateMultisigSignature(unsignedTransaction, inputIndex, input, signerInputSignature) {
@@ -402,6 +446,10 @@ function multisigSignatureBuffer(signature) {
  * @param {Transaction} unsignedTransaction - generated transaction object from call to unsignedMultisigTransaction
  * @param {UTXO[]} inputs - generated array of inputs to the transaction (blockExplorerGetAddresesUTXOs|bitcoindListUnspent)
  * @param {Object[]} inputsSignaturesByPublicKey - input signatures mapped to the pulic key index [{signature: index},...]
+ * @example
+ * const keysigs = [{[pubkey1]: signature1}, {[pubkey2]: signature2}]
+ * const signedTx = signedMultisigTransaction(unsignedTx, inputs, keysigs)
+ * console.log(signedTx.toHex()) // 0100000001d73e679f...
  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
  */
 export function signedMultisigTransaction(unsignedTransaction, inputs, inputsSignaturesByPublicKey) {
@@ -482,7 +530,7 @@ function multisigScriptSig(multisig, signersInputSignatures) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 10:45:28 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 11:08:30 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

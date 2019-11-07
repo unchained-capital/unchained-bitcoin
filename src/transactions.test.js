@@ -1,14 +1,7 @@
 import {validateFeeRate, validateFeeBTC, validateOutputAmountBTC} from './transactions'
 import BigNumber from 'bignumber.js';
 
-describe("Test address validation", () => {
-    it.skip("should recognize invalid fee rate", () => {
-        // TODO: this is unreachable
-        // this relies on an error being thrown in BigNumber constructor
-        // expecting "Invalid fee rate."
-        // BigNumber returns NaN and does not throw an error
-        // this is true for all functions in this module
-    });
+describe("Test fees and rates", () => {
     describe("Test validateFeeRate", () => {
         it("should properly report the validation of a negative fee rate", () => {
             const feerate = -1;

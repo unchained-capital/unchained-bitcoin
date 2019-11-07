@@ -1,9 +1,9 @@
 import { networkData, NETWORKS } from './networks';
 import { validateHex, toHexString, satoshisToBitcoins, bitcoinsToSatoshis } from './utils';
-import BigNumber from 'bignumber.js';
 import { estimateMultisigP2SHTransactionLength } from './p2sh'
 import { estimateMultisigP2SHP2WSHTransactionLength } from './p2sh_p2wsh'
 import { estimateMultisigP2WSHTransactionLength } from './p2wsh'
+import { buffString, bitcoinValues } from './test_constants'
 const bitcoin = require('bitcoinjs-lib');
 
 describe("Test network", () => {
@@ -47,27 +47,17 @@ describe("test utils", () => {
 
     describe('Test toHexString', () => {
         it('should properly convert a buffer of bytes to hex string', () => {
-            [
-                {buff: [0, 1, 2, 3], string: '00010203'},
-                {buff: [15, 31, 47, 63], string: '0f1f2f3f'},
-                {buff: [16, 32, 48, 64], string: '10203040'},
-                {buff: [255, 0, 15, 16, 31, 32], string: 'ff000f101f20'},
-            ].forEach(h => {
+            buffString.forEach(h => {
                 const hex = toHexString(h.buff);
                 expect(hex).toBe(h.string);
             })
         })
     });
 
-    const conversionValues =[
-        { btc: 1.2345, sats: 123450000},
-        { btc: 0.00000001, sats: 1},
-        { btc: BigNumber(0.00000001), sats: BigNumber(1)},
-        { btc: BigNumber(21000000), sats: BigNumber('2100000000000000') }
-    ]
+    
     describe('Test satoshisToBitcoins', () => {
         it('should properly convert a satoshi value to the corresponding value in bitcoin', () => {
-            conversionValues.forEach(val => {
+            bitcoinValues.forEach(val => {
                 const btc = satoshisToBitcoins(val.sats);
                 expect(btc.eq(val.btc)).toBe(true)
             })
@@ -76,7 +66,7 @@ describe("test utils", () => {
 
     describe('Test bitcoinsToSatoshis', () => {
         it('should properly convert a bitcoin value to the corresponding value in satoshis', () => {
-            conversionValues.forEach(val => {
+            bitcoinValues.forEach(val => {
                 const sats = bitcoinsToSatoshis(val.btc);
                 expect(sats.eq(val.sats)).toBe(true)
             })
@@ -88,25 +78,38 @@ describe("test utils", () => {
 describe('Test transaction length calculations', () => {
     describe('Test estimateMultisigP2SHTransactionLength', () => {
         it('should properly estimate the transaction size in bytes for P2SH', () => {
-            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1};
-            const est = estimateMultisigP2SHTransactionLength(config);
-            expect(est).toBe(216)
+            const nin = 1;
+            const nout = 1;
+            const est = estimateMultisigP2SHTransactionLength({
+                numInputs: 1, 
+                numOutputs: 2,
+                m: 2,
+                n: 3});
+            expect(est).toBe(391)
         });
     });
 
     describe('Test estimateMultisigP2WSHTransactionLength', () => {
-        it.skip('should properly estimate the transaction size in bytes for P2WSH', () => {
-            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1}
-            const est = estimateMultisigP2WSHTransactionLength(cofig);
-            expect(est).toBe(113) // actual value from bitcoin core for P2PKH out
+        it('should properly estimate the transaction size in bytes for P2WSH', () => {
+            const est = estimateMultisigP2WSHTransactionLength({
+                numInputs: 1, 
+                numOutputs: 2,
+                m: 2,
+                n: 3
+            });
+            expect(est).toBe(202) // actual value from bitcoin core for P2PKH out
         });
     });
 
     describe('Test estimateMultisigP2SHP2WSHTransactionLength', () => {
-        it.skip('should properly estimate the transaction size in bytes for P2SH-P2WSH', () => {
-            const config = {numInputs:1, numOutputs: 1, m: 1, n: 1}
-            const est = estimateMultisigP2SHP2WSHTransactionLength(config);
-            expect(est).toBe(148) // actual value from bitcoin core for P2PKH out
+        it('should properly estimate the transaction size in bytes for P2SH-P2WSH', () => {
+            const est = estimateMultisigP2SHP2WSHTransactionLength({
+                numInputs: 2,
+                numOutputs: 2,
+                m: 3,
+                n: 5
+            });
+            expect(est).toBe(444) // actual value from bitcoin core for P2PKH out
         });
     });
 });

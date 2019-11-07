@@ -26,6 +26,9 @@ export const NETWORKS = {
 /**
  * Returns network configuration object for the specified network for internal use.
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @example
+ * const key = bip32.fromBase58(extendedPublicKey, networkData(NETWORKS.MAINNET));
+ * const child = key.derivePath("m/0/0");
  * @returns {Network} network object for use as a parameter to other functions where needed, do not access directly
  */
 export function networkData(network) {

@@ -16,6 +16,9 @@ const BECH32_ADDRESS_BODY_PATTERN = "[ac-hj-np-z02-9]+$";
  * Provide a validation messages for a given address.
  * @param {string} address - the address to validate
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @example
+ * const validationError = validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', NETWORKS.MAINNET);
+ * console.log(validationError); // Address must start with either of 'bc1', '1' or '3' followed by letters or digits.
  * @returns {string} empty if valid or corresponding validation message
  */
 export function validateAddress(address, network) {

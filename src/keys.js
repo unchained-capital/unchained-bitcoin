@@ -5,6 +5,7 @@
 
 import {validateHex} from "./utils";
 import {NETWORKS, networkData} from "./networks";
+import {ECPair} from "bitcoinjs-lib"
 
 const bip32 = require('bip32');
 
@@ -12,6 +13,10 @@ const bip32 = require('bip32');
  * Provide validation messages for an extended public key.
  * @param {string} inputString - base58 encoded extended public key
  * @param {module:networks.NETWORKS} network  - bitcoin network
+ * @example
+ * const key = "apub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
+ * const validationError = validateExtendedPublicKey(key, NETWORKS.TESTNET);
+ * console.log(validationError); // Extended public key must begin with 'xpub' or 'tpub'."
  * @returns {string} empty if valid or corresponding validation message
  */
 export function validateExtendedPublicKey(inputString, network) {
@@ -25,9 +30,8 @@ export function validateExtendedPublicKey(inputString, network) {
   }
   const notXpubError = `Extended public key must begin with ${requiredPrefix}.`;
 
-  // FIXME: this message is inaccurate
-  if (inputString.length < 5) {
-    return notXpubError;
+  if (inputString.length < 111) {
+    return "Extended public key length is too short.";
   }
 
   const prefix = inputString.slice(0, 4);
@@ -48,6 +52,8 @@ export function validateExtendedPublicKey(inputString, network) {
 /**
  * Provide validation messages for a public key.
  * @param {string} inputString - hex public key string
+ * @example
+ * const validationError = validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"); // result empty, valid key
  * @returns {string} empty if valid or corresponding validation message
  */
 export function validatePublicKey(inputString) {
@@ -58,13 +64,11 @@ export function validatePublicKey(inputString) {
   const error = validateHex(inputString);
   if (error !== '') { return error; }
 
-  // FIXME -- how do I validate a public key?
-  // x
-  // try {
-  //   bip32.fromPublicKey(new Buffer(inputString), chainCode, network);
-  // } catch (e) {
-  //   return `Invalid public key ${e}.`;
-  // }
+  try {
+    ECPair.fromPublicKey(Buffer.from(inputString, 'hex'));
+  } catch (e) {
+    return `Invalid public key ${e}.`;
+  }
 
   return '';
 }
@@ -72,6 +76,9 @@ export function validatePublicKey(inputString) {
 /**
  * Compresses a public key.
  * @param {string} publicKey - the hex public key to compress
+ * @example
+ * const compressed = compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5");
+ * console.log(compressed); // 03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee
  * @returns {string} compressed public key
  */
 export function compressPublicKey(publicKey) {

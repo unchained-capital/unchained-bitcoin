@@ -706,7 +706,7 @@ removes the complexities so you should not obtain information directly from the
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line278">line 278</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line313">line 313</a>
     </li></ul></dd>
     
 
@@ -1042,7 +1042,7 @@ const fee = estimateMultisigTransactionFee({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line251">line 251</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line286">line 286</a>
     </li></ul></dd>
     
 
@@ -1260,7 +1260,7 @@ const feerate = estimateMultisigTransactionFeeRate({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line205">line 205</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line240">line 240</a>
     </li></ul></dd>
     
 
@@ -1314,7 +1314,7 @@ const feerate = estimateMultisigTransactionFeeRate({
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>const redeemScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
-const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemScript);</code></pre>
+const multisig = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemScript);</code></pre>
 
 
 
@@ -1324,7 +1324,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
     
-    <h4 class="name" id=".generateMultisigFromSpec"><span class="type-signature">(static) </span>generateMultisigFromSpec<span class="signature">(network, addressType, requiredSigners, &hellip;publicKeys)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>}</span></h4>
+    <h4 class="name" id=".generateMultisigFromPublicKeys"><span class="type-signature">(static) </span>generateMultisigFromPublicKeys<span class="signature">(network, addressType, requiredSigners, &hellip;publicKeys)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>}</span></h4>
     
 
     
@@ -1530,7 +1530,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line186">line 186</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line221">line 221</a>
     </li></ul></dd>
     
 
@@ -1583,7 +1583,166 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const result = generateMultisigFromSpec(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, 3, pubkey1, pubkey2, ..., pubkeyn);</code></pre>
+    <pre class="prettyprint"><code>const multisig = generateMultisigFromSpec(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, 3, pubkey1, pubkey2, ..., pubkeyN);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigAddress"><span class="type-signature">(static) </span>multisigAddress<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Return the address for a given Multisig object.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object to parse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line207">line 207</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the address
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
 
 
 
@@ -1694,7 +1853,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line99">line 99</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line113">line 113</a>
     </li></ul></dd>
     
 
@@ -1743,6 +1902,15 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const addressType = multisigAddressType(multisig);
+if (addressType == MULTISIG_ADDRESS_TYPES.P2SH) {
+ // handle P2SH here
+}
+// check other address types and handle</code></pre>
 
 
 
@@ -1899,7 +2067,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line86">line 86</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -1948,6 +2116,13 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const p2sh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET, 0); // m/45'/0'/0'/0
+const p2sh_p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/1'/0
+const p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/2'/0</code></pre>
 
 
 
@@ -2081,7 +2256,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line65">line 65</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -2130,6 +2305,13 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const p2sh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/45'/0'/0'
+const p2sh_p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET); // m/48'/0'/0'/1'
+const p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/48'/0'/0'/2'</code></pre>
 
 
 
@@ -2240,7 +2422,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line172">line 172</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line198">line 198</a>
     </li></ul></dd>
     
 
@@ -2289,6 +2471,11 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const pubkeys = multisigPublicKeys(multisig);</code></pre>
 
 
 
@@ -2399,7 +2586,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line136">line 136</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line157">line 157</a>
     </li></ul></dd>
     
 
@@ -2451,6 +2638,12 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const redeemMultisig = multisigRedeemScript(multisig)
+console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
 
 
@@ -2561,7 +2754,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line118">line 118</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line134">line 134</a>
     </li></ul></dd>
     
 
@@ -2610,6 +2803,11 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const m = multisigRequiredSigners(multisig); // m = 2 for a 2 of 3 multisig</code></pre>
 
 
 
@@ -2720,7 +2918,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line127">line 127</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line145">line 145</a>
     </li></ul></dd>
     
 
@@ -2769,6 +2967,11 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const n = multisigTotalSigners(multisig); // n = 3 for a 2 of 3 multisig</code></pre>
 
 
 
@@ -2879,7 +3082,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line154">line 154</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line178">line 178</a>
     </li></ul></dd>
     
 
@@ -2931,6 +3134,12 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const witnessScript = multisigWitnessScript(multisig)
+console.log(scriptToHex(witnessScript)) // 522102e326263c35e...</code></pre>
 
 
 
@@ -3087,7 +3296,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line379">line 379</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line427">line 427</a>
     </li></ul></dd>
     
 
@@ -3136,6 +3345,13 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const keysigs = [{[pubkey1]: signature1}, {[pubkey2]: signature2}]
+const signedTx = signedMultisigTransaction(unsignedTx, inputs, keysigs)
+console.log(signedTx.toHex()) // 0100000001d73e679f...</code></pre>
 
 
 
@@ -3292,7 +3508,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line303">line 303</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line340">line 340</a>
     </li></ul></dd>
     
 
@@ -3341,6 +3557,11 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const unsignedTransaction = unsignedMultisigTransaction(NETWORKS.MAINNET, inputs, outputs);</code></pre>
 
 
 
@@ -3520,7 +3741,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line326">line 326</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line370">line 370</a>
     </li></ul></dd>
     
 
@@ -3574,6 +3795,16 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+if (publicKey) {
+  // is valid, do something with publicKey
+} else {
+  // not valid, handle here
+}</code></pre>
+
+
 
         
     
@@ -3597,7 +3828,7 @@ const multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 10:45:28 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 11:08:30 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

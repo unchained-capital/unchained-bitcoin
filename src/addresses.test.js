@@ -1,8 +1,6 @@
 import { validateAddress } from './addresses';
 import { NETWORKS } from './networks';
-
-const mainnetAddresses = ["3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH", "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4", "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx"]
-const testnetAddresses = ["mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r", "2NByiBUaEXrhmqAsg7BbLpcQSAQs1EDwt5w", "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7"]
+import { mainnetAddresses, testnetAddresses } from './test_constants'
 
 describe("Test address validation library", () => {
     describe("Test validateAddress", () => {
