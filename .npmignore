@@ -1,4 +1,4 @@
 src/
 .npmrc.template
 .travis.yml
-out/
+docs/
