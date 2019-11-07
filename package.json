@@ -28,7 +28,7 @@
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
     "test": "jest lib",
-    "docs": "jsdoc -d docs -r src/"
+    "docs": "jsdoc -d docs -r src/ README.md"
   },
   "bin": {},
   "dependencies": {

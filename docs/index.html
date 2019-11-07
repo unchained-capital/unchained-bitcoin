@@ -42,6 +42,124 @@
 
 
 
+    <section>
+        <article><h1>Unchained Capital Bitcoin Utilities</h1>
+<p><a href="https://travis-ci.com/unchained-capital/unchained-bitcoin"><img src="https://travis-ci.com/unchained-capital/unchained-bitcoin.svg?branch=master" alt="Build Status"></a></p>
+<p>This library builds on the excellent
+<a href="https://github.com/bitcoinjs/bitcoinjs-lib">bitcoinjs-lib</a>, adding
+valuable but missing functionality for validation, HD wallets, block
+explorers, and especially multisig.</p>
+<p>Full API documentation can be found at <a href="#">LINK</a>.</p>
+<p>This library was built and is maintained by <a href="https://www.unchained-capital.com">Unchained
+Capital</a>.</p>
+<h2>Installation</h2>
+<p><code>unchained-bitcoin</code> is distributed as an NPM package.  Add it to your
+application's dependencies:</p>
+<pre class="prettyprint source"><code>$ npm install --save unchained-bitcoin
+</code></pre>
+<h2>Usage</h2>
+<p>The library provides a functional API which builds upon data
+structures used by <code>bitcoinjs-lib</code>.</p>
+<p>In particular, many functions accept a <code>multisig</code> argument which is
+the kind of object returned by functions such as
+<code>bitcoin.payments.p2ms</code>, <code>bitcoin.payments.p2sh</code>, &amp;c. from
+<code>bitcoinjs-lib</code>.</p>
+<p>The examples below provide an initial idea of how to use this library,
+but see the <a href="#">API documentation</a> for full details.</p>
+<h3>Interacting with a multisig address.</h3>
+<h4>Generating multisigs</h4>
+<p>Multisignature objects can be generated with two functions:</p>
+<ul>
+<li><code>generateMultisigFromPublicKeys</code> -- useful when directly passing public keys</li>
+<li><code>generateMultisigFromHex</code> -- useful when parsing an existing redeem script</li>
+</ul>
+<p>Each of these functions accepts additional arguments which determines
+the multisig address type (e.g. P2SH or P2WSH).</p>
+<pre class="prettyprint source lang-javasacript"><code>import {
+	generateMultisigFromPublicKeys, 
+	P2SH,                      // or: P2SH_P2WSH, P2WSH
+	MAINNET,                   // or: TESTNET
+} from &quot;unchained-bitcoin&quot;;
+
+// Public keys are represented as compressed hex.
+const publicKeys = [
+	&quot;03d703e0d7622f087f27e18b61b1c131d4a7b868a4960ab66d89c76f9daf1a1569&quot;,
+	&quot;031c27e952c332fc0630e29d6ec2a10ba18c33cf096ccaeb7620983e0daf625946&quot;,
+	&quot;03f6eed874ad71db090325dc92ccec9b722187dfd4aac19c9f54b9047bc4fac2b0&quot;,
+];
+
+// A mainnet P2SH 2-of-3 multisig.
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, ...publicKeys);
+</code></pre>
+<h4>Querying multisigs</h4>
+<p>The <code>multisig</code> object above can be passed around and queried with
+other functions in the API.</p>
+<pre class="prettyprint source lang-javascript"><code>
+multisigAddress(multisig); // Returns public address
+multisigAddressType(multisig); // P2SH
+multisigRequiredSigners(multisig); // 2
+multisigTotalSigners(multisig); // 3
+multisigRedeemScript(multisig); // Returns redeem script in hex
+multisigWitnessScript(multisig); // Returns witness script in hex (null for P2SH)
+multisigPublicKeys(multisig); // Returns publicKeys
+</code></pre>
+<h4>Validation</h4>
+<p>This library contains several useful functions for validation not
+provided by <code>bitcoinjs-lib</code> or other libraries.  The validation
+functions are designed to return an empty string <code>''</code> on valid input
+and provide a helpful error message otherwise.</p>
+<ul>
+<li>
+<p><code>validateAddress</code> -- understands Bech32 addresses and is aware of
+differences in addresses across networks</p>
+</li>
+<li>
+<p><code>valdiateBIP32Path</code> -- understands absolute and relative BIP32
+paths, validates maximum BIP32 index values, and can optionally
+check for fully hardened or unhardened paths</p>
+</li>
+<li>
+<p><code>validateExtendedPublicKey</code> -- understands network-dependent
+differences in encoding extended public keys</p>
+</li>
+<li>
+<p><code>validatePublicKey</code> -- allows any hexadecimal value</p>
+</li>
+<li>
+<p><code>validateFeeRate</code> -- implements a reasonable maximum fee rate in
+Satoshis/byte</p>
+</li>
+<li>
+<p><code>validateFee</code> -- implements a reasonable maximum fee in BTC</p>
+</li>
+<li>
+<p><code>validateOutputAmount</code> -- checks for dust and that amount is less
+than total input amount</p>
+</li>
+<li>
+<p><code>validateMultisigSignature</code> -- checks signatures for correctness and
+works across all multisig address types</p>
+</li>
+</ul>
+<h2>Developers</h2>
+<p>Developers who want to work on this library should clone the source
+code and install dependencies:</p>
+<pre class="prettyprint source"><code>$ git clone https://github.com/unchained-capital/unchained-bitcoin`
+...
+$ cd unchained-bitcoin
+$ npm install
+</code></pre>
+<h3>Testing</h3>
+<p>Unit tests are implemented in Jest and can be run via</p>
+<pre class="prettyprint source"><code>$ npm test
+</code></pre>
+<h3>Contributing</h3>
+<p>Unchained Capital welcomes bug reports, new features, and better documentation for this library.</p>
+<p>If you are fixing a bug or adding a feature, please first check the <a href="https://github.com/unchained-capital/unchained-bitcoin/issues">GitHub issues page</a> to see if there is any existing discussion about it.</p>
+<p>To contribute, create a pull request (PR) on GitHub against the <a href="https://github.com/unchained-capital/unchained-bitcoin">Unchained Capital fork of unchained-bitcoin</a>.</p>
+<p>Before you submit your PR, make sure to update and run the test suite!</p></article>
+    </section>
+
 
 
 
@@ -56,7 +174,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 11:08:30 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 07 2019 11:11:43 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
