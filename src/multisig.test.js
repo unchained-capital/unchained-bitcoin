@@ -2,8 +2,8 @@ import {
     MULTISIG_ADDRESS_TYPES, multisigBIP32Root, multisigBIP32Path,
     multisigAddressType, multisigRequiredSigners, multisigTotalSigners,
     multisigRedeemScript, multisigWitnessScript, generateMultisigFromHex, generateMultisigFromPublicKeys,
-    multisigPublicKeys, estimateMultisigTransactionFeeRate, estimateMultisigTransactionFee,
-    unsignedMultisigTransaction, validateMultisigSignature, signedMultisigTransaction,
+    multisigPublicKeys, estimateMultisigTransactionFee,
+    validateMultisigSignature, signedMultisigTransaction,
     multisigAddress,
 } from './multisig';
 import { NETWORKS } from './networks';
@@ -59,7 +59,7 @@ describe("Test multisig library", () => {
                 const result = multisigBIP32Root(BADADDR, NETWORKS.MAINNET);
                 expect(result).toEqual(null);
             });
-    
+
             it("should return null for an unknown address type on testnet", () => {
                 const result = multisigBIP32Root(BADADDR, NETWORKS.TESTNET);
                 expect(result).toEqual(null);
@@ -157,7 +157,7 @@ describe("Test multisig library", () => {
                 const result = multisigBIP32Path(BADADDR, NETWORKS.MAINNET);
                 expect(result).toEqual(null);
             });
-    
+
             it("should return null for an unknown address type on testnet", () => {
                 const result = multisigBIP32Path(BADADDR, NETWORKS.TESTNET);
                 expect(result).toEqual(null);
@@ -336,7 +336,7 @@ describe("Test multisig library", () => {
     describe("Test multisigWitnessScript", () => {
         describe("Test for P2SH address type", () => {
             it("should properly return null for P2SH on mainnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
                     let result = multisigWitnessScript(multi);
                     expect(result).toBe(null);
@@ -344,7 +344,7 @@ describe("Test multisig library", () => {
             });
 
             it("should properly return null for P2SH on testnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
                     let result = multisigWitnessScript(multi);
                     expect(result).toBe(null);
@@ -354,7 +354,7 @@ describe("Test multisig library", () => {
 
         describe("Test for P2SH-P2WSH address type", () => {
             it("should properly return the witness script hex representation for P2SH-P2WSH on mainnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, r);
                     let result = multisigWitnessScript(multi);
                     expect(scriptToHex(result)).toBe(r);
@@ -362,7 +362,7 @@ describe("Test multisig library", () => {
             });
 
             it("should properly return the witness script hex representation for P2SH-P2WSH on testnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, r);
                     let result = multisigWitnessScript(multi);
                     expect(scriptToHex(result)).toBe(r);
@@ -372,7 +372,7 @@ describe("Test multisig library", () => {
 
         describe("Test for P2WSH address type", () => {
             it("should properly return the witness script hex representation for P2SH-P2WSH on mainnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2WSH, r);
                     let result = multisigWitnessScript(multi);
                     expect(scriptToHex(result)).toBe(r);
@@ -380,20 +380,19 @@ describe("Test multisig library", () => {
             });
 
             it("should properly return the witness script hex representation for P2SH-P2WSH on testnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, r);
                     let result = multisigWitnessScript(multi);
                     expect(scriptToHex(result)).toBe(r);
                 });
             });
         });
-
     });
 
     describe("Test multisigRedeemScript", () => {
         describe("Test for P2SH address type", () => {
             it("should properly return the redeem script hex representation for P2SH on mainnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
                     let result = multisigRedeemScript(multi);
                     expect(scriptToHex(result)).toBe(r);
@@ -401,7 +400,7 @@ describe("Test multisig library", () => {
             });
 
             it("should properly return the redeem script hex representation for P2SH on testnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
                     let result = multisigRedeemScript(multi);
                     expect(scriptToHex(result)).toBe(r);
@@ -429,7 +428,7 @@ describe("Test multisig library", () => {
 
         describe("Test for P2WSH address type", () => {
             it("should properly return null for P2WSH on mainnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2WSH, r);
                     let result = multisigRedeemScript(multi);
                     expect(result).toBe(null);
@@ -437,7 +436,7 @@ describe("Test multisig library", () => {
             });
 
             it("should properly return null for P2WSH on testnet", () => {
-                redeemscripts.forEach((r, i) => {
+                redeemscripts.forEach(r => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, r);
                     let result = multisigRedeemScript(multi);
                     expect(result).toBe(null);
@@ -659,17 +658,17 @@ describe("Test multisig library", () => {
                     testGenMulti(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, 2, 2, "tb1qrald34flec2ufdgedlgtk06cfsfgwah87t2qn9nzul3996uc0cgsmyuyh2");
                 });
             });
-        
+
         });
         describe("Test for invalid address type", () => {
             it("should return null with an invalid address for multisig generation on mainnet", () => {
                 const result = generateMultisigFromPublicKeys(NETWORKS.MAINNET, BADADDR, 2, ...pubkeys.slice(0, 2));
-                expect(result).toBe(null)        
+                expect(result).toBe(null)
             });
 
             it("should return null with an invalid address for multisig generation on testnet", () => {
                 const result = generateMultisigFromPublicKeys(NETWORKS.TESTNET, BADADDR, 2, ...pubkeys.slice(0, 2));
-                expect(result).toBe(null)        
+                expect(result).toBe(null)
             });
         });
     });
@@ -743,8 +742,8 @@ describe("Test multisig library", () => {
     describe("Test estimateMultisigTransactionFeeRate", () => {
         it("should properly estimate fee for P2SH address type", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2SH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -755,8 +754,8 @@ describe("Test multisig library", () => {
 
         it("should properly estimate fee P2SH-P2WSH address type", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -767,8 +766,8 @@ describe("Test multisig library", () => {
 
         it("should properly estimate fee P2WSH address type", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2WSH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2WSH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -780,8 +779,8 @@ describe("Test multisig library", () => {
         // TODO: is this really what we want
         it("this should be NaN(not string) or null?", () => {
             const feerate = estimateMultisigTransactionFee({
-                addressType: BADADDR, 
-                numInputs: 2, 
+                addressType: BADADDR,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -794,8 +793,8 @@ describe("Test multisig library", () => {
     describe("Test estimateMultisigTransactionFee", () => {
         it("should estimate fee for p2sh", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2SH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -806,8 +805,8 @@ describe("Test multisig library", () => {
 
         it("should estimate fee p2sh-p2wsh", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2SH_P2WSH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -818,8 +817,8 @@ describe("Test multisig library", () => {
 
         it("should estimate fee p2wsh", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: MULTISIG_ADDRESS_TYPES.P2WSH, 
-                numInputs: 2, 
+                addressType: MULTISIG_ADDRESS_TYPES.P2WSH,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -830,8 +829,8 @@ describe("Test multisig library", () => {
 
         it("should return NaN for an invalid address type", () => {
             const fee = estimateMultisigTransactionFee({
-                addressType: BADADDR, 
-                numInputs: 2, 
+                addressType: BADADDR,
+                numInputs: 2,
                 numOutputs: 3,
                 m: 2,
                 n: 3,
@@ -857,7 +856,7 @@ describe("Test multisig library", () => {
                 }, {
                    [p2shkey2]: sig2
                 }]);
-    
+
             expect(sigtx.toHex()).toBe(signed)
         });
 
@@ -865,12 +864,12 @@ describe("Test multisig library", () => {
             const tx = getUnsigned(1);
             const ms = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, p2wshredeem);
             const sigtx = signedMultisigTransaction(tx, [{ multisig: ms }], [
-                { 
-                    [p2wshpub1]: p2wshsig1, 
+                {
+                    [p2wshpub1]: p2wshsig1,
                     [p2wshpub2]: p2wshsig2
                 }
                 ]);
-    
+
             expect(sigtx.toHex()).toBe(p2wshsigned)
         });
     })
@@ -889,20 +888,20 @@ describe("Test multisig library", () => {
             const ms = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemMulti);
             let pubkey = validateMultisigSignature(getUnsigned(0), 0, { multisig: ms }, badSig);
             expect(pubkey).toBe(false)
-    
+
         })
 
         it("should properly extract the public key for a valid signature for P2WSH address type", () => {
             const tx = getUnsignedWithAmount(1)
             const ms = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, p2wshredeem);
             const input = { amountSats: tx.amountSats, multisig: ms }
-                
+
             let pubkey = validateMultisigSignature(tx.unsigned, 0, input, p2wshsig1);
             expect(pubkey).toBe(p2wshpub1);
-    
+
             pubkey = validateMultisigSignature(tx.unsigned, 0, input, p2wshsig2);
             expect(pubkey).toBe(p2wshpub2);
         });
 
-    });    
+    });
 });

@@ -14,24 +14,27 @@
   },
   "homepage": "https://unchained-capital.github.io/unchained-bitcoin",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-runtime": "^6.26.0",
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
     "jest": "^24.9.0",
     "jest-junit": "^9.0.0",
     "jsdoc": "^3.6.3",
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "eslint": "^6.6.0",
+    "eslint-plugin-jest": "^23.0.3"
   },
   "scripts": {
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
     "test": "jest lib",
-    "docs": "jsdoc -d docs -r src README.md"
+    "docs": "jsdoc -d docs -r src README.md",
+    "lint": "eslint src"
   },
   "bin": {},
   "dependencies": {
+    "@babel/polyfill": "^7.7.0",
     "bignumber.js": "^8.1.1",
     "bitcoin-address-validation": "^0.2.9",
     "bitcoinjs-lib": "^4.0.5"
@@ -40,6 +43,14 @@
     "lib": "lib"
   },
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      [
+        "@babel/env",
+        {
+          "useBuiltIns": "usage",
+          "corejs": 2
+        }
+      ]
+    ]
   }
 }

@@ -54,7 +54,7 @@ describe("test utils", () => {
         })
     });
 
-    
+
     describe('Test satoshisToBitcoins', () => {
         it('should properly convert a satoshi value to the corresponding value in bitcoin', () => {
             bitcoinValues.forEach(val => {
@@ -78,10 +78,8 @@ describe("test utils", () => {
 describe('Test transaction length calculations', () => {
     describe('Test estimateMultisigP2SHTransactionLength', () => {
         it('should properly estimate the transaction size in bytes for P2SH', () => {
-            const nin = 1;
-            const nout = 1;
             const est = estimateMultisigP2SHTransactionLength({
-                numInputs: 1, 
+                numInputs: 1,
                 numOutputs: 2,
                 m: 2,
                 n: 3});
@@ -92,7 +90,7 @@ describe('Test transaction length calculations', () => {
     describe('Test estimateMultisigP2WSHTransactionLength', () => {
         it('should properly estimate the transaction size in bytes for P2WSH', () => {
             const est = estimateMultisigP2WSHTransactionLength({
-                numInputs: 1, 
+                numInputs: 1,
                 numOutputs: 2,
                 m: 2,
                 n: 3

@@ -12,7 +12,7 @@ describe("Test script library", () => {
                     expect(scriptToOps(multi)).toBe(opsP2sh[i]);
                 });
             });
-    
+
             it("should properly return the redeem script opcode representation for P2SH on testnet", () => {
                 redeemscripts.forEach((r, i) => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
@@ -20,7 +20,7 @@ describe("Test script library", () => {
                 });
             });
         });
-    
+
         describe("Test for P2SH-P2WSH address type", () => {
             it("should properly return the redeem script opcode representation for P2SH-P2WSH on mainnet", () => {
                 redeemscripts.forEach((r, i) => {
@@ -28,7 +28,7 @@ describe("Test script library", () => {
                     expect(scriptToOps(multi)).toBe(opsP2shP2wsh[i]);
                 });
             });
-    
+
             it("should properly return the redeem script opcode representation for P2SH-P2WSH on testnet", () => {
                 redeemscripts.forEach((r, i) => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, r);
@@ -36,7 +36,7 @@ describe("Test script library", () => {
                 });
             });
         });
-    
+
         describe("Test for P2WSH address type", () => {
             it("should properly return the redeem script opcode representation for P2WSH on mainnet", () => {
                 redeemscripts.forEach((r, i) => {
@@ -44,7 +44,7 @@ describe("Test script library", () => {
                     expect(scriptToOps(multi)).toBe(`OP_0 ${hashes[i]}`);
                 });
             });
-    
+
             it("should properly return the redeem script opcode representation for P2WSH on testnet", () => {
                 redeemscripts.forEach((r, i) => {
                     let multi = generateMultisigFromHex(NETWORKS.TESTNET, MULTISIG_ADDRESS_TYPES.P2WSH, r);
@@ -55,7 +55,7 @@ describe("Test script library", () => {
     });
     describe("Test scriptToHex", () => {
         it("should properly return hex string representation of a given script", () => {
-            redeemscripts.forEach((r, i) => {
+            redeemscripts.forEach(r => {
                 let multi = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, r);
                 let redeem = multisigRedeemScript(multi);
                 const result = scriptToHex(redeem)

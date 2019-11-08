@@ -9,7 +9,7 @@ import {NETWORKS} from "./networks";
 const BASE_URL_MAINNET = 'https://blockstream.info';
 const BASE_URL_TESTNET = 'https://blockstream.info/testnet';
 
- function blockExplorerBaseURL(network, api) {
+ function blockExplorerBaseURL(network) {
   return (network === NETWORKS.TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET);
 }
 
@@ -24,7 +24,7 @@ const BASE_URL_TESTNET = 'https://blockstream.info/testnet';
  * @returns {string} the full block explorer url
  */
 export function blockExplorerURL(path, network) {
-  return `${blockExplorerBaseURL(network, false)}${path}`;
+  return `${blockExplorerBaseURL(network)}${path}`;
 }
 
 /**
@@ -38,7 +38,7 @@ export function blockExplorerURL(path, network) {
  * @returns {string} the full block explorer url
  */
 export function blockExplorerAPIURL(path, network) {
-  return `${blockExplorerBaseURL(network, false)}/api${path}`;
+  return `${blockExplorerBaseURL(network)}/api${path}`;
 }
 
 /**
