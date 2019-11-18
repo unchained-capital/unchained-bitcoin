@@ -5,9 +5,69 @@
 
 import {validateHex} from "./utils";
 import {NETWORKS, networkData} from "./networks";
-import {ECPair} from "bitcoinjs-lib"
+import {ECPair, payments, address, networks} from "bitcoinjs-lib";
+import {magicHash} from 'bitcoinjs-message';
+import {verifyPublicKey} from './message';
+import secp256k1 from 'secp256k1';
+import bip32 from 'bip32';
 
-const bip32 = require('bip32');
+const toOutputScript = address.toOutputScript;
+const base64re=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/
+
+/**
+ * Check to see if a message was signed by the pubkey associated
+ * with a given address, and return the pubkey if it was.
+ * @param {string} message - message signed
+ * @param {string} address - p2pkh address for the signing key
+ * @param {string} signature - base64 encoded bitcoin message signature
+ * @returns {error: string?, publicKey: string?}
+ */
+export function validateSignaturePublicKey(message, address, signature, network) {
+  if (message === null || message === undefined || message === '') {
+    return {error: "Message cannot be blank."};
+  }
+
+  if (address === null || address === undefined || address === '') {
+    return {error: "Address cannot be blank."};
+  }
+
+  if(network===null) {
+        network = networks.bitcoin;
+  } else {
+        if(typeof(network === 'string')) {
+                network = networks[network];
+        }
+  }
+
+  try {
+    toOutputScript(address, network);
+  } catch(e) {
+  console.log(e);
+    return {error: "Address must be valid."}
+  }
+
+  if (signature === null || signature === undefined || signature === '') {
+    return {error: "Signature cannot be blank."};
+  }
+
+  if( !signature.match(base64re)) {
+        return {error: "Signature must be a valid base64 string."}
+  }
+
+  const sg = Buffer.from(signature, 'base64');
+
+  try {
+    const publicKey = verifyPublicKey(message, address, sg);
+
+    if(publicKey) {
+      return {publicKey};
+    }
+  } catch(error) {
+    return {error}
+  }
+
+  return {error: "Signature not valid."}
+}
 
 /**
  * Provide validation messages for an extended public key.

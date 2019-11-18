@@ -37,7 +37,8 @@
     "@babel/polyfill": "^7.7.0",
     "bignumber.js": "^8.1.1",
     "bitcoin-address-validation": "^0.2.9",
-    "bitcoinjs-lib": "^4.0.5"
+    "bitcoinjs-lib": "^4.0.5",
+    "bitcoinjs-message": "^2.1.0"
   },
   "directories": {
     "lib": "lib"

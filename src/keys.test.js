@@ -1,9 +1,87 @@
-import { validateExtendedPublicKey, validatePublicKey, compressPublicKey } from './keys'
+import { validateExtendedPublicKey, validatePublicKey, compressPublicKey, validateSignaturePublicKey } from './keys'
 import { NETWORKS } from './networks';
+import {ECPair, payments, address} from "bitcoinjs-lib"
+import {sign,magicHash,verify} from 'bitcoinjs-message';
 
 import { emptyValues, keysCompressedUncompressed, validXpub, validTpub } from './test_constants';
 
+const validAddress='115qNHcmBzhwZ7wmUC8BxDPcDN3WAaL9pa';
+
 describe('Test key validation library', () => {
+    describe("Test validateSignaturePublicKey", () => {
+        it('should properly report the validation of empty message', () => {
+            emptyValues.forEach(k => {
+                const {error} = validateSignaturePublicKey(k, 'bad', 'AAAA', 'mainnet');
+                expect(error).toBe("Message cannot be blank.");
+            });
+        });
+
+        it('should properly report the validation of empty address', () => {
+            emptyValues.forEach(k => {
+                const {error} = validateSignaturePublicKey('message', k, 'AAAA', 'mainnet');
+                expect(error).toBe("Address cannot be blank.");
+            });
+        });
+
+        it('should properly report the validation of an invalid address', () => {
+            const {error} = validateSignaturePublicKey('message', 'BadAddress', 'AAAA', 'mainnet');
+            expect(error).toBe("Address must be valid.");
+        });
+
+        it('should properly report the validation of empty signature', () => {
+            const pair = ECPair.makeRandom();
+            const {address} = payments.p2pkh({pubkey: pair.publicKey});
+            emptyValues.forEach(k => {
+                const {error} = validateSignaturePublicKey('message', address, k, 'mainnet');
+                expect(error).toBe("Signature cannot be blank.");
+            });
+        });
+
+        it('should properly report the validation of an invalid signature', () => {
+          const pair = ECPair.makeRandom();
+          const {address} = payments.p2pkh({pubkey: pair.publicKey});
+          const {error} = validateSignaturePublicKey('message', address, 'signature', 'mainnet');
+          expect(error).toBe("Signature must be a valid base64 string.");
+        });
+
+        it('should properly report the validity a canned signed message', () => {
+            const message = "nonce:188e13429beb61d2489e4d24";
+            const address = "115qNHcmBzhwZ7wmUC8BxDPcDN3WAaL9pa";
+            const signature = "Gyx7BbA3TzlgsnepjO9uL2ykcgL+laiTFFZmNyqEaCZD2hm57GFTeEREeWpV6IJLXLAP1+KP0FbAnHUM+7T2gOE=";
+            const {publicKey, error} = validateSignaturePublicKey(message, address, signature, 'mainnet');
+            expect(error).toBe(undefined);
+            expect(publicKey).toBeTruthy();
+        });
+
+        it('should properly report the validity a canned signed message 2', () => {
+            const message = "The test!";
+            const address = "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH";
+            const signature = "IEiQ7kHfGqlxHSOcUftzR4gChjupJbuIIJCiY3LryQ9SXwPeRoBtJYkrNd/rgU7RP9jX6i2IaGGYMLt9bW+/bbI=";
+            const {publicKey, error} = validateSignaturePublicKey(message, address, signature, 'mainnet');
+            expect(error).toBe(undefined);
+            expect(publicKey).toBeTruthy();
+        });
+
+        it('should properly report the validity a canned signed message 3', () => {
+            const message = "The test!";
+            const address = "mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r";
+            const signature = "IEiQ7kHfGqlxHSOcUftzR4gChjupJbuIIJCiY3LryQ9SXwPeRoBtJYkrNd/rgU7RP9jX6i2IaGGYMLt9bW+/bbI=";
+            const {publicKey, error} = validateSignaturePublicKey(message, address, signature, 'testnet');
+            expect(error).toBe(undefined);
+            expect(publicKey).toBeTruthy();
+        });
+
+        it('should properly report the validity a real signed message', () => {
+            const message = 'this is a real message to sign';
+            const pair = ECPair.makeRandom();
+            const buffer = sign(message, pair.privateKey, pair.compressed);
+            const signature = buffer.toString('base64');
+            const {address} = payments.p2pkh({pubkey: pair.publicKey});
+            const {publicKey, error} = validateSignaturePublicKey(message, address, signature, 'mainnet');
+            expect(error).toBe(undefined);
+            expect(publicKey).toEqual(pair.publicKey.toString('hex'))
+        });
+    });
     describe("Test validateExtendedPublicKey", () => {
         it('should properly report the validation of an empty key value', () => {
             emptyValues.forEach(k => {
@@ -18,7 +96,7 @@ describe('Test key validation library', () => {
                 const result = validateExtendedPublicKey(key);
                 expect(result).toBe("Extended public key must begin with 'xpub'.");
             });
-    
+
             it('should properly report the validation of an improper key prefix on testnet', () => {
                 const key = "apub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
                 const result = validateExtendedPublicKey(key, NETWORKS.TESTNET);
