@@ -1,4 +1,4 @@
-/** 
+/**
  * This module provides validation messages related to transactions.
  * @module transactions
  */
@@ -68,7 +68,7 @@ export function validateFeeBTC(feeBTCString, inputsTotalSats) {
 /**
  * Provide a validation message for a given BTC output amount
  * @param {string} amountString - BTC output amount
- * @param {BigNumber} inputsTotalSats - total satoshis being spent
+ * @param {BigNumber} [inputsTotalSats] - total satoshis being spent
  * @example
  * const out = "0.00000500";
  * const validationError = validateOutputAmountBTC(out, BigNumber(1000000));
@@ -96,7 +96,7 @@ export function validateOutputAmountBTC(amountString, inputsTotalSats) {
     return "Invalid output amount.";
   }
 
-  if (amount.isGreaterThan(satoshisToBitcoins(inputsTotalSats))) {
+  if (typeof inputsTotalSats !== 'undefined' && amount.isGreaterThan(satoshisToBitcoins(inputsTotalSats))) {
     return "Output amount is too large.";
   }
 
