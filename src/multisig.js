@@ -347,7 +347,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
   }
   for (let outputIndex = 0; outputIndex < outputs.length; outputIndex += 1) {
     const output = outputs[outputIndex];
-    transactionBuilder.addOutput(output.address, output.amountSats.toNumber());
+    transactionBuilder.addOutput(output.address, new BigNumber(output.amountSats).toNumber());
   }
   return transactionBuilder.buildIncomplete();
 }
@@ -391,7 +391,7 @@ function signatureNoSighashType(signature) {
 
 function multisigSignatureHash(unsignedTransaction, inputIndex, input) {
   if (multisigAddressType(input.multisig) === MULTISIG_ADDRESS_TYPES.P2WSH || multisigAddressType(input.multisig) === MULTISIG_ADDRESS_TYPES.P2SH_P2WSH) {
-    return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, input.amountSats.toNumber(), bitcoin.Transaction.SIGHASH_ALL);
+    return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, new BigNumber(input.amountSats).toNumber(), bitcoin.Transaction.SIGHASH_ALL);
   } else {
     return unsignedTransaction.hashForSignature(inputIndex, multisigRedeemScript(input.multisig).output, bitcoin.Transaction.SIGHASH_ALL);
   }
