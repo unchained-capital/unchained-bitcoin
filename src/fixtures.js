@@ -23,7 +23,7 @@
 
 
 import BigNumber from 'bignumber.js';
-import { 
+import {
   generateMultisigFromPublicKeys,
   multisigRedeemScript,
   multisigWitnessScript,
@@ -103,7 +103,7 @@ const NODES = {
 const MULTISIGS_BASE = [
 
   {
-    network: TESTNET, 
+    network: TESTNET,
     type: P2SH,
     bip32Path: "m/45'/1'/100'/0/0",
     publicKey: "02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4",
@@ -146,7 +146,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: TESTNET, 
+    network: TESTNET,
     type: P2SH_P2WSH,
     bip32Path: "m/48'/1'/100'/1'/0/0",
     publicKey: "026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422",
@@ -191,7 +191,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: TESTNET, 
+    network: TESTNET,
     type: P2WSH,
     bip32Path: "m/48'/1'/100'/2'/0/0",
     publicKey: "03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469",
@@ -234,7 +234,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: MAINNET, 
+    network: MAINNET,
     type: P2SH,
     bip32Path: "m/45'/0'/100'/0/0",
     publicKey: "02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79",
@@ -278,7 +278,7 @@ const MULTISIGS_BASE = [
 
 
   {
-    network: MAINNET, 
+    network: MAINNET,
     type: P2SH_P2WSH,
     bip32Path: "m/48'/0'/100'/1'/0/0",
     publicKey: "0342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c",
@@ -323,7 +323,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: MAINNET, 
+    network: MAINNET,
     type: P2WSH,
     bip32Path: "m/48'/0'/100'/2'/0/0",
     publicKey: "0369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f4",
@@ -364,7 +364,7 @@ const MULTISIGS_BASE = [
       signature: ["304402207e9ed7746415d01ebf54e84367f5767fdcd36834b24a09518209689c2ca77b6502207123faaa61953f1c3f7b723bc8cff43bb3a007ec46079b46c4f260d2c1c998db01","3045022100d8d052f50b1a996e1738a94a28d762bcd6ec26d3658ed9a66aeb39b41688154d02206cc815d5b7ef6f14647856fc5481f12a32abc077c51c60a4b19a545e072a5cf301","3045022100f26c0ab42123f342c878894d496d62d154f10fffa0949d4356f0bb134d80ae3302207c5aa6892da2e3392b8488c999b76df31633e31209c34b3eb847fccb70a0b6e101"],
     },
   },
-  
+
 ];
 
 const MULTISIGS = MULTISIGS_BASE.map((test) => {
@@ -469,6 +469,22 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
   },
 ]);
 
+export const EXTENDED_PUBLIC_KEY_CONVERSIONS = {
+  xpub: "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv",
+  ypub: "ypub6X2YoPDhEBXo793SZXn4evUdhVav2HDh1g4fa1QyCvpCrXA5dsmokftiaxozvqSqM4bLPo6JFw7ijDDWDSnC3aG2bBK45cKtFdWLsUKgtyo",
+  zpub: "zpub6qrp73tcNs5GxSEZPtZgs1a8sTjMxuDBvnatMQJrawC5ucyJtXwNNjYrcAmavk6kkhi99GgribUGcVq4w9CCqowdTX1UfX9NXMZzG2XWQdj",
+  Ypub: "Ypub6hvdvcx8o96AXiCpWCF3UzpSRHdBEduHKwiLVGgWahecUhizQHA5qnkePfmUVGfjaXfKGP6R99WDrNqGWfw9C4NhReRTV1nt9MnDTNALmuh",
+  Zpub: "Zpub72kuEHd3wpdeP1PwLZ2fh5uwbFmdBFtnF4EZGfaPxi2VXoYDewKeTrQnQsj4VBKezAn81rgybormjfSqENM9zJ4JHz7t4vcNR5qrqv8qja7",
+  tpub: "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px",
+  upub: "upub5DhVaiY2dTMshxGyE6dZpa6d1d18FoFhMDynSRqRguJge7uAdF7ZGRGAW8yewCq9iW87Pti4RHhXC4mFLf88rdXd7pXMjy3wAjFmK6jyHiX",
+  vpub: "vpub5YXktPCwn8uMZFU64TRC2fC8Bb9aCRFCGLW1DpjK4ugZhDiPsuH7tUvJXLwEw7V589Ev9NJcsx455MNp4MY9esDDzADnKssRSTKQhgCrtoZ",
+  Upub: "Upub5QbahxGUCQvF8XSMAm6YeeSRjR3PU9wHfVdTMh6y4g96GJU5PeVqMY86Jqw8Ve43wyC6GUiBJW62KEP1dtH617eHxHdm9NWw4TXdu1aWzdx",
+  Vpub: "Vpub5jRr1cwPM6TiypdU17tArjXvuPBqQmvnac9g95zrSgWyKQHJeJfPybnEL3tiVYhyMcJu1xJjmASaCWzaMah6oMKtpdLBjHLRLBbHHcy3jDH",
+
+}
+
+
+
 /**
  * A set of test fixtures all built from the same [BIP39 seed phrase]{@link https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki}.
  *
@@ -487,20 +503,21 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
  * import {TEST_FIXTURES} from "unchained-bitcoin";
  * console.log(TEST_FIXTURES.bip39Phrase);
  * // merge alley lucky axis penalty manage latin gasp virus captain wheel deal chase fragile chapter boss zero dirt stadium tooth physical valve kid plunge
- * 
+ *
  */
 export const TEST_FIXTURES = {
   bip39Phrase: BIP39_PHRASE,
   nodes: NODES,
   multisigs: MULTISIGS,
   transactions: TRANSACTIONS,
+  extendedPublicKeyConversions: EXTENDED_PUBLIC_KEY_CONVERSIONS,
 };
 
 /**
  * An HD node fixture derived from the BIP39 seed phrase fixture.
  *
  * Not all HD node fixtures have all properties below.
- * 
+ *
  * @typedef module:fixtures.HDNode
  * @type {Object}
  * @property {string} pub - the (compressed) public key in hex
@@ -527,12 +544,12 @@ export const TEST_FIXTURES = {
  * @property {string} redeemScriptOps - redeem script in opcodes (missing for P2WSH)
  * @property {string} witnessScriptHex - witness script in hex (missing for P2SH)
  * @property {string} witnessScriptOps - witness script in opcodes (missing for P2SH)
- * @property {string} address - bitcoin address 
+ * @property {string} address - bitcoin address
  * @property {string} scriptHex - script in hex
  * @property {string} scriptOps - script in opcodes
  * @property {module:multisig.Multisig} multisig - `Multisig` object for address
  * @property {module:transactions.UTXO[]} utxos - UTXOs at this address
- * 
+ *
  */
 
 /**
@@ -560,5 +577,5 @@ export const TEST_FIXTURES = {
  * @property {module:transactions.TransactionOutput[]} outputs - transaction outputs
  * @property {string} hex - unsigned transaction in hex
  * @property {string[]} signature - one signature for the transaction (consisting of one signature per input)
- * 
+ *
  */
