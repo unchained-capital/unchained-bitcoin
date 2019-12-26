@@ -1,23 +1,97 @@
 /**
  * This module provides functions for validating & deriving public
  * keys and extended public keys.
- * 
+ *
  * @module keys
  */
 
 import {ECPair} from "bitcoinjs-lib";
 import bip32 from "bip32";
+import bs58check from 'bs58check'
 
 import {validateHex, toHexString, hash160} from "./utils";
 import {bip32PathToSequence} from "./paths"
 import {TESTNET, networkData, MAINNET} from "./networks";
+
+export const EXTENDED_PUBLIC_KEY_VERSIONS = {
+  xpub: "0488b21e",
+  ypub: "049d7cb2",
+  zpub: "04b24746",
+  Ypub: "0295b43f",
+  Zpub: "02aa7ed3",
+  tpub: "043587cf",
+  upub: "044a5262",
+  vpub: "045f1cf6",
+  Upub: "024289ef",
+  Vpub: "02575483"
+}
+
+function validatePrefix(prefix, prefixType) {
+  if (!~Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).indexOf(prefix)) {
+    return `Invalid ${prefixType} version for extended public key conversion`;
+  }
+  return null;
+}
+
+/**
+ * Convert an extended public key between formats
+ * @param {string} extendedPublicKey - the extended public key to convert
+ * @param {string} targetPrefix - the target format to convert to
+ * @example
+ * import {convertExtendedPublicKey} from "unchained-bitcoin";
+ * const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
+ * console.log(tpub.extendedPublicKey, tpub.message)
+ * // tpubDCZv...
+ * @returns {string} converted extended public key
+ */
+export function convertExtendedPublicKey(extendedPublicKey, targetPrefix) {
+  const targetError = validatePrefix(targetPrefix, 'target')
+  if (targetError !== null) return {extendedPublicKey, error:targetError};
+  const sourcePrefix = extendedPublicKey.slice(0, 4);
+  const sourceError = validatePrefix(sourcePrefix, 'source')
+  if (sourceError !== null) throw(new Error(sourceError))
+
+  try {
+    const decodedExtendedPublicKey = bs58check.decode(extendedPublicKey.trim());
+    const extendedPublicKeyNoPrefix = decodedExtendedPublicKey.slice(4);
+    const extendedPublicKeyNewPrefix = Buffer.concat([Buffer.from(EXTENDED_PUBLIC_KEY_VERSIONS[targetPrefix],'hex'), extendedPublicKeyNoPrefix]);
+    return bs58check.encode(extendedPublicKeyNewPrefix)
+  } catch (err) {
+    throw(new Error("Unable to convert extended public key: "+err.message))
+  }
+}
+
+
+/**
+ * Check to see if an extended public key is of the correct prefix for the network
+ * this can be used in conjuction with convertExtendedPublicKey to attempt to automatically convert
+ * @param {string} extendedPublicKey - the extended public key to check
+ * @param {string} network - thie bitcoin network
+ * @example
+ * import {validateExtendedPublicKeyForNetwork} from "unchained-bitcoin";
+ * console.log(validateExtendedPublicKeyForNetwork('xpub...', MAINNET)) // empty
+ * console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extended public key must begin with ...."
+ * @returns {string} a validation message or empty if valid
+ */
+export function validateExtendedPublicKeyForNetwork(extendedPublicKey, network) {
+  let requiredPrefix = "'xpub'";
+  if (network === TESTNET) {
+    requiredPrefix += " or 'tpub'";
+  }
+  const notXpubError = `Extended public key must begin with ${requiredPrefix}.`;
+  const prefix = extendedPublicKey.slice(0, 4);
+  if (! (prefix === 'xpub' || (network === TESTNET && prefix === 'tpub'))) {
+    return notXpubError;
+  }
+  return '';
+}
 
 /**
  * Validate the given extended public key.
  *
  * - Must start with the appropriate (network-dependent) prefix.
  * - Must be a valid BIP32 extended public key
- * 
+ *
  * @param {string} xpubString - base58 encoded extended public key (`xpub...`)
  * @param {module:networks.NETWORKS} network  - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
@@ -95,7 +169,7 @@ export function validatePublicKey(pubkeyHex) {
 
 /**
  * Compresses the given public key.
- * 
+ *
  * @param {string} publicKey - (uncompressed) public key in hex
  * @returns {string} compressed public key in hex
  * @example
@@ -130,7 +204,7 @@ export function compressPublicKey(publicKey) {
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
  * console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
- * 
+ *
  */
 export function deriveChildPublicKey(extendedPublicKey, bip32Path, network) {
   if (bip32Path.slice(0, 2) === 'm/') {
@@ -144,7 +218,7 @@ export function deriveChildPublicKey(extendedPublicKey, bip32Path, network) {
 /**
  * Return the extended public key at the given BIP32 path below the
  * given extended public key.
- * 
+ *
  * @param {string} extendedPublicKey - base58 encoded extended public key (`xpub...`)
  * @param {string} bip32Path - BIP32 derivation path string (with or without initial `m/`)
  * @param {module:networks.NETWORKS} network - bitcoin network
