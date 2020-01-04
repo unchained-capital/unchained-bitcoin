@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: p2sh_p2wsh</title>
+    <title>JSDoc: Module: signatures</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: p2sh_p2wsh</h1>
+    <h1 class="page-title">Module: signatures</h1>
 
     
 
@@ -38,8 +38,8 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>This module provides functions and constants for the P2SH-wrapped
-P2WSH address type, sometimes written P2SH-P2WSH.</p></div>
+            <div class="description"><p>This modulde provides functions for validating and handling
+multisig transaction signatures.</p></div>
         
 
         
@@ -88,7 +88,7 @@ P2WSH address type, sometimes written P2SH-P2WSH.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh_p2wsh.js.html">p2sh_p2wsh.js</a>, <a href="p2sh_p2wsh.js.html#line1">line 1</a>
+        <a href="signatures.js.html">signatures.js</a>, <a href="signatures.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -135,88 +135,6 @@ P2WSH address type, sometimes written P2SH-P2WSH.</p></div>
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".P2SH_P2WSH"><span class="type-signature">(static, constant) </span>P2SH_P2WSH<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    <p>Address type constant for &quot;pay-to-script-hash&quot; wrapped
-&quot;pay-to-witness-script-hash&quot; (P2SH-P2WSH) addresses.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-default">Default Value:</dt>
-    <dd class="tag-default"><ul class="dummy">
-            <li>P2SH-P2WSH</li>
-        </ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh_p2wsh.js.html">p2sh_p2wsh.js</a>, <a href="p2sh_p2wsh.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -227,7 +145,7 @@ P2WSH address type, sometimes written P2SH-P2WSH.</p></div>
     
 
     
-    <h4 class="name" id=".estimateMultisigP2SH_P2WSHTransactionVSize"><span class="type-signature">(static) </span>estimateMultisigP2SH_P2WSHTransactionVSize<span class="signature">(config)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".validateMultisigSignature"><span class="type-signature">(static) </span>validateMultisigSignature<span class="signature">(unsignedTransaction, inputIndex, input, signerInputSignature)</span><span class="type-signature"> &rarr; {string|boolean}</span></h4>
     
 
     
@@ -235,8 +153,7 @@ P2WSH address type, sometimes written P2SH-P2WSH.</p></div>
 
 
 <div class="description">
-    <p>Estimate the transaction virtual size (vsize) when spending inputs
-from the same multisig P2SH-P2WSH address.</p>
+    <p>Validate a multisig signature for given input and public key.</p>
 </div>
 
 
@@ -272,13 +189,13 @@ from the same multisig P2SH-P2WSH address.</p>
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>unsignedTransaction</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Transaction</span>
 
 
             
@@ -288,33 +205,14 @@ from the same multisig P2SH-P2WSH address.</p>
 
             
 
-            <td class="description last"><p>configuration for the calculation</p>
-                <h6>Properties</h6>
-                
+            <td class="description last"><p>transaction to validate</p></td>
+        </tr>
 
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>numInputs</code></td>
+                <td class="name"><code>inputIndex</code></td>
             
 
             <td class="type">
@@ -330,20 +228,20 @@ from the same multisig P2SH-P2WSH address.</p>
 
             
 
-            <td class="description last"><p>number of m-of-n multisig P2SH inputs</p></td>
+            <td class="description last"><p>the index where the input appears in the transaction</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>numOutputs</code></td>
+                <td class="name"><code>input</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type"><a href="module-transactions.html#.UTXO">module:transactions.UTXO</a></span>
 
 
             
@@ -353,20 +251,20 @@ from the same multisig P2SH-P2WSH address.</p>
 
             
 
-            <td class="description last"><p>number of outputs</p></td>
+            <td class="description last"><p>the input itself</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>m</code></td>
+                <td class="name"><code>signerInputSignature</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -376,37 +274,7 @@ from the same multisig P2SH-P2WSH address.</p>
 
             
 
-            <td class="description last"><p>required signers</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>total signers</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>signature to validate</p></td>
         </tr>
 
     
@@ -447,7 +315,7 @@ from the same multisig P2SH-P2WSH address.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh_p2wsh.js.html">p2sh_p2wsh.js</a>, <a href="p2sh_p2wsh.js.html#line31">line 31</a>
+        <a href="signatures.js.html">signatures.js</a>, <a href="signatures.js.html#line65">line 65</a>
     </li></ul></dd>
     
 
@@ -476,7 +344,7 @@ from the same multisig P2SH-P2WSH address.</p>
 
         
 <div class="param-desc">
-    <p>estimated transaction virtual size in bytes</p>
+    <p>false if invalid or corresponding public key</p>
 </div>
 
 
@@ -487,7 +355,10 @@ from the same multisig P2SH-P2WSH address.</p>
     </dt>
     <dd>
         
-<span class="param-type">number</span>
+<span class="param-type">string</span>
+|
+
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -496,6 +367,41 @@ from the same multisig P2SH-P2WSH address.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const pubkey1 = "03a...";
+const pubkey2 = "03b...";
+const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
+const inputs = [
+  {
+    txid: "ae...",
+    index: 0,
+    multisig,
+  },
+  // other inputs...
+];
+const outputs = [
+  {
+    address: "2N...",
+    amountSats: BigNumber(90000),
+  },
+  // other outputs...
+];
+const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
+const signature = "304...";
+const result = validateMultisigSignature(unsignedTransaction, 0, inputs[0], signature);
+switch (result) {
+  case false:
+    // signature was invalid
+  case pubkey1:
+    // signature was valid for pubkey1
+  case pubkey2:
+    // signature was valid for pubkey2
+  default:
+    // ...
+}</code></pre>
 
 
 

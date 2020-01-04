@@ -29,7 +29,7 @@
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
     "test": "jest lib",
-    "docs": "jsdoc -d docs -r src README.md",
+    "docs": "jsdoc -c docs/config.json -d docs -r src README.md",
     "lint": "eslint src"
   },
   "bin": {},

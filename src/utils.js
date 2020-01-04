@@ -1,17 +1,22 @@
 /**
- * This module provides various utility conversion and validation functions.
+ * This module provides conversion and validation functions for units
+ * (Satoshis, BTC) and hex strings.
+ * 
  * @module utils
  */
 
- import BigNumber from "bignumber.js";
+import BigNumber from "bignumber.js";
 
 /**
  * Converts a byte array to its hex representation.
- * @param {number[]} byteArray - array of bytes to convert
+ * 
+ * @param {number[]} byteArray - input byte array
+ * @returns {string} hex representation of input array
+ * 
  * @example
  * const hex = toHexString([255, 0, 15, 16, 31, 32]);
  * console.log(hex) // ff000f101f20
- * @returns {string} hex representation of bytes
+ * 
  */
 export function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
@@ -20,46 +25,70 @@ export function toHexString(byteArray) {
 }
 
 /**
- * Provide validation messages for a hex string.
- * @param {string} inputString - hex string to validate
+ * Validate whether the given string is hex.
+ *
+ * - Valid hex consists of an even number of characters 'a-f`, `A-F`,
+ *   or `0-9`.  This is case-insensitive.
+ *
+ * - The presence of the common prefix `0x` will make the input be
+ *   considered invalid (because of the` `x`).
+ * 
+ * @param {string} inputString - string to validate
+ * @returns {string} empty if valid or corresponding validation message if not
+ * 
  * @example
- * const validationError = validateHex('00112233gg');
- * console.log(validationError) // invalid hex - invalid characters
- * @returns {string} empty if valid or corresponding validation message
+ * console.log(validateHex('00112233gg')) // "Invalid hex: ..."
+ * console.log(validateHex('0xdeadbeef')) // "Invalid hex: ..."
+ * console.log(validateHex('deadbeef')) // ""
+ * console.log(validateHex('DEADbeef')) // ""
+ * 
  */
 export function validateHex(inputString) {
   if (inputString.length % 2) {
-    return 'invalid hex - odd-length string';
+    return 'Invalid hex: odd-length string.';
   }
   const re = /^[0-9A-Fa-f]*$/;
   if (!re.test(inputString)) {
-    return 'invalid hex - invalid characters';
+    return 'Invalid hex: only characters a-f, A-F and 0-9 allowed.';
   }
   return '';
 }
 
 /**
- * Convert a value in satoshis to corresponding value in BTC.
- * @param {BigNumber} num - value in satoshis
- * @example
- * const sats = BigNumber(123450000);
- * const btc = satoshisToBitcoins(sats);
- * console.log(btc); // 1.2345
+ * Convert a value in Satoshis to BTC.
+ *
+ * - Accepts both positive and negative input values.
+ * - Rounds down (towards zero) input value to the nearest Satoshi.
+ * 
+ * @param {BigNumber|string|number} satoshis - value in Satoshis
  * @returns {BigNumber} value in BTC
+ * 
+ * @example
+ * console.log(satoshisToBitcoins(123450000)); // 1.2345
+ * console.log(satoshisToBitcoins('0.5')); // 0
+ * console.log(satoshisToBitcoins('-100000000.5')); // -1.0
+ * 
  */
-export function satoshisToBitcoins(num) {
-  return new BigNumber(num).shiftedBy(-8);
+export function satoshisToBitcoins(satoshis) {
+  const originalValue = BigNumber(satoshis);
+  const roundedValue = originalValue.integerValue(BigNumber.ROUND_DOWN);
+  return roundedValue.shiftedBy(-8);
 }
 
 /**
- * Convert a value in BTC to corresponding value in satoshis.
- * @param {BigNumber} num - value in BTC
- * @example
- * const btc = BigNumber(1.2345);
- * const sats = bitcoinsToSatoshis(btc);
- * console.log(sats); // 123450000
+ * Convert a value in BTC to Satoshis.
+ *
+ * - Accepts both positive and negative input values.
+ * - Rounds down output value to the nearest Satoshi.
+ * 
+ * @param {BigNumber|string|number} btc - value in BTC
  * @returns {BigNumber} value in satoshis
+ * 
+ * @example
+ * console.log(bitcoinsToSatoshis(1.2345)); // 123450000
  */
 export function bitcoinsToSatoshis(num) {
-  return new BigNumber(num).shiftedBy(8);
+  return BigNumber(num).shiftedBy(8).integerValue(BigNumber.ROUND_DOWN);
 }
+
+export const ZERO = BigNumber(0);

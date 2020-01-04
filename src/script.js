@@ -1,31 +1,38 @@
 /**
- * This module provides script conversion functions.
+ * This module provides functions for converting generic bitcoin
+ * scripts to hex or opcodes.
+ * 
  * @module script
  */
 
- const bitcoin = require('bitcoinjs-lib');
+const bitcoin = require('bitcoinjs-lib');
 
 /**
- * Extracts the asm representation of a script from a Multisig object.
- * @param {Multisig} script - Multisig object to parse
+ * Extracts the ASM (opcode) representation of a script from a
+ * `Multisig` object.
+ * 
+ * @param {Multisig} script - Multisig object
+ * @returns {string} ASM representation of script
  * @example
- * const redeemMultisig = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2WSH, redeemScript)
- * console.log(scriptToOps(redeemMultisig)) // OP_0 81aaef2af523f8b269ea9c8337d4fdcc3f982a668c54f63bf2d0d9dda6a662e6
- * @returns {string} asm representation of script
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, "03a...", "03b...");
+ * console.log(scriptToOps(multisig)) // "OP_1 03a... 03b... OP_2 OP_CHECKMULTISIG"
+ * 
  */
 export function scriptToOps(script) {
   return bitcoin.script.toASM(script.output);
 }
 
 /**
- * Extracts the hex representation of a script from a Multisig object.
- * @param {Multisig} script - Multisig object to parse
- * @example
- * const redeemMultisig = multisigRedeemScript(multisig)
- * console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...
+ * Extracts the hex representation of a script from a `Multisig`
+ * object.
+ * 
+ * @param {Multisig} script - Multisig object
  * @returns {string} hex representation of script
+ * @example
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, "03a...", "03b...");
+ * console.log(scriptToHex(multisig)) // "5121024f355bdcb...5871aa52ae"
+ * 
  */
 export function scriptToHex(script) {
   return script.output.toString('hex');
 }
-

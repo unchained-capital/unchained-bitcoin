@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">This module provides a utility function for P2SH address type.</div>
+            <div class="description"><p>This module provides functions and constants for the P2SH address type.</p></div>
         
 
         
@@ -134,6 +134,87 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".P2SH"><span class="type-signature">(static, constant) </span>P2SH<span class="type-signature"> :string</span></h4>
+
+
+
+
+<div class="description">
+    <p>Address type constant for &quot;pay-to-script-hash&quot; (P2SH) addresses.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>P2SH</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -144,7 +225,7 @@
     
 
     
-    <h4 class="name" id=".estimateMultisigP2SHTransactionLength"><span class="type-signature">(static) </span>estimateMultisigP2SHTransactionLength<span class="signature">(config)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".estimateMultisigP2SHTransactionVSize"><span class="type-signature">(static) </span>estimateMultisigP2SHTransactionVSize<span class="signature">(config)</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -152,7 +233,8 @@
 
 
 <div class="description">
-    Estimate the transaction size for P2SH address type.
+    <p>Estimate the transaction virtual size (vsize) when spending inputs
+from the same multisig P2SH address.</p>
 </div>
 
 
@@ -204,7 +286,7 @@
 
             
 
-            <td class="description last">configuration for the calculation
+            <td class="description last"><p>configuration for the calculation</p>
                 <h6>Properties</h6>
                 
 
@@ -246,7 +328,7 @@
 
             
 
-            <td class="description last">input count used for calculation</td>
+            <td class="description last"><p>number of m-of-n multisig P2SH inputs</p></td>
         </tr>
 
     
@@ -269,7 +351,7 @@
 
             
 
-            <td class="description last">output count used for calculation</td>
+            <td class="description last"><p>number of outputs</p></td>
         </tr>
 
     
@@ -292,7 +374,7 @@
 
             
 
-            <td class="description last">number of required signers for the quorum</td>
+            <td class="description last"><p>required signers</p></td>
         </tr>
 
     
@@ -315,7 +397,7 @@
 
             
 
-            <td class="description last">number of total signers for the quorum</td>
+            <td class="description last"><p>total signers</p></td>
         </tr>
 
     
@@ -363,7 +445,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line15">line 15</a>
+        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -392,7 +474,7 @@
 
         
 <div class="param-desc">
-    estimated transaction size in bytes
+    <p>estimated transaction virtual size in bytes</p>
 </div>
 
 
@@ -431,13 +513,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Nov 08 2019 15:31:16 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

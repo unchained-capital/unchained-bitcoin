@@ -1,115 +1,177 @@
-import { validateExtendedPublicKey, validatePublicKey, compressPublicKey } from './keys'
-import { NETWORKS } from './networks';
+import { 
+    validateExtendedPublicKey, 
+    validatePublicKey, 
+    compressPublicKey, 
+    deriveChildPublicKey, 
+    deriveChildExtendedPublicKey,
+} from './keys';
 
-import { emptyValues, keysCompressedUncompressed, validXpub, validTpub } from './test_constants';
+import { TESTNET, MAINNET } from './networks';
 
-describe('Test key validation library', () => {
-    describe("Test validateExtendedPublicKey", () => {
-        it('should properly report the validation of an empty key value', () => {
-            emptyValues.forEach(k => {
-                const result = validateExtendedPublicKey(k);
-                expect(result).toBe("Extended public key cannot be blank.");
-            });
-        });
+import {TEST_NODES} from "./test_constants";
 
-        describe("Test invalid prefixes", () =>{
-            it('should properly report the validation of an improper key prefix on mainnet', () => {
-                const key = "apub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
-                const result = validateExtendedPublicKey(key);
-                expect(result).toBe("Extended public key must begin with 'xpub'.");
-            });
+
+describe("keys", () => {
+
+  describe("validateExtendedPublicKey", () => {
+
+    const validXpub = "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv";
+    const validTpub = "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px";
+
+    it("returns an error message on an empty value", () => {
+      expect(validateExtendedPublicKey(undefined, TESTNET)).toMatch(/cannot be blank/i);
+      expect(validateExtendedPublicKey("", TESTNET)).toMatch(/cannot be blank/i);
+      expect(validateExtendedPublicKey(null, TESTNET)).toMatch(/cannot be blank/i);
+    });
+
+    it("returns an error message when the prefix does not match the network", () => {
+      expect(validateExtendedPublicKey("foo", TESTNET)).toMatch(/must begin with/i);
+      expect(validateExtendedPublicKey("tpub", MAINNET)).toMatch(/must begin with/i);
+      expect(validateExtendedPublicKey(validTpub, MAINNET)).toMatch(/must begin with/i);
+      expect(validateExtendedPublicKey(validXpub, TESTNET)).toMatch(/must begin with/i);
+    });
+
+    it("returns an error message when the value is too short", () => {
+      expect(validateExtendedPublicKey("tpub123", TESTNET)).toMatch(/is too short/i);
+      expect(validateExtendedPublicKey("xpub123", MAINNET)).toMatch(/is too short/i);
+    });
+
+    it("returns an error message when the value is too short", () => {
+      expect(validateExtendedPublicKey("tpub123", TESTNET)).toMatch(/is too short/i);
+      expect(validateExtendedPublicKey("xpub123", MAINNET)).toMatch(/is too short/i);
+    });
+
+    it("returns an error message when the value is not valid", () => {
+      // they both have 'n' in them
+      expect(validateExtendedPublicKey(validTpub.replace('n', 'p'), TESTNET)).toMatch(/invalid/i);
+      expect(validateExtendedPublicKey(validXpub.replace('n', 'p'), MAINNET)).toMatch(/invalid/i);
+    });
+
+    it("returns an empty string when the value is valid", () => {
+      expect(validateExtendedPublicKey(validTpub, TESTNET)).toBe("");
+      expect(validateExtendedPublicKey(validXpub, MAINNET)).toBe("");
+    });
+
+  });
+
+  describe("validatePublicKey", () => {
+
+    it("returns an error message on an empty value", () => {
+      expect(validatePublicKey(undefined)).toMatch(/cannot be blank/i);
+      expect(validatePublicKey("")).toMatch(/cannot be blank/i);
+      expect(validatePublicKey(null)).toMatch(/cannot be blank/i);
+    });
+
+    it("returns an error message on a non-hex value", () => {
+      expect(validatePublicKey("zzzz")).toMatch(/invalid hex/i);
+    });
+
+    it("returns an error message on an invalid value", () => {
+      expect(validatePublicKey("deadbeef")).toMatch(/invalid public key/i);
+    });
+
+    it("returns an empty string when the value is a valid compressed public key", () => {
+      expect(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee")).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid uncompressed public key", () => {
+      expect(validatePublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5")).toBe("");
+    });
     
-            it('should properly report the validation of an improper key prefix on testnet', () => {
-                const key = "apub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
-                const result = validateExtendedPublicKey(key, NETWORKS.TESTNET);
-                expect(result).toBe("Extended public key must begin with 'xpub' or 'tpub'.");
-            });
-        });
+  });
 
 
-        it("should properly report the validation of a key of insufficient length", () => {
-            const key = "xpub";
-            const result = validateExtendedPublicKey(key);
-            expect(result).toBe("Extended public key length is too short.");
-        });
+  describe("compressPublicKey", () => {
 
-        describe("Test invalid keys", () =>{
-            const invalid = /^Invalid extended public key/
-            it("should properly report the validation of an invalid xpub key on mainnet", () => {
-                const xpub = "xpub6CCHV1Yn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
-                const result = validateExtendedPublicKey(xpub, NETWORKS.MAINNET);
-                expect(invalid.test(result)).toBe(true);
-            });
+    it("compresses public keys", () => {
 
-            it("should properly report the validation of an invalid tpub key on testnet", () => {
-                const tpub = "tpubDCZvixNTnmwmiZW4boJEY6YmKH2qKscsV9tuimmwaN8pT8NCxwtFLEAJUTSw6yxf4N44AQVFpt26vwVMBhxhTLAAN1w2Cgidnc7n3JVnBDH";
-                const result = validateExtendedPublicKey(tpub, NETWORKS.TESTNET);
-                expect(invalid.test(result)).toBe(true);
-            });
-        });
+      expect(compressPublicKey(
+        "04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5"
+      )).toBe("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee");
 
-        describe("Test valid keys", () =>{
-            it('should not provide a validation message for a valid xpub key on mainnet', () => {
-                const result = validateExtendedPublicKey(validXpub, NETWORKS.MAINNET);
-                expect(result).toBe("");
-            });
+      expect(compressPublicKey(
+        "04f7946511e5f5c2697ed1a6c7f1fb7cfa6c03c74ac123b3d2d0c19ad25899baa6bd72af01ea2a58460fe34c2a2d48527f91da977a45a224f50028d937feb68660"
+      )).toBe("02f7946511e5f5c2697ed1a6c7f1fb7cfa6c03c74ac123b3d2d0c19ad25899baa6");
 
-            it('should not provide a validation message for a valid tpub key on testnet', () => {
-                const result = validateExtendedPublicKey(validTpub, NETWORKS.TESTNET);
-                expect(result).toBe("");
-            });
-        });
+      expect(compressPublicKey(
+        "04d87003b52cc497a6ca9a72fd610bcbfb2fe1430ffc4c9d89c2b25b501e04d677ee43c602a902993757d479d89b004f70a944de6db953594be98f397921b20162"
+      )).toBe("02d87003b52cc497a6ca9a72fd610bcbfb2fe1430ffc4c9d89c2b25b501e04d677");
 
+      expect(compressPublicKey(
+        "040354bd30fed4d431ee2acb51391128c72af8ee2bec8a303d977a40c85ba82e7b0456f8717352c5cb95fef87671109a66243e0b6d4917b3c33eb6aa5f33e5c09d"
+      )).toBe("030354bd30fed4d431ee2acb51391128c72af8ee2bec8a303d977a40c85ba82e7b");
+      
     });
 
-    describe("Test validatePublicKey", () => {
-        it('should properly report the validation of using an empty key value', () => {
-            emptyValues.forEach(b => {
-                const result = validatePublicKey(b);
-                expect(result).toBe("Public key cannot be blank.");
-            });
-        });
+  });
 
-        it("shold report invalid hex", () => {
-            const bad = ["aaa", "ffaz"]
-            bad.forEach(hex => {
-                const result = validatePublicKey(hex);
-                expect(result).not.toBe(""); // actual values test in utils module
-            });
-        });
 
-        it("should report invalid key", () => {
-            const bad = ["aaaa", "0000000000000000"]
-            const invalid = /^Invalid public key/
+  describe("deriveChildPublicKey", () => {
 
-            bad.forEach(key => {
-                const result = validatePublicKey(key);
-                console.log(result)
-                expect(invalid.test(result)).toBe(true);
-            });
-        });
+    it('derives child public keys for unhardened paths on mainnet', () => {
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "m/0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].pub);
 
-        it('should not provide a validation message for a valid compressed public key', () => {
-            keysCompressedUncompressed.forEach(key => {
-                const result = validatePublicKey(key.compressed);
-                expect(result).toBe("")
-            })
-        });
-
-        it('should not provide a validation message for a valid uncompressed public key', () => {
-            keysCompressedUncompressed.forEach(key => {
-                const result = validatePublicKey(key.uncompressed);
-                expect(result).toBe("")
-            })
-        });
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/6/2", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "6/2", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].pub);
     });
 
-    describe("Test compressPublicKey", () => {
-        it("should properly compress public key", () => {
-            keysCompressedUncompressed.forEach(k => {
-                const result = compressPublicKey(k.uncompressed);
-                expect(result).toBe(k.compressed)
-            });
-        });
-    })
+    it('derives child public keys for unhardened paths on testnet', () => {
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "m/0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].pub);
+
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "m/0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "m/6/2", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].pub);
+      expect(deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "6/2", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].pub);
+    });
+
+    it('throws an error when asked to derive down a hardened path', () => {
+      expect(() => {deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => {deriveChildPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
+    });
+
+    it('throws an error when passed a mismatch extended public key and network', () => {
+      expect(() => {deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
+      expect(() => {deriveChildPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
+    });
+
+  });
+
+  describe("deriveChildExtendedPublicKey", () => {
+
+    it('derives child extended public keys for unhardened paths on mainnet', () => {
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "m/0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].xpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].xpub);
+
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].xpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "0/0", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].xpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/6/2", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].xpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "6/2", MAINNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].xpub);
+    });
+
+    it('derives child extended public keys for unhardened paths on testnet', () => {
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "m/0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].tpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/0'/0/0"].tpub);
+
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "m/0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].tpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "0/0", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/0/0"].tpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "m/6/2", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].tpub);
+      expect(deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].tpub, "6/2", TESTNET)).toBe(TEST_NODES["m/45'/0'/4'/6/2"].tpub);
+    });
+
+    it('throws an error when asked to derive down a hardened path', () => {
+      expect(() => {deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => {deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
+    });
+
+    it('throws an error when passed a mismatch extended public key and network', () => {
+      expect(() => {deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
+      expect(() => {deriveChildExtendedPublicKey(TEST_NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
+    });
+
+  });
+
 });

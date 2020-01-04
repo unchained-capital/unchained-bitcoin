@@ -38,8 +38,8 @@
     <div class="container-overview">
     
         
-            <div class="description">This module contains various utility functions for converting and validating BIP32 derivation paths.
-It also provides functions for deriving child public keys and child extended public keys for a given BIP32 derivation path.</div>
+            <div class="description"><p>This module contains various utility functions for converting and validating BIP32 derivation paths.
+It also provides functions for deriving child public keys and child extended public keys for a given BIP32 derivation path.</p></div>
         
 
         
@@ -88,7 +88,7 @@ It also provides functions for deriving child public keys and child extended pub
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line1">line 1</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -145,7 +145,7 @@ It also provides functions for deriving child public keys and child extended pub
 
 
 <div class="description">
-    Integer representation of the hardened path offset.
+    <p>Integer representation of the hardened path offset.</p>
 </div>
 
 
@@ -183,7 +183,7 @@ It also provides functions for deriving child public keys and child extended pub
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line15">line 15</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -219,7 +219,7 @@ It also provides functions for deriving child public keys and child extended pub
 
 
 <div class="description">
-    Convert derivation path to an array of integer values representing the derivation sequence.
+    <p>Convert derivation path to an array of integer values representing the derivation sequence.</p>
 </div>
 
 
@@ -271,7 +271,7 @@ It also provides functions for deriving child public keys and child extended pub
 
             
 
-            <td class="description last">BIP32 derivation path string</td>
+            <td class="description last"><p>BIP32 derivation path string</p></td>
         </tr>
 
     
@@ -312,7 +312,7 @@ It also provides functions for deriving child public keys and child extended pub
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line30">line 30</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line30">line 30</a>
     </li></ul></dd>
     
 
@@ -341,7 +341,7 @@ It also provides functions for deriving child public keys and child extended pub
 
         
 <div class="param-desc">
-    the segments of the derivation path sequence as integer values, hardened path values will be segment + 2^31
+    <p>the segments of the derivation path sequence as integer values, hardened path values will be segment + 2^31</p>
 </div>
 
 
@@ -384,7 +384,7 @@ console.log(sequence); // [2147483693, 1, 99]</code></pre>
 
 
 <div class="description">
-    Convert an array of integers representaing a derivation sequence to derivation path string.
+    <p>Convert an array of integers representaing a derivation sequence to derivation path string.</p>
 </div>
 
 
@@ -436,7 +436,7 @@ console.log(sequence); // [2147483693, 1, 99]</code></pre>
 
             
 
-            <td class="description last">the segments of the derivation path sequence as integer values</td>
+            <td class="description last"><p>the segments of the derivation path sequence as integer values</p></td>
         </tr>
 
     
@@ -477,7 +477,7 @@ console.log(sequence); // [2147483693, 1, 99]</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line49">line 49</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -506,7 +506,7 @@ console.log(sequence); // [2147483693, 1, 99]</code></pre>
 
         
 <div class="param-desc">
-    BIP32 derivation path
+    <p>BIP32 derivation path</p>
 </div>
 
 
@@ -541,430 +541,6 @@ console.log(sequence); // m/45'/1/99</code></pre>
     
 
     
-    <h4 class="name" id=".deriveChildExtendedPublicKey"><span class="type-signature">(static) </span>deriveChildExtendedPublicKey<span class="signature">(extendedPublicKey, bip32Path, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Derive a base58 encoded representation fo a child extended public key.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>extendedPublicKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">base58 encoded extended public key</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>bip32Path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">BIP32 derivation path string</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line173">line 173</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    base58 encoded representation of the derived child extended public key
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab"
-const child = deriveChildExtendedPublicKey(xpub, "m/0/0", NETWORKS.MAINNET);
-console.log(child); // xpub6GYTTMaaN8bSEhicdKq7ji9H7B2SL4un33obThv9aekop4J7L7B3snYMnJUuwXJiUmsbSVSyZydbqLC97JMWnj3R4MHz6JNunMJhjEBKovS</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".deriveChildPublicKey"><span class="type-signature">(static) </span>deriveChildPublicKey<span class="signature">(extendedPublicKey, bip32Path, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Derive a hex representation of a child public key for derivation path.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>extendedPublicKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">base58 encoded extended public key</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>bip32Path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">BIP32 derivation path string</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    hex string representation of the derived public key
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab"
-const child = deriveChildPublicKey(xpub, "m/0/0", NETWORKS.MAINNET);
-console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace</code></pre>
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id=".validateBIP32Path"><span class="type-signature">(static) </span>validateBIP32Path<span class="signature">(pathString, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
@@ -973,7 +549,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
 
 
 <div class="description">
-    Provide validation messages for a BIP32 derivation path string.
+    <p>Provide validation messages for a BIP32 derivation path string.</p>
 </div>
 
 
@@ -1035,7 +611,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
 
             
 
-            <td class="description last">BIP32 derivation path string</td>
+            <td class="description last"><p>BIP32 derivation path string</p></td>
         </tr>
 
     
@@ -1068,7 +644,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
 
             
 
-            <td class="description last">additional options
+            <td class="description last"><p>additional options</p>
                 <h6>Properties</h6>
                 
 
@@ -1122,7 +698,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
 
             
 
-            <td class="description last">"hardened" and "unhardened" verify respectively</td>
+            <td class="description last"><p>&quot;hardened&quot; and &quot;unhardened&quot; verify respectively</p></td>
         </tr>
 
     
@@ -1170,7 +746,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bip32.js.html">bip32.js</a>, <a href="bip32.js.html#line69">line 69</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -1199,7 +775,7 @@ console.log(child); // 021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e
 
         
 <div class="param-desc">
-    empty if valid or corresponding validation message
+    <p>empty if valid or corresponding validation message</p>
 </div>
 
 
@@ -1244,13 +820,13 @@ console.log(validationError); // BIP32 path cannot be blank.</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Nov 08 2019 15:31:16 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Jan 03 2020 13:31:41 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

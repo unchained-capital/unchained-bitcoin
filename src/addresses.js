@@ -4,7 +4,8 @@
  */
 
 import bitcoinAddressValidation from "bitcoin-address-validation";
-import { NETWORKS } from "./networks";
+
+import { TESTNET, MAINNET } from "./networks";
 
 const MAINNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(bc1|[13])";
 const TESTNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(tb1|bcrt1|[mn2])";
@@ -13,25 +14,30 @@ const BECH32_ADDRESS_MAGIC_BYTE_REGEX = /^(tb|bc)/;
 const BECH32_ADDRESS_BODY_PATTERN = "[ac-hj-np-z02-9]+$";
 
 /**
- * Provide a validation messages for a given address.
+ * Validate a given bitcoin address.
+ *
+ * Address must be a valid address on the given bitcoin network.
+ * 
  * @param {string} address - the address to validate
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @returns {string} empty if valid or corresponding validation message if not
  * @example
- * const validationError = validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', NETWORKS.MAINNET);
- * console.log(validationError); // Address must start with either of 'bc1', '1' or '3' followed by letters or digits.
- * @returns {string} empty if valid or corresponding validation message
+ * console.log(validateAddress('', MAINNET)); // "Address cannot be blank"
+ * console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', MAINNET)); // "Address must start with either of 'bc1', '1' or '3' followed by letters or digits."
+ * console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', TESTNET)); // ""
+ * 
  */
 export function validateAddress(address, network) {
   if ((! address) || address.trim() === '') {
     return 'Address cannot be blank.';
   }
 
-  const magic_byte_regex = (network === NETWORKS.TESTNET ? TESTNET_ADDRESS_MAGIC_BYTE_PATTERN : MAINNET_ADDRESS_MAGIC_BYTE_PATTERN);
+  const magic_byte_regex = (network === TESTNET ? TESTNET_ADDRESS_MAGIC_BYTE_PATTERN : MAINNET_ADDRESS_MAGIC_BYTE_PATTERN);
   const isBech32 = address.match(BECH32_ADDRESS_MAGIC_BYTE_REGEX);
   const address_body_regex = (isBech32 ? BECH32_ADDRESS_BODY_PATTERN : ADDRESS_BODY_PATTERN);
   const address_regex = magic_byte_regex + address_body_regex;
   if (! address.match(address_regex)) {
-    if (network === NETWORKS.TESTNET) {
+    if (network === TESTNET) {
       return "Address must start with one of 'tb1', 'm', 'n', or '2' followed by letters or digits.";
     } else {
       return "Address must start with either of 'bc1', '1' or '3' followed by letters or digits.";
@@ -47,11 +53,11 @@ export function validateAddress(address, network) {
 
   const result = bitcoinAddressValidation(address);
   if (result) {
-    if (network === NETWORKS.TESTNET && (!result.testnet)) {
-      return `This is a ${NETWORKS.MAINNET} address.`;
+    if (network === TESTNET && (!result.testnet)) {
+      return `This is a ${MAINNET} address.`;
     }
-    if (network === NETWORKS.MAINNET && result.testnet) {
-      return `This is a ${NETWORKS.TESTNET} address.`;
+    if (network === MAINNET && result.testnet) {
+      return `This is a ${TESTNET} address.`;
     }
   } else {
     return "Address is invalid.";

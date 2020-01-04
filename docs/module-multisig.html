@@ -38,12 +38,32 @@
     <div class="container-overview">
     
         
-            <div class="description">This module provides utility functions for abstracting away the underlying library.  
-By using the functions in this module, you can extract the information contained in
-the underlying objects, without knowing the object structure.  The underlying object
-is generically referred to as "Multisig".  This object is complex, and this module
-removes the complexities so you should not obtain information directly from the
-"Multisig" object but instead call the module functions to extract its values.</div>
+            <div class="description"><p>This module provides an API around the multisig capabilities of the
+bitcoinjs-lib library.  The API is functional but requires you
+creating and passing around a <code>Multisig</code> object.</p>
+<p>This <code>Multisig</code> object represents the combination of:</p>
+<ol>
+<li>a sequence of N public keys</li>
+<li>the number of required signers (M)</li>
+<li>the address type  (P2SH, P2SH-P2WSH, P2WSH)</li>
+<li>the bitcoin network</li>
+</ol>
+<p>This corresponds to a unique bitcoin multisig address.  Note that
+since (3) &amp; (4) can change without changing (1) &amp; (2), different
+<code>Multisig</code> objects (and their corresponding bitcoin addresses) can
+have different representations but the same security rules as to
+who can sign.</p>
+<p>You can create <code>Multisig</code> objects yourself using the following
+functions:</p>
+<ul>
+<li><code>generateMultisigFromPublicKeys</code> which takes public keys as input</li>
+<li><code>generateMultisigFromHex</code> which takes a redeem/witness script as input</li>
+</ul>
+<p>Once you have a <code>Multisig</code> object you can pass it around in your
+code and then ask questions about it using the other functions
+defined in this module.</p>
+<p>You can manipulate <code>Multisig</code> objects directly but it's better to
+use the functions from API provided by this module.</p></div>
         
 
         
@@ -121,6 +141,19 @@ removes the complexities so you should not obtain information directly from the
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const pubkey1 = "03a...";
+const pubkey2 = "03b...";
+// A mainnet 1-of-2 P2SH multisig
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, pubkey1, pubkey2);
+
+console.log(multisigRequiredSigners(multisig)); // 1
+console.log(multisigTotalSigners(multisig)); // 2
+console.log(multisigAddressType(multisig)); // "P2SH"
+console.log(multisigPublicKeys(multisig)); // ["03a...", "03b..."]</code></pre>
+
+
 
         
     
@@ -149,7 +182,7 @@ removes the complexities so you should not obtain information directly from the
 
 
 <div class="description">
-    Enumeration of possible multisig address types (<a href="module-multisig.html#.P2SH">P2SH</a>|<a href="module-multisig.html#.P2SH_P2WSH">P2SH_P2WSH</a>|<a href="module-multisig.html#.P2WSH">P2WSH</a>).
+    <p>Enumeration of possible multisig address types (<a href="module-p2sh.html#.P2SH">P2SH</a>|<a href="module-p2sh_p2wsh.html#.P2SH_P2WSH">P2SH_P2WSH</a>|<a href="module-p2wsh.html#.P2WSH">P2WSH</a>).</p>
 </div>
 
 
@@ -197,223 +230,7 @@ removes the complexities so you should not obtain information directly from the
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line53">line 53</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".P2SH"><span class="type-signature">(static, constant) </span>P2SH<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    Address type constant for "pay to script hash" address type.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".P2SH_P2WSH"><span class="type-signature">(static, constant) </span>P2SH_P2WSH<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    Address type constant for "pay to script hash - pay to witness script hash" address type.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line41">line 41</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".P2WSH"><span class="type-signature">(static, constant) </span>P2WSH<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    Address type constant for "pay to witness script hash" address type.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line47">line 47</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -441,7 +258,7 @@ removes the complexities so you should not obtain information directly from the
     
 
     
-    <h4 class="name" id=".estimateMultisigTransactionFee"><span class="type-signature">(static) </span>estimateMultisigTransactionFee<span class="signature">(config)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".generateMultisigFromHex"><span class="type-signature">(static) </span>generateMultisigFromHex<span class="signature">(network, addressType, multisigScriptHex)</span><span class="type-signature"> &rarr; {Multisig}</span></h4>
     
 
     
@@ -449,679 +266,14 @@ removes the complexities so you should not obtain information directly from the
 
 
 <div class="description">
-    Estimate transaction fee based on fee rate, address type, number of inputs and outputs.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>config</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">configuration for the calculation
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>addressType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">address type used for estimation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>numInputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of inputs used in calculation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>numOutputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of outputs used in calculation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>m</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of required signers for the quorum</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of total signers for the quorum</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>feesPerByteInSatoshis</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">satoshis per byte fee rate</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line313">line 313</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    estimated transaction fee
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// get fee for P2SH multisig transaction with 2 inputs and 3 outputs at 10 satoshis per byte
-const fee = estimateMultisigTransactionFee({
-  addressType: MULTISIG_ADDRESS_TYPES.P2SH, 
-  numInputs: 2, 
-  numOutputs: 3, 
-  m: 2,
-  n: 3,
-  feesPerByteInSatoshis: 10
-});</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".estimateMultisigTransactionFeeRate"><span class="type-signature">(static) </span>estimateMultisigTransactionFeeRate<span class="signature">(config)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Estimate transaction fee rate based on actual fee and address type, number of inputs and number of outputs.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>config</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">configuration for the calculation
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>addressType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">address type used for estimation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>numInputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of inputs used in calculation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>numOutputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of outputs used in calculation</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>m</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of required signers for the quorum</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">number of total signers for the quorum</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>feesInSatoshis</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">BigNumber</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">total transaction fee in satoshis</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line286">line 286</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    estimated fee rate
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// get the fee rate a P2WSH multisig transaction with 2 inputs and 3 outputs with a known fee of 7060
-const feerate = estimateMultisigTransactionFeeRate({
-  addressType: MULTISIG_ADDRESS_TYPES.P2WSH, 
-  numInputs: 2, 
-  numOutputs: 3, 
-  m: 2,
-  n: 3,
-  feesInSatoshis: 7060
-});</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".generateMultisigFromHex"><span class="type-signature">(static) </span>generateMultisigFromHex<span class="signature">(network, addressType, redeemScriptHex)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Create a Multisig object from the hex representation of a redeem script.
+    <p>Return an M-of-N <code>Multisig</code>
+object by passing a script in hex.</p>
+<p>If the <code>addressType</code> is <code>P2SH</code> then the script hex being passed is
+the redeem script.  If the <code>addressType</code> is P2SH-wrapped SegWit
+(<code>P2SH_P2WSH</code>) or native SegWit (<code>P2WSH</code>) then the script hex being
+passed is the witness script.</p>
+<p>In practice, the same script hex can be thought of as any of
+several address types, depending on context.</p>
 </div>
 
 
@@ -1173,7 +325,7 @@ const feerate = estimateMultisigTransactionFeeRate({
 
             
 
-            <td class="description last">bitcoin network</td>
+            <td class="description last"><p>bitcoin network</p></td>
         </tr>
 
     
@@ -1196,14 +348,14 @@ const feerate = estimateMultisigTransactionFeeRate({
 
             
 
-            <td class="description last">address type for object creation</td>
+            <td class="description last"><p>address type</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>redeemScriptHex</code></td>
+                <td class="name"><code>multisigScriptHex</code></td>
             
 
             <td class="type">
@@ -1219,7 +371,1265 @@ const feerate = estimateMultisigTransactionFeeRate({
 
             
 
-            <td class="description last">hex representation of the redeem script</td>
+            <td class="description last"><p>hex representation of the redeem/witness script</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line135">line 135</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>object for further parsing</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Multisig</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const multisigScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
+const multisigP2SH = generateMultisigFromHex(MAINNET, P2SH, multisigScript);
+const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".generateMultisigFromPublicKeys"><span class="type-signature">(static) </span>generateMultisigFromPublicKeys<span class="signature">(network, addressType, requiredSigners, &hellip;publicKeys)</span><span class="type-signature"> &rarr; {Multisig}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return an M-of-N <code>Multisig</code>
+object by specifying the total number of signers (M) and the public
+keys (N total).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>addressType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>address type</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>requiredSigners</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>number of signers required needed to spend funds (M)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>list of public keys, 1 per possible signer (N)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Multisig</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// A 2-of-3 P2SH mainnte multisig built from 3 public keys.
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigAddress"><span class="type-signature">(static) </span>multisigAddress<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the address for a given <code>Multisig</code> object.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line319">line 319</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the address</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigAddressType"><span class="type-signature">(static) </span>multisigAddressType<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {<a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the <a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">address type</a> of the given <code>Multisig</code> object.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line188">line 188</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the address type</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>function doSomething(multisig) {
+  switch (multisigAddressType(multisig)) {
+  case P2SH:
+    // handle P2SH here
+  case P2SH_P2WSH:
+    // handle P2SH-P2WSH here
+  case P2WSH:
+    // handle P2WSH here
+  default:
+    // shouldn't reach here
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigPublicKeys"><span class="type-signature">(static) </span>multisigPublicKeys<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the (compressed) public keys in hex for the given <code>Multisig</code>
+object.</p>
+<p>The public keys are in the order used in the corresponding
+redeem/witness script.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line309">line 309</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>(compressed) public keys in hex</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigRedeemScript"><span class="type-signature">(static) </span>multisigRedeemScript<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {Multisig|null}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the redeem script for the given <code>Multisig</code> object.</p>
+<p>If the address type of the given multisig object is P2WSH, this
+will return null.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line263">line 263</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Multisig</span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigRequiredSigners"><span class="type-signature">(static) </span>multisigRequiredSigners<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the number of required signers of the given <code>Multisig</code>
+object.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line212">line 212</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>number of required signers</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+console.log(multisigRequiredSigners(multisig)); // 2</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multisigScript"><span class="type-signature">(static) </span>multisigScript<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {Multisig|null}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the multisig script for the given <code>Multisig</code> object.</p>
+<p>If the address type of the given multisig object is P2SH, the
+redeem script will be returned.  Otherwise, the witness script will
+be returned.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
         </tr>
 
     
@@ -1288,10 +1698,6 @@ const feerate = estimateMultisigTransactionFeeRate({
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    object for further parsing
-</div>
-
 
 
 <dl>
@@ -1300,1333 +1706,7 @@ const feerate = estimateMultisigTransactionFeeRate({
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const redeemScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
-const multisig = generateMultisigFromHex(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, redeemScript);</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".generateMultisigFromPublicKeys"><span class="type-signature">(static) </span>generateMultisigFromPublicKeys<span class="signature">(network, addressType, requiredSigners, &hellip;publicKeys)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Create a Multisig object by specifying the network, address type, total number of signers and the public keys.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>addressType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">address type for determining Multisig object</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>requiredSigners</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">number of signers needed to spend funds</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>publicKeys</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                    &lt;repeatable><br>
-                
-                </td>
-            
-
-            
-
-            <td class="description last">list of hex string representation of public keys</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line221">line 221</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    object for further parsing
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const multisig = generateMultisigFromSpec(NETWORKS.MAINNET, MULTISIG_ADDRESS_TYPES.P2SH, 3, pubkey1, pubkey2, ..., pubkeyN);</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigAddress"><span class="type-signature">(static) </span>multisigAddress<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Return the address for a given Multisig object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">object to parse</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line207">line 207</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    the address
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigAddressType"><span class="type-signature">(static) </span>multisigAddressType<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {<a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Determine the multisig address type for a Multisig object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">derive the address type from this object</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line113">line 113</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    the address type
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const addressType = multisigAddressType(multisig);
-if (addressType == MULTISIG_ADDRESS_TYPES.P2SH) {
- // handle P2SH here
-}
-// check other address types and handle</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigBIP32Path"><span class="type-signature">(static) </span>multisigBIP32Path<span class="signature">(addressType, network, index)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Retrieve the standard derivation path for a given multisig address type and network at a given index.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>addressType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">type from which to create the child path</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>index</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">completes the derivation path</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line94">line 94</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    full child derivation path
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const p2sh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET, 0); // m/45'/0'/0'/0
-const p2sh_p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/1'/0
-const p2wsh_path = multisigBIP32Path(MULTISIG_ADDRESS_TYPES.P2WSH, NETWORKS.MAINNET, 0); // m/48'/0'/0'/2'/0</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigBIP32Root"><span class="type-signature">(static) </span>multisigBIP32Root<span class="signature">(addressType, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Retrieve the standard derivation path for a given multisig address type and network.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>addressType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">type from which to create the root path</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line69">line 69</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    full root derivation path
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const p2sh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/45'/0'/0'
-const p2sh_p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH_P2WSH, NETWORKS.MAINNET); // m/48'/0'/0'/1'
-const p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINNET); // m/48'/0'/0'/2'</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigPublicKeys"><span class="type-signature">(static) </span>multisigPublicKeys<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Extract the public keys from a given Multisig object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">object to parse</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line198">line 198</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    the hex representation of the public keys used in the multisig address
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;string></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const pubkeys = multisigPublicKeys(multisig);</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigRedeemScript"><span class="type-signature">(static) </span>multisigRedeemScript<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>|null}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Retrieve the Multisig object representing proper redeem script from a base Multisig object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">object to parse</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line157">line 157</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    object for further parsing
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
+<span class="param-type">Multisig</span>
 |
 
 <span class="param-type">null</span>
@@ -2638,176 +1718,6 @@ const p2wsh_root = multisigBIP32Root(MULTISIG_ADDRESS_TYPES.P2SH, NETWORKS.MAINN
     
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const redeemMultisig = multisigRedeemScript(multisig)
-console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".multisigRequiredSigners"><span class="type-signature">(static) </span>multisigRequiredSigners<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Extract the number of required signers value from a Multisig object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">object to parse</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line134">line 134</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    number of signatures required to spend from a given multisig address
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const m = multisigRequiredSigners(multisig); // m = 2 for a 2 of 3 multisig</code></pre>
 
 
 
@@ -2825,7 +1735,8 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
 
 <div class="description">
-    Extract the total number of signers value from a Multisig object.
+    <p>Return the number of total signers (public keys) of the given
+<code>Multisig</code> object.</p>
 </div>
 
 
@@ -2867,7 +1778,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
             <td class="type">
             
                 
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
 
 
             
@@ -2877,7 +1788,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
             
 
-            <td class="description last">object to parse</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -2918,7 +1829,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line145">line 145</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line226">line 226</a>
     </li></ul></dd>
     
 
@@ -2947,7 +1858,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
         
 <div class="param-desc">
-    number of keys available for signing for a given multisig address
+    <p>number of total signers</p>
 </div>
 
 
@@ -2971,7 +1882,8 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const n = multisigTotalSigners(multisig); // n = 3 for a 2 of 3 multisig</code></pre>
+    <pre class="prettyprint"><code>const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+console.log(multisigTotalSigners(multisig)); // 3</code></pre>
 
 
 
@@ -2981,7 +1893,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
     
 
     
-    <h4 class="name" id=".multisigWitnessScript"><span class="type-signature">(static) </span>multisigWitnessScript<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {<a href="global.html#Multisig">Multisig</a>|null}</span></h4>
+    <h4 class="name" id=".multisigWitnessScript"><span class="type-signature">(static) </span>multisigWitnessScript<span class="signature">(multisig)</span><span class="type-signature"> &rarr; {Multisig|null}</span></h4>
     
 
     
@@ -2989,7 +1901,9 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
 
 <div class="description">
-    Retrieve the Multisig object representing proper witness script from a base Multisig object.
+    <p>Return the witness script for the given <code>Multisig</code> object.</p>
+<p>If the address type of the given multisig object is P2SH, this will
+return null.</p>
 </div>
 
 
@@ -3031,7 +1945,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
             <td class="type">
             
                 
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
 
 
             
@@ -3041,7 +1955,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
             
 
-            <td class="description last">object to parse</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -3082,7 +1996,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line178">line 178</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line285">line 285</a>
     </li></ul></dd>
     
 
@@ -3110,10 +2024,6 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    object for further parsing
-</div>
-
 
 
 <dl>
@@ -3122,7 +2032,7 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
+<span class="param-type">Multisig</span>
 |
 
 <span class="param-type">null</span>
@@ -3136,132 +2046,43 @@ console.log(scriptToHex(redeemMultisig)) // 522102e326263c35e...</code></pre>
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const witnessScript = multisigWitnessScript(multisig)
-console.log(scriptToHex(witnessScript)) // 522102e326263c35e...</code></pre>
-
-
 
         
-            
-
     
 
     
-    <h4 class="name" id=".signedMultisigTransaction"><span class="type-signature">(static) </span>signedMultisigTransaction<span class="signature">(unsignedTransaction, inputs, inputsSignaturesByPublicKey)</span><span class="type-signature"> &rarr; {Transaction}</span></h4>
-    
+        <h3 class="subsection-title">Type Definitions</h3>
 
-    
+        
+                
+<h4 class="name" id=".Multisig">Multisig</h4>
+
 
 
 
 <div class="description">
-    Add signatures to an unsigned transaction.
+    <p>Describes the return type of several functions in the
+<code>bitcoin.payments</code> module of bitcoinjs-lib.</p>
+<p>The following functions in this module will return objects of this
+type:</p>
+<ul>
+<li><code>generateMultisigFromPublicKeys</code> which takes public keys as input</li>
+<li><code>generateMultisigFromHex</code> which takes a redeem/witness script as input</li>
+</ul>
+<p>The remaining functions accept these objects as arguments.</p>
 </div>
 
 
 
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
+    <h5>Type:</h5>
+    <ul>
+        <li>
             
-                <td class="name"><code>unsignedTransaction</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Transaction</span>
+<span class="param-type">Object</span>
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">generated transaction object from call to unsignedMultisigTransaction</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="global.html#UTXO">UTXO</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">generated array of inputs to the transaction (blockExplorerGetAddresesUTXOs|bitcoindListUnspent)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inputsSignaturesByPublicKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Object></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">input signatures mapped to the pulic key index [{signature: index},...]</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
+        </li>
+    </ul>
 
 
 
@@ -3296,7 +2117,7 @@ console.log(scriptToHex(witnessScript)) // 522102e326263c35e...</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line427">line 427</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -3312,503 +2133,7 @@ console.log(scriptToHex(witnessScript)) // 522102e326263c35e...</code></pre>
 
 
 
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    a signed <a href="https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts">Transaction</a> object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Transaction</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const keysigs = [{[pubkey1]: signature1}, {[pubkey2]: signature2}]
-const signedTx = signedMultisigTransaction(unsignedTx, inputs, keysigs)
-console.log(signedTx.toHex()) // 0100000001d73e679f...</code></pre>
-
-
-
-        
             
-
-    
-
-    
-    <h4 class="name" id=".unsignedMultisigTransaction"><span class="type-signature">(static) </span>unsignedMultisigTransaction<span class="signature">(network, inputs, outputs)</span><span class="type-signature"> &rarr; {Transaction}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Create an unsigned bitcoin transaction based on the network, inputs and outputs.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">bitcoin network</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="global.html#UTXO">UTXO</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">inputs used to create transaction</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>outputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Object></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">transaction recipients</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line340">line 340</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    an unsigned <a href="https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts">Transaction</a> object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Transaction</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const unsignedTransaction = unsignedMultisigTransaction(NETWORKS.MAINNET, inputs, outputs);</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".validateMultisigSignature"><span class="type-signature">(static) </span>validateMultisigSignature<span class="signature">(unsignedTransaction, inputIndex, input, signerInputSignature)</span><span class="type-signature"> &rarr; {string|boolean}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Validate a signature for a signed transaction input.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>unsignedTransaction</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Transaction</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">transaction to validate</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inputIndex</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the index where the input appears in the transaction</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>input</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#UTXO">UTXO</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the object representing the input whose signature you wish to validate</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>signerInputSignature</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">signature to validate</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line370">line 370</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    false if invalid or corresponding public key
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-|
-
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
-if (publicKey) {
-  // is valid, do something with publicKey
-} else {
-  // not valid, handle here
-}</code></pre>
-
-
-
-        
-    
-
     
 
     
@@ -3822,13 +2147,13 @@ if (publicKey) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Nov 08 2019 15:31:16 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

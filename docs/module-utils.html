@@ -38,7 +38,8 @@
     <div class="container-overview">
     
         
-            <div class="description">This module provides various utility conversion and validation functions.</div>
+            <div class="description"><p>This module provides conversion and validation functions for units
+(Satoshis, BTC) and hex strings.</p></div>
         
 
         
@@ -144,7 +145,7 @@
     
 
     
-    <h4 class="name" id=".bitcoinsToSatoshis"><span class="type-signature">(static) </span>bitcoinsToSatoshis<span class="signature">(num)</span><span class="type-signature"> &rarr; {BigNumber}</span></h4>
+    <h4 class="name" id=".bitcoinsToSatoshis"><span class="type-signature">(static) </span>bitcoinsToSatoshis<span class="signature">(btc)</span><span class="type-signature"> &rarr; {BigNumber}</span></h4>
     
 
     
@@ -152,7 +153,11 @@
 
 
 <div class="description">
-    Convert a value in BTC to corresponding value in satoshis.
+    <p>Convert a value in BTC to Satoshis.</p>
+<ul>
+<li>Accepts both positive and negative input values.</li>
+<li>Rounds down output value to the nearest Satoshi.</li>
+</ul>
 </div>
 
 
@@ -188,13 +193,19 @@
 
         <tr>
             
-                <td class="name"><code>num</code></td>
+                <td class="name"><code>btc</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">BigNumber</span>
+|
+
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
 
 
             
@@ -204,7 +215,7 @@
 
             
 
-            <td class="description last">value in BTC</td>
+            <td class="description last"><p>value in BTC</p></td>
         </tr>
 
     
@@ -245,7 +256,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line63">line 63</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -274,7 +285,7 @@
 
         
 <div class="param-desc">
-    value in satoshis
+    <p>value in satoshis</p>
 </div>
 
 
@@ -298,9 +309,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const btc = BigNumber(1.2345);
-const sats = bitcoinsToSatoshis(btc);
-console.log(sats); // 123450000</code></pre>
+    <pre class="prettyprint"><code>console.log(bitcoinsToSatoshis(1.2345)); // 123450000</code></pre>
 
 
 
@@ -310,7 +319,7 @@ console.log(sats); // 123450000</code></pre>
     
 
     
-    <h4 class="name" id=".satoshisToBitcoins"><span class="type-signature">(static) </span>satoshisToBitcoins<span class="signature">(num)</span><span class="type-signature"> &rarr; {BigNumber}</span></h4>
+    <h4 class="name" id=".satoshisToBitcoins"><span class="type-signature">(static) </span>satoshisToBitcoins<span class="signature">(satoshis)</span><span class="type-signature"> &rarr; {BigNumber}</span></h4>
     
 
     
@@ -318,7 +327,11 @@ console.log(sats); // 123450000</code></pre>
 
 
 <div class="description">
-    Convert a value in satoshis to corresponding value in BTC.
+    <p>Convert a value in Satoshis to BTC.</p>
+<ul>
+<li>Accepts both positive and negative input values.</li>
+<li>Rounds down (towards zero) input value to the nearest Satoshi.</li>
+</ul>
 </div>
 
 
@@ -354,13 +367,19 @@ console.log(sats); // 123450000</code></pre>
 
         <tr>
             
-                <td class="name"><code>num</code></td>
+                <td class="name"><code>satoshis</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">BigNumber</span>
+|
+
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
 
 
             
@@ -370,7 +389,7 @@ console.log(sats); // 123450000</code></pre>
 
             
 
-            <td class="description last">value in satoshis</td>
+            <td class="description last"><p>value in Satoshis</p></td>
         </tr>
 
     
@@ -411,7 +430,7 @@ console.log(sats); // 123450000</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line50">line 50</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -440,7 +459,7 @@ console.log(sats); // 123450000</code></pre>
 
         
 <div class="param-desc">
-    value in BTC
+    <p>value in BTC</p>
 </div>
 
 
@@ -464,9 +483,9 @@ console.log(sats); // 123450000</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const sats = BigNumber(123450000);
-const btc = satoshisToBitcoins(sats);
-console.log(btc); // 1.2345</code></pre>
+    <pre class="prettyprint"><code>console.log(satoshisToBitcoins(123450000)); // 1.2345
+console.log(satoshisToBitcoins('0.5')); // 0
+console.log(satoshisToBitcoins('-100000000.5')); // -1.0</code></pre>
 
 
 
@@ -484,7 +503,7 @@ console.log(btc); // 1.2345</code></pre>
 
 
 <div class="description">
-    Converts a byte array to its hex representation.
+    <p>Converts a byte array to its hex representation.</p>
 </div>
 
 
@@ -536,7 +555,7 @@ console.log(btc); // 1.2345</code></pre>
 
             
 
-            <td class="description last">array of bytes to convert</td>
+            <td class="description last"><p>input byte array</p></td>
         </tr>
 
     
@@ -577,7 +596,7 @@ console.log(btc); // 1.2345</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line16">line 16</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -606,7 +625,7 @@ console.log(btc); // 1.2345</code></pre>
 
         
 <div class="param-desc">
-    hex representation of bytes
+    <p>hex representation of input array</p>
 </div>
 
 
@@ -649,7 +668,16 @@ console.log(hex) // ff000f101f20</code></pre>
 
 
 <div class="description">
-    Provide validation messages for a hex string.
+    <p>Validate whether the given string is hex.</p>
+<ul>
+<li>
+<p>Valid hex consists of an even number of characters 'a-f<code>,</code>A-F<code>, or</code>0-9`.  This is case-insensitive.</p>
+</li>
+<li>
+<p>The presence of the common prefix <code>0x</code> will make the input be
+considered invalid (because of the<code></code>x`).</p>
+</li>
+</ul>
 </div>
 
 
@@ -701,7 +729,7 @@ console.log(hex) // ff000f101f20</code></pre>
 
             
 
-            <td class="description last">hex string to validate</td>
+            <td class="description last"><p>string to validate</p></td>
         </tr>
 
     
@@ -742,7 +770,7 @@ console.log(hex) // ff000f101f20</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line30">line 30</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -771,7 +799,7 @@ console.log(hex) // ff000f101f20</code></pre>
 
         
 <div class="param-desc">
-    empty if valid or corresponding validation message
+    <p>empty if valid or corresponding validation message if not</p>
 </div>
 
 
@@ -795,8 +823,10 @@ console.log(hex) // ff000f101f20</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const validationError = validateHex('00112233gg');
-console.log(validationError) // invalid hex - invalid characters</code></pre>
+    <pre class="prettyprint"><code>console.log(validateHex('00112233gg')) // "Invalid hex: ..."
+console.log(validateHex('0xdeadbeef')) // "Invalid hex: ..."
+console.log(validateHex('deadbeef')) // ""
+console.log(validateHex('DEADbeef')) // ""</code></pre>
 
 
 
@@ -816,13 +846,13 @@ console.log(validationError) // invalid hex - invalid characters</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Nov 08 2019 15:31:16 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

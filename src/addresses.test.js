@@ -1,93 +1,63 @@
 import { validateAddress } from './addresses';
+import { P2SH, P2WSH, } from './multisig';
 import { NETWORKS } from './networks';
-import { mainnetAddresses, testnetAddresses } from './test_constants'
 
-describe("Test address validation library", () => {
-    describe("Test validateAddress", () => {
-        describe("Validate empty strings", () => {
-            it('should properly report the validation of using an empty address string on mainnet', () => {
-                const address = "";
-                const result = validateAddress(address, NETWORKS.MAINNET);
-                expect(result).toBe('Address cannot be blank.');
-            });
+const P2PKH = "P2PKH";
 
-            it('should properly report the validation of using an empty address string on testnet', () => {
-                const address = "";
-                const result = validateAddress(address, NETWORKS.TESTNET);
-                expect(result).toBe('Address cannot be blank.');
-            });
-        })
+let ADDRESSES = {};
+ADDRESSES[NETWORKS.MAINNET] = {};
+ADDRESSES[NETWORKS.MAINNET][P2PKH] = ["1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"];
+ADDRESSES[NETWORKS.MAINNET][P2SH] = ["3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr"];
+ADDRESSES[NETWORKS.MAINNET][P2WSH] = ["bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4", "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx"];
 
-        describe("Validate addresses on the wrong network", () => {
-            it('should properly report the validation of using a mainnet address on testnet', () => {
-                mainnetAddresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.TESTNET);
-                    expect(result).toBe("Address must start with one of 'tb1', 'm', 'n', or '2' followed by letters or digits.");
-                })
-            });
+ADDRESSES[NETWORKS.TESTNET] = {};
+ADDRESSES[NETWORKS.TESTNET][P2PKH] = ["mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r"];
+ADDRESSES[NETWORKS.TESTNET][P2SH] = ["2NByiBUaEXrhmqAsg7BbLpcQSAQs1EDwt5w"];
+ADDRESSES[NETWORKS.TESTNET][P2WSH] = ["tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7"];
 
-            it('should properly report the validation of using a testnet address on mainnet', () => {
-                testnetAddresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.MAINNET);
-                    expect(result).toBe("Address must start with either of 'bc1', '1' or '3' followed by letters or digits.");
-                })
-            });
-        })
+const ADDRESS_TYPES = [P2PKH, P2SH, P2WSH];
 
-        describe("Validate valid adresses", () => {
-            it('should not provide a validation message for a valid mainnet addresses', () => {
-                mainnetAddresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.MAINNET);
-                    expect(result).toBe('');
-                })
-            });
+describe('addresses', ()  => {
 
-            it('should not provide a validation message for a valid testnet addresses', () => {
-                testnetAddresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.TESTNET);
-                    expect(result).toBe('');
-                })
-            });
-        })
+  describe('validateAddress', () =>  {
 
-        describe("Validate invalid adresses", () => {
-            it('should properly report the validation of using an invalid addresses on testnet', () => {
-                const addresses = testnetAddresses.map(a => a.slice(0, -3) + 'zzz')
-                addresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.TESTNET);
-                    expect(result).toBe('Address is invalid.');
-                })
-            });
+    const invalidAddress = /must start with.+followed by letters or digits/i;
 
-            it('should properly report the validation of using an invalid addresses on mainnet', () => {
-                const addresses = mainnetAddresses.map(a => a.slice(0, -3) + 'zzz')
-                addresses.forEach(address => {
-                    const result = validateAddress(address, NETWORKS.MAINNET);
-                    expect(result).toBe('Address is invalid.');
-                });
-            });
-        });
+    it("returns an error message on blank addresses", ()  => {
+      Object.values(NETWORKS).forEach((network) => {
+        expect(validateAddress("", network)).toMatch(/cannot be blank/i);
+        expect(validateAddress(" ", network)).toMatch(/cannot be blank/i);
+      });
+    });
+    
+    it("returns an error message on an invalid address", () => {
+      Object.values(NETWORKS).forEach((network) => {
+        expect(validateAddress("f", network)).toMatch(invalidAddress);
+        expect(validateAddress("--", network)).toMatch(invalidAddress);
+      });
     });
 
-    /*
-    observations
+    it("returns an error message when an address doesn't match the network",  () => {
+      ADDRESS_TYPES.forEach((addressType) => {
+        ADDRESSES[NETWORKS.MAINNET][addressType].forEach((address) => {
+          expect(validateAddress(address, NETWORKS.TESTNET)).toMatch(invalidAddress);
+        });
+        ADDRESSES[NETWORKS.TESTNET][addressType].forEach((address) => {
+          expect(validateAddress(address, NETWORKS.MAINNET)).toMatch(invalidAddress);
+        });
+      });
+    });
 
-    * I don't think we can reach this code???
+    it("returns an empty string when the address is valid",  () => {
+      Object.values(NETWORKS).forEach((network) => {
+        ADDRESS_TYPES.forEach((addressType) => {
+          ADDRESSES[network][addressType].forEach((address) => {
+            expect(validateAddress(address, network)).toEqual("");
+          });
+        });
+      });
+    });
 
-    if (network === NETWORKS.TESTNET && (!result.testnet)) {
-      return `This is a ${NETWORKS.MAINNET} address.`;
-    }
-    if (network === NETWORKS.MAINNET && result.testnet) {
-      return `This is a ${NETWORKS.TESTNET} address.`;
-    }
-
-    * validateAddress is inconsistent, does not check null or undefined
-
-    * "must begin with" errors can be confusing, here, keys.js
-
-    */
-
+  });
 
 });
-
-

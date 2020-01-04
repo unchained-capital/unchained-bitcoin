@@ -1,69 +1,77 @@
 /**
- * This module provides various helper functions for the Blockstream block explorer and associated API.
- * Use this to easily access the block explorer links and API endpoint URLs
+ * This module provides functions for creating URLs for Blockstream's
+ * [block explorer]{@link https://blockstream.info}.
+ *
+ * This module does NOT provide implementations of HTTP requests which
+ * fetch data from these URLs.
+ * 
  * @module block_explorer
  */
 
-import {NETWORKS} from "./networks";
+import {TESTNET} from "./networks";
 
 const BASE_URL_MAINNET = 'https://blockstream.info';
 const BASE_URL_TESTNET = 'https://blockstream.info/testnet';
 
- function blockExplorerBaseURL(network) {
-  return (network === NETWORKS.TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET);
+function blockExplorerBaseURL(network) {
+  return (network === TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET);
 }
 
 /**
- * Formats the proper URL based on the block explorer path and network.
+ * Returns the block explorer URL for the given path and network.
+ * 
  * @param {string} path - the explorer path
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @returns {string} the block explorer url
  * @example
  * const path = "/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57";
- * const url = blockExplorerURL(path, NETWORKS.MAINNET);
- * console.log(url) // https://blockstream.info/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
- * @returns {string} the full block explorer url
+ * console.log(blockExplorerURL(path, MAINNET)) // https://blockstream.info/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
+ * console.log(blockExplorerURL(path, TESTNET)) // https://blockstream.info/block/testnet/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
  */
 export function blockExplorerURL(path, network) {
   return `${blockExplorerBaseURL(network)}${path}`;
 }
 
 /**
- * Formats the proper API URL based on the api path and network.
- * @param {string} path - the api path
+ * Returns the block explorer API URL for the given path and network.
+ * 
+ * @param {string} path - the API path
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @returns {string} the full block explorer url
  * @example
  * const path = "/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
- * const url = blockExplorerAPIURL(path, NETWORKS.MAINNET);
- * console.log(url); // https://blockstream.info/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
- * @returns {string} the full block explorer url
+ * console.log(blockExplorerAPIURL(path, MAINNET)); // https://blockstream.info/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
+ * console.log(blockExplorerAPIURL(path, TESTNET)); // https://blockstream.info/testnet/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
  */
 export function blockExplorerAPIURL(path, network) {
   return `${blockExplorerBaseURL(network)}/api${path}`;
 }
 
 /**
- * Formats the proper URL for a transaction on a given network.
- * @param {string} txid - the transaction id to look up
+ * Return the block explorer URL for the given transaction ID and network.
+ * 
+ * @param {string} txid - the transaction id
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @returns {string} the full transaction URL
  * @example
  * const txid = "1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
- * const url = blockExplorerTransactionURL(txid, NETWORKS.MAINNET);
- * console.log(url); // https://blockstream.info/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
- * @returns {string} the full transaction URL
+ * console.log(blockExplorerTransactionURL(txid, MAINNET)); // https://blockstream.info/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
+ * console.log(blockExplorerTransactionURL(txid, TESTNET)); // https://blockstream.info/testnet/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
  */
 export function blockExplorerTransactionURL(txid, network) {
   return blockExplorerURL(`/tx/${txid}`, network);
 }
 
 /**
- * Formats the proper URL for an address on a given network.
- * @param {string} address the address to look up
+ * Return the block explorer URL for the given address and network.
+ * 
+ * @param {string} address - the address
  * @param {module:networks.NETWORKS} network - bitcoin network
+ * @returns {string} full URL for address lookup
  * @example
  * const address = "39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX";
- * const url = blockExplorerAddressURL(address, NETWORKS.MAINNET);
- * console.log(url); // https://blockstream.info/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX
- * @returns {string} full URL for address lookup
+ * console.log(blockExplorerAddressURL(address, MAINNET)); // https://blockstream.info/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX
+ * console.log(blockExplorerAddressURL(address, TESTNET)); // https://blockstream.info/testnet/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX
  */
 export function blockExplorerAddressURL(address, network) {
   return blockExplorerURL(`/address/${address}`, network);

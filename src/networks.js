@@ -1,22 +1,38 @@
 const bitcoin = require('bitcoinjs-lib');
 
 /**
- * This module provides network constant enumerations and utility function.
+ * This module exports network constants and provide some utility
+ * functions for displaying the network name and passing the network
+ * value to bitcoinjs.
+ * 
  * @module networks
  */
 
 /**
- * @constant {string} - Constant for selection of the bitcoin mainnet network.
+ * Constant corresponding to the Bitcoin mainnet.
+ * 
+ * @constant
+ * @type {string}
+ * @default mainnet
+ * 
  */
 export const MAINNET = "mainnet";
 
 /**
- * @constant {string} - Constant for selection of the bitcoin testnet netwrok.
+ * Constant corresponding to the current Bitcoin testnet.
+ * 
+ * @constant
+ * @type {string}
+ * @default testnet
  */
 export const TESTNET = "testnet";
 
 /**
- * @enum {string} Enumeration of possible values for bitcoin networks ([MAINET]{@link module:networks.MAINNET}|[TESTNET]{@link module:networks.TESTNET}).
+ * Enumeration of possible values for bitcoin networks ([MAINET]{@link module:networks.MAINNET}|[TESTNET]{@link module:networks.TESTNET}).
+ *
+ * @constant
+ * @enum {string}
+ * @default
  */
 export const NETWORKS = {
   MAINNET,
@@ -24,12 +40,13 @@ export const NETWORKS = {
 };
 
 /**
- * Returns network configuration object for the specified network for internal use.
+ * Returns bitcoinjs-lib network object corresponding to the given
+ * network.
+ *
+ * This function is for internal use by this library.
+ * 
  * @param {module:networks.NETWORKS} network - bitcoin network
- * @example
- * const key = bip32.fromBase58(extendedPublicKey, networkData(NETWORKS.MAINNET));
- * const child = key.derivePath("m/0/0");
- * @returns {Network} network object for use as a parameter to other functions where needed, do not access directly
+ * @returns {Network} bitcoinjs-lib network object
  */
 export function networkData(network) {
   switch (network) {
@@ -44,8 +61,11 @@ export function networkData(network) {
 
 /**
  * Returns human-readable network label for the specified network.
+ * 
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} network label
+ * @example
+ * console.log(networkLabel(MAINNET)); // "Mainnet"
  */
 export function networkLabel(network) {
   switch (network) {

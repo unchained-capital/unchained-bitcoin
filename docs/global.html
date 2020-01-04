@@ -96,114 +96,37 @@
     
 
     
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
+        <h3 class="subsection-title">Methods</h3>
 
         
-                
-<h4 class="name" id="Multisig">Multisig</h4>
+            
 
+    
+
+    
+    <h4 class="name" id="validateMultisigSignature"><span class="type-signature"></span>validateMultisigSignature<span class="signature">(unsignedTransaction, inputIndex, input, signerInputSignature)</span><span class="type-signature"> &rarr; {string|boolean}</span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    IMPORTANT: Always parse this and never use properties directly!
+    <p>Validate a signature for a signed transaction input.</p>
 </div>
 
 
 
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">'Multisig'</span>
-
-
-        </li>
-    </ul>
 
 
 
 
 
-<dl class="details">
 
+    <h5>Parameters:</h5>
     
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line474">line 474</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id="UTXO">UTXO</h4>
-
-
-
-
-<div class="description">
-    A utxo object for signing with various wallets
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -212,8 +135,6 @@
 
         <th>Type</th>
 
-        
-        <th>Attributes</th>
         
 
         
@@ -227,65 +148,30 @@
 
         <tr>
             
-                <td class="name"><code>confirmed</code></td>
+                <td class="name"><code>unsignedTransaction</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">boolean</span>
+<span class="param-type">Transaction</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last">This is for UI developers and not signing related</td>
+            <td class="description last"><p>transaction to validate</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>txid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">The transaction ID where funds were received</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>index</code></td>
+                <td class="name"><code>inputIndex</code></td>
             
 
             <td class="type">
@@ -298,23 +184,40 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last">The index in the transaction referred to by {txid}</td>
+            <td class="description last"><p>the index where the input appears in the transaction</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>amount</code></td>
+                <td class="name"><code>input</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UTXO</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the object representing the input whose signature you wish to validate</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>signerInputSignature</code></td>
             
 
             <td class="type">
@@ -327,112 +230,17 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last">String representation of BTC value</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>amountSats</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">BigNumber</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Value in satoshis</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>transactionHex</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Hex representation of the raw transaction referred to by txid</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Multisig">Multisig</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">For parsing only</td>
+            <td class="description last"><p>signature to validate</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -466,7 +274,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line478">line 478</a>
+        <a href="signatures.js.html">signatures.js</a>, <a href="signatures.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -482,7 +290,58 @@
 
 
 
-            
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>false if invalid or corresponding public key</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+if (publicKey) {
+  // is valid, do something with publicKey
+} else {
+  // not valid, handle here
+}</code></pre>
+
+
+
+        
+    
+
     
 
     
@@ -496,13 +355,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-bip32.html">bip32</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#validateMultisigSignature">validateMultisigSignature</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Nov 08 2019 15:31:16 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Jan 03 2020 17:45:00 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
