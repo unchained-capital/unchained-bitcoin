@@ -53,6 +53,7 @@ const MAX_FEE_SATS = BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
  * @param {string|number|BigNumber} feeRateSatsPerVbyte - the fee rate in Satoshis/vbyte
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validateFeeRate} from "unchained-bitcoin";
  * console.log(validateFeeRate(-1)); // "Fee rate must be positive."
  * console.log(validateFeeRate(10000)); // "Fee rate is too high."
  * console.log(validateFeeRate(250)); // ""
@@ -91,6 +92,7 @@ export function validateFeeRate(feeRateSatsPerVbyte) {
  * @param {string|number|BigNumber} inputsTotalSats - total input amount in Satoshis
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validateFee} from "unchained-bitcoin";
  * console.log(validateFee(3000000, 10000000)) // "Fee is too high."
  * console.log(validateFee(30000, 20000)) // "Fee is too high."
  * console.log(validateFee(-30000)) // "Fee cannot be negative."
@@ -141,6 +143,7 @@ export function validateFee(feeSats, inputsTotalSats) {
  * @param {number} config.n - number of total signers for the quorum
  * @param {BigNumber} config.feesInSatoshis - total transaction fee in satoshis
  * @example 
+ * import {estimateMultisigP2WSHTransactionFeeRate} from "unchained-bitcoin";
  * // get the fee rate a P2WSH multisig transaction with 2 inputs and 3 outputs with a known fee of 7060
  * const feerate = estimateMultisigTransactionFeeRate({
  *   addressType: P2WSH, 
@@ -171,6 +174,7 @@ export function estimateMultisigTransactionFeeRate(config) {
  * @param {string} config.feesPerByteInSatoshis - satoshis per byte fee rate
  * @example
  * // get fee for P2SH multisig transaction with 2 inputs and 3 outputs at 10 satoshis per byte
+ * import {estimateMultisigP2WSHTransactionFee} from "unchained-bitcoin";
  * const fee = estimateMultisigTransactionFee({
  *   addressType: P2SH, 
  *   numInputs: 2, 

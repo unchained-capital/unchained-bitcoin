@@ -374,7 +374,7 @@ transaction, inputs, and their signatures.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line218">line 218</a>
+        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -427,7 +427,12 @@ transaction, inputs, and their signatures.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const pubkey1 = "03a...";
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, TESTNET, P2SH,
+  unsignedMultisigTransaction,
+  signedMultisigTransaction,
+} from "unchained-bitcoin";
+const pubkey1 = "03a...";
 const pubkey2 = "03b...";
 const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
 const inputs = [
@@ -441,7 +446,7 @@ const inputs = [
 const outputs = [
   {
     address: "2N...",
-    amountSats: BigNumber(90000),
+    amountSats: 90000,
   },
   // other outputs...
 ];
@@ -773,7 +778,7 @@ and outputs.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line163">line 163</a>
+        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line168">line 168</a>
     </li></ul></dd>
     
 
@@ -826,7 +831,11 @@ and outputs.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, "03a...", "03b...");
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, TESTNET, P2SH,
+  unsignedMultisigTransaction,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, "03a...", "03b...");
 const inputs = [
   {
     txid: "ae...",
@@ -838,7 +847,7 @@ const inputs = [
 const outputs = [
   {
     address: "2N...",
-    amountSats: BigNumber(90000),
+    amountSats: 90000,
   },
   // other outputs...
 ];
@@ -1002,7 +1011,7 @@ const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line100">line 100</a>
+        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -1055,7 +1064,8 @@ const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validateOutputAmount(-100, 1000000) // "Output amount must be positive."
+    <pre class="prettyprint"><code>import {validateOutputAmount} from "unchained-bitcoin";
+console.log(validateOutputAmount(-100, 1000000) // "Output amount must be positive."
 console.log(validateOutputAmount(0, 1000000) // "Output amount must be positive."
 console.log(validateOutputAmount(10, 1000000) // "Output amount is too small."
 console.log(validateOutputAmount(1000000, 100000) // "Output amount is too large."
@@ -1402,13 +1412,13 @@ the address the UTXO belongs to.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

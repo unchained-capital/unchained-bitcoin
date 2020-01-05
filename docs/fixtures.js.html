@@ -1,3 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: fixtures.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: fixtures.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This module provides useful test fixtures.
+ *
+ * All test fixtures are derived from the same BIP39 seed phrase
+ * (which is also included as a fixture).
+ *
+ * Test transactions are multisig which allows them to have one of the
+ * keys be the open source (private) key above and another be private
+ * (private key).  This doubly-private key is held by Unchained
+ * Capital.
+ *
+ * Multisig addresses built from both keys have the advantage that
+ * they are open enough to test most aspects of transaction authoring
+ * &amp; signing while remaining impossible to spend from without having
+ * the private (private) key.  This enables robust public tests of
+ * multisig addresses in testnet and mainnet.
+ *
+ * All the fixtures in this module are accessible through the
+ * `TEST_FIXTURES` constant.
+ *
+ * @module fixtures
+ */
+
+
 import BigNumber from 'bignumber.js';
 import { 
   generateMultisigFromPublicKeys,
@@ -10,14 +62,13 @@ import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import { TESTNET, MAINNET } from './networks';
 
-// These addresses are owned by Unchained Capital.
-export const TEST_RECEIVING_ADDRESSES = {};
-TEST_RECEIVING_ADDRESSES[MAINNET] = "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs";
-TEST_RECEIVING_ADDRESSES[TESTNET] = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
+const RECEIVING_ADDRESSES = {};
+RECEIVING_ADDRESSES[MAINNET] = "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs";
+RECEIVING_ADDRESSES[TESTNET] = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
 
-export const TEST_BIP39_PHRASE = ['merge', 'alley', 'lucky', 'axis', 'penalty', 'manage', 'latin', 'gasp', 'virus', 'captain', 'wheel', 'deal', 'chase', 'fragile', 'chapter', 'boss', 'zero', 'dirt', 'stadium', 'tooth', 'physical', 'valve', 'kid', 'plunge'];
+const BIP39_PHRASE = ['merge', 'alley', 'lucky', 'axis', 'penalty', 'manage', 'latin', 'gasp', 'virus', 'captain', 'wheel', 'deal', 'chase', 'fragile', 'chapter', 'boss', 'zero', 'dirt', 'stadium', 'tooth', 'physical', 'valve', 'kid', 'plunge'];
 
-export const TEST_NODES = {
+const NODES = {
   "m/45'/0'/0'": {
     xpub: "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv",
     tpub: "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px",
@@ -27,7 +78,6 @@ export const TEST_NODES = {
     xpub: "xpub6FjSpitFpSJB9BpSVwp3eJzhpaQFLbLefD1f3qaGRmok2Z2FDeSNsy5CL9TLwM3HpcV2kAyTNf2W1uUXs1jbeXGWjdWnsaqnUQ9PyWAYVhQ",
     tpub: "tpubDG75LxhwXiFdQz1Hx8o8rEL59hVuKyqiCqbxQPdQmgZdmqgxHsHU2Qk2aBY8TqzXcX1wMkVKukrYi5y9FsaqXxiooEG6Z7W24MjojRNcVtA"
   },
-
   "m/45'/0'/4'": {
     xpub: "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab",
     tpub: "tpubDCZv1xNTnmwmiZW4boJEY6YmKH2qKscsV9tuimmwaN8pT8NCxwtFLEAJUTSw6yxf4N44AQVFpt26vwVMBhxhTLAAN1w2Cgidnc7n3JVnBDH",
@@ -56,9 +106,29 @@ export const TEST_NODES = {
     xpub: "xpub6LCRwXBN9moqsJKhToW6K5qfBfTguMXuZw67q1BUuaWRyYD56P1zhqbyXsHqoo4WPsjUfeiJPu4JXnhtUz6cHbYgX6AFfDhUnPfCvbZD3JZ",
     tpub: "tpubDLa4Tm13s3mJ96WYuzVBX1B2WnZLtk2y7ZgRBZEdFVGKipsnAbs5rHGomuNdLJ1kBnGPHEEAvztMDyCVsqwrB2zyaguZLkMiNMFcgX4e2rG"
   },
+
+  "m/45'/1'/0'/0/0": {
+    pub: "037226e92491b2cf9691152fc2e9a0a7cff8f9ab7ad1b24b6f6506d7c8bf18911b",
+  },
+
+  "m/48'/0'/0'/1'/0/0": {
+    pub: "02c63c7ae511c9902e885da3e2fbb4a8f227eefc7f53eda3cad4d8f9389331b5be",
+  },
+
+  "m/48'/1'/0'/1'/0/0": {
+    pub: "03ff8a79f5016243a3959e2216e51cf90034cf510b379a34e6fdf565b19852baa2",
+  },
+
+  "m/48'/0'/0'/2'/0/0": {
+    pub: "032817ba5e2b76f6e2fab1d985224516f2b77a9c181e210def81ec2be8e17007c9"
+  },
+
+  "m/48'/1'/0'/2'/0/0": {
+    pub: "03ecf349ecf63fcd0ece9de7eb1abfb8f8b243fecc443bd62ef47744f0f6b7eef6",
+  }
 };
 
-const TEST_MULTISIGS_BASE = [
+const MULTISIGS_BASE = [
 
   {
     network: TESTNET, 
@@ -93,7 +163,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET],
           amountSats: '291590',
         }
       ],
@@ -137,7 +207,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET],
           amountSats: '291590',
         }
       ],
@@ -179,7 +249,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET],
           amountSats: '291590',
         }
       ],
@@ -221,7 +291,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET],
           amountSats: '21590',
         }
       ],
@@ -266,7 +336,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET],
           amountSats: '21590',
         }
       ],
@@ -308,7 +378,7 @@ const TEST_MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET],
           amountSats: '21590',
         }
       ],
@@ -319,12 +389,12 @@ const TEST_MULTISIGS_BASE = [
   
 ];
 
-export const TEST_MULTISIGS = TEST_MULTISIGS_BASE.map((test) => {
+const MULTISIGS = MULTISIGS_BASE.map((test) => {
   const multisig = generateMultisigFromPublicKeys(test.network, test.type, 2, ...test.publicKeys);
   return {
     ...test,
     ...{
-      description: `spends several UTXOs from a single ${test.network} ${test.type} 2-of-2 address`,
+      description: `${test.network} ${test.type} 2-of-2 multisig address`,
       utxos: test.utxos.map((utxo) => ({
         ...utxo,
         ...{
@@ -354,23 +424,35 @@ function selectFirstUTXOFromEach(tests) {
   });
   const sortedUTXOs = sortInputs(unsortedUTXOs);
   const sortedBIP32Paths = sortedUTXOs.map((utxo) => {
-    return unsortedBIP32Paths[unsortedUTXOs.findIndex((otherUTXO) => (otherUTXO.txid === utxo.txid && otherUTXO.index === utxo.index))];
+    return unsortedBIP32Paths[unsortedUTXOs.findIndex((otherUTXO) => (otherUTXO.txid === utxo.txid &amp;&amp; otherUTXO.index === utxo.index))];
   });
   return {
-    utxos: sortedUTXOs,
+    inputs: sortedUTXOs,
     bip32Paths: sortedBIP32Paths,
   };
 }
 
-export const TEST_TRANSACTIONS = [
-  {
-    ...selectFirstUTXOFromEach(TEST_MULTISIGS.filter((test) => test.network === TESTNET)),
+function singleMultisigTransaction(test) {
+  return {
     ...{
-      description: `spends UTXOs from several different ${TESTNET} 2-of-2 address types`,
+      description: `spends multiple UTXOs from a single ${test.description}`,
+      network: test.network,
+      inputs: sortInputs(test.utxos),
+      bip32Paths: test.utxos.map((utxo) => test.bip32Path),
+    },
+    ...test.transaction,
+  };
+}
+
+const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).concat([
+  {
+    ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === TESTNET)),
+    ...{
+      description: `spends a UTXO from each ${TESTNET} 2-of-2 address type`,
       network: TESTNET,
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET],
           amountSats: BigNumber('291590'),
         }
       ],
@@ -379,13 +461,13 @@ export const TEST_TRANSACTIONS = [
     signature: ["30440220583a0f9f0dec594d16cee927dc10d10e99b075c2cbdaad75daf1adf1a9f34900022058311ae12f952a4707f8c4966a50ed96b21e049ef35afc91e77c9a1b991f93b801","304502210084f12880a76b33e4bbf7bc896e76ccd726f59e24876261d1f9c999a2203d10c70220327e7daf28cf6dca83ff24c2b1dbded308e71f11941c14fa2b3bb1623d240b7201","3045022100aeeaa8c07be892ff1dcbbcf76ab6f202fa3f6b3f41e0476294f8df2d0afb457f02206d7eecc49e1ff32f1f25b7649a127e4334c0f9272aa92051364f5094b3d796ad01"],
   },
   {
-    ...selectFirstUTXOFromEach(TEST_MULTISIGS.filter((test) => test.network === MAINNET)),
+    ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === MAINNET)),
     ...{
-      description: `spends UTXOs from several different ${MAINNET} 2-of-2 address types`,
+      description: `spends a UTXO from each ${MAINNET} 2-of-2 address type`,
       network: MAINNET,
       outputs: [
         {
-          address: TEST_RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET],
           amountSats: BigNumber('21590'),
         }
       ],
@@ -393,11 +475,45 @@ export const TEST_TRANSACTIONS = [
       signature: ["304502210088188fe088e22872e06ddad13c2586f6abb5d8040b2bb919bf00f6a855e3788902202517f77ae39ac37c0522864dfb996dc86272f328ee4d7b614cad17899f5bbc3a01","3044022078e151ce21dab691a35f8aa2a080478cd15369653bc8ecd250019e62f2d1557102204349f260f9233558b8a71c9e2dc9888b6666451de97ea12b890ee7526f9f404001","3044022005e44b81d321ce6cc27e7d64cf482844e0dd30220a776c62199d2fac33c6a41502201beacca9c4d4f00d31c797b9441222e67ada8d4e0706d1cd29805af363de615c01"],
     }
   },
-];
+]);
 
-export const SUITE = {
-  bip39Phrase: TEST_BIP39_PHRASE,
-  nodes: TEST_NODES,
-  multisigs: TEST_MULTISIGS,
-  transactions: TEST_TRANSACTIONS,
+/**
+ * Useful test fixtures.
+ *
+ * Includes the following properties:
+ *
+ * - `bip39Phrase` -- a BIP39 seed phrase for initializing a keystore
+ * - `nodes` -- a collection of BIP32 nodes with extended &amp; regular public keys
+ * - `multisigs` -- a collection of multisig addresses derived from the BIP39 seed phrase above other (private) keys
+ * - `transactions` -- a collection of transactions spending funds from the multisig addresses above
+ * 
+ */
+export const TEST_FIXTURES = {
+  bip39Phrase: BIP39_PHRASE,
+  nodes: NODES,
+  multisigs: MULTISIGS,
+  transactions: TRANSACTIONS,
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -271,7 +271,7 @@ fetch data from these URLs.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line76">line 76</a>
+        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -324,7 +324,8 @@ fetch data from these URLs.</p></div>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const address = "39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX";
+    <pre class="prettyprint"><code>import {MAINNET, TESTNET, blockExplorerAddressURL} from "unchained-bitcoin";
+const address = "39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX";
 console.log(blockExplorerAddressURL(address, MAINNET)); // https://blockstream.info/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX
 console.log(blockExplorerAddressURL(address, TESTNET)); // https://blockstream.info/testnet/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX</code></pre>
 
@@ -460,7 +461,7 @@ console.log(blockExplorerAddressURL(address, TESTNET)); // https://blockstream.i
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line46">line 46</a>
+        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -513,7 +514,8 @@ console.log(blockExplorerAddressURL(address, TESTNET)); // https://blockstream.i
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const path = "/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
+    <pre class="prettyprint"><code>import {MAINNET, TESTNET, blockExplorerAPIURL} from "unchained-bitcoin";
+const path = "/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
 console.log(blockExplorerAPIURL(path, MAINNET)); // https://blockstream.info/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
 console.log(blockExplorerAPIURL(path, TESTNET)); // https://blockstream.info/testnet/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0</code></pre>
 
@@ -649,7 +651,7 @@ console.log(blockExplorerAPIURL(path, TESTNET)); // https://blockstream.info/tes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line61">line 61</a>
+        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line64">line 64</a>
     </li></ul></dd>
     
 
@@ -702,7 +704,8 @@ console.log(blockExplorerAPIURL(path, TESTNET)); // https://blockstream.info/tes
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const txid = "1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
+    <pre class="prettyprint"><code>import {MAINNET, TESTNET, blockExplorerTransactionURL} from "unchained-bitcoin";
+const txid = "1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
 console.log(blockExplorerTransactionURL(txid, MAINNET)); // https://blockstream.info/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
 console.log(blockExplorerTransactionURL(txid, TESTNET)); // https://blockstream.info/testnet/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0</code></pre>
 
@@ -838,7 +841,7 @@ console.log(blockExplorerTransactionURL(txid, TESTNET)); // https://blockstream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line31">line 31</a>
+        <a href="block_explorer.js.html">block_explorer.js</a>, <a href="block_explorer.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -891,7 +894,8 @@ console.log(blockExplorerTransactionURL(txid, TESTNET)); // https://blockstream.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const path = "/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57";
+    <pre class="prettyprint"><code>import {MAINNET, TESTNET, blockExplorerURL} from "unchained-bitcoin";
+const path = "/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57";
 console.log(blockExplorerURL(path, MAINNET)) // https://blockstream.info/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
 console.log(blockExplorerURL(path, TESTNET)) // https://blockstream.info/block/testnet/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57</code></pre>
 
@@ -913,13 +917,13 @@ console.log(blockExplorerURL(path, TESTNET)) // https://blockstream.info/block/t
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

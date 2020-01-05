@@ -91,6 +91,7 @@ export function sortInputs(inputs) {
  * @param {string|number|BigNumber} inputsTotalSats - total input amount in Satoshis
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validateOutputAmount} from "unchained-bitcoin";
  * console.log(validateOutputAmount(-100, 1000000) // "Output amount must be positive."
  * console.log(validateOutputAmount(0, 1000000) // "Output amount must be positive."
  * console.log(validateOutputAmount(10, 1000000) // "Output amount is too small."
@@ -141,6 +142,10 @@ export function validateOutputAmount(amountSats, inputsTotalSats) {
  * @param {module:transactions.TransactionOutput[]} outputs - transaction outputs
  * @returns {Transaction} an unsigned bitcoinjs-lib Transaction object
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, TESTNET, P2SH,
+ *   unsignedMultisigTransaction,
+ * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, "03a...", "03b...");
  * const inputs = [
  *   {
@@ -153,7 +158,7 @@ export function validateOutputAmount(amountSats, inputsTotalSats) {
  * const outputs = [
  *   {
  *     address: "2N...",
- *     amountSats: BigNumber(90000),
+ *     amountSats: 90000,
  *   },
  *   // other outputs...
  * ];
@@ -185,6 +190,11 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {Object[]} inputsSignaturesByPublicKey - array of mappings from public keys to signatures.
  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, TESTNET, P2SH,
+ *   unsignedMultisigTransaction,
+ *   signedMultisigTransaction,
+ * } from "unchained-bitcoin";
  * const pubkey1 = "03a...";
  * const pubkey2 = "03b...";
  * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
@@ -199,7 +209,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * const outputs = [
  *   {
  *     address: "2N...",
- *     amountSats: BigNumber(90000),
+ *     amountSats: 90000,
  *   },
  *   // other outputs...
  * ];

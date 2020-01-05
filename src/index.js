@@ -12,7 +12,4 @@ export * from "./block_explorer";
 export * from "./p2sh";
 export * from "./p2sh_p2wsh";
 export * from "./p2wsh";
-
-import {SUITE} from "./test_constants";
-
-export const TEST_SUITE = SUITE;
+export * from "./fixtures";

@@ -22,6 +22,7 @@ const bip32 = require('bip32');
  * @param {module:networks.NETWORKS} network  - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validateExtendedPublicKey} from "unchained-bitcoin";
  * console.log(validateExtendedPublicKey("", MAINNET)); // "Extended public key cannot be blank."
  * console.log(validateExtendedPublicKey("foo", MAINNET)); // "Extended public key must begin with ..."
  * console.log(validateExtendedPublicKey("xpub123", MAINNET)); // "Extended public key is too short."
@@ -69,6 +70,7 @@ export function validateExtendedPublicKey(xpubString, network) {
  * @param {string} pubkeyHex - (compressed) public key in hex
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validatePublicKey} from "unchained-bitcoin";
  * console.log(validatePublicKey("")); // "Public key cannot be blank."
  * console.log(validatePublicKey("zzzz")); // "Invalid hex..."
  * console.log(validatePublicKey("deadbeef")); // "Invalid public key."
@@ -97,6 +99,7 @@ export function validatePublicKey(pubkeyHex) {
  * @param {string} publicKey - (uncompressed) public key in hex
  * @returns {string} compressed public key in hex
  * @example
+ * import {compressPublicKey} from "unchained-bitcoin";
  * console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5"));
  * // "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
  */
@@ -121,6 +124,7 @@ export function compressPublicKey(publicKey) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} (compressed) child public key in hex
  * @example
+ * import {deriveChildPublicKey, MAINNET} from "unchained-bitcoin";
  * const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
  * console.log(deriveChildPublicKey(xpub, "m/0/0", MAINNET));
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
@@ -146,6 +150,7 @@ export function deriveChildPublicKey(extendedPublicKey, bip32Path, network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} child extended public key in base58
  * @example
+ * import {deriveChildExtendedPublicKey, MAINNET} from "unchained-bitcoin";
  * const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
  * console.log(deriveChildExtendedPublicKey(xpub, "m/0/0", MAINNET));
  * // "xpub6GYTTMaaN8bSEhicdKq7ji9H7B2SL4un33obThv9aekop4J7L7B3snYMnJUuwXJiUmsbSVSyZydbqLC97JMWnj3R4MHz6JNunMJhjEBKovS"

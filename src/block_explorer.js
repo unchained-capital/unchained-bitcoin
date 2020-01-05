@@ -24,6 +24,7 @@ function blockExplorerBaseURL(network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the block explorer url
  * @example
+ * import {MAINNET, TESTNET, blockExplorerURL} from "unchained-bitcoin";
  * const path = "/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57";
  * console.log(blockExplorerURL(path, MAINNET)) // https://blockstream.info/block/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
  * console.log(blockExplorerURL(path, TESTNET)) // https://blockstream.info/block/testnet/00000000000000000011341d69792271766e4683e29b3ea169eacc59bde10a57
@@ -39,6 +40,7 @@ export function blockExplorerURL(path, network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the full block explorer url
  * @example
+ * import {MAINNET, TESTNET, blockExplorerAPIURL} from "unchained-bitcoin";
  * const path = "/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
  * console.log(blockExplorerAPIURL(path, MAINNET)); // https://blockstream.info/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
  * console.log(blockExplorerAPIURL(path, TESTNET)); // https://blockstream.info/testnet/api/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
@@ -54,6 +56,7 @@ export function blockExplorerAPIURL(path, network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the full transaction URL
  * @example
+ * import {MAINNET, TESTNET, blockExplorerTransactionURL} from "unchained-bitcoin";
  * const txid = "1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0";
  * console.log(blockExplorerTransactionURL(txid, MAINNET)); // https://blockstream.info/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
  * console.log(blockExplorerTransactionURL(txid, TESTNET)); // https://blockstream.info/testnet/tx/1814a10fb22e9551a17a94a1e68971e19b4f59eaf1689e0af85b97929b3b9ae0
@@ -69,6 +72,7 @@ export function blockExplorerTransactionURL(txid, network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} full URL for address lookup
  * @example
+ * import {MAINNET, TESTNET, blockExplorerAddressURL} from "unchained-bitcoin";
  * const address = "39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX";
  * console.log(blockExplorerAddressURL(address, MAINNET)); // https://blockstream.info/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX
  * console.log(blockExplorerAddressURL(address, TESTNET)); // https://blockstream.info/testnet/address/39YqNoLULDpbjmeCTdGJ42DQhrQLzRcMdX

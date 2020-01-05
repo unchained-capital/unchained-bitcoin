@@ -65,6 +65,7 @@ export function networkData(network) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} network label
  * @example
+ * import {MAINNET} from "unchained-bitcoin";
  * console.log(networkLabel(MAINNET)); // "Mainnet"
  */
 export function networkLabel(network) {

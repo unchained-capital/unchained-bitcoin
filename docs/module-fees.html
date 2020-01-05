@@ -568,7 +568,7 @@ transaction fees.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line184">line 184</a>
+        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line188">line 188</a>
     </li></ul></dd>
     
 
@@ -622,6 +622,7 @@ transaction fees.</p></div>
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// get fee for P2SH multisig transaction with 2 inputs and 3 outputs at 10 satoshis per byte
+import {estimateMultisigP2WSHTransactionFee} from "unchained-bitcoin";
 const fee = estimateMultisigTransactionFee({
   addressType: P2SH, 
   numInputs: 2, 
@@ -904,7 +905,7 @@ const fee = estimateMultisigTransactionFee({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line157">line 157</a>
+        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -957,7 +958,8 @@ const fee = estimateMultisigTransactionFee({
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// get the fee rate a P2WSH multisig transaction with 2 inputs and 3 outputs with a known fee of 7060
+    <pre class="prettyprint"><code>import {estimateMultisigP2WSHTransactionFeeRate} from "unchained-bitcoin";
+// get the fee rate a P2WSH multisig transaction with 2 inputs and 3 outputs with a known fee of 7060
 const feerate = estimateMultisigTransactionFeeRate({
   addressType: P2WSH, 
   numInputs: 2, 
@@ -1125,7 +1127,7 @@ const feerate = estimateMultisigTransactionFeeRate({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line99">line 99</a>
+        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -1178,7 +1180,8 @@ const feerate = estimateMultisigTransactionFeeRate({
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validateFee(3000000, 10000000)) // "Fee is too high."
+    <pre class="prettyprint"><code>import {validateFee} from "unchained-bitcoin";
+console.log(validateFee(3000000, 10000000)) // "Fee is too high."
 console.log(validateFee(30000, 20000)) // "Fee is too high."
 console.log(validateFee(-30000)) // "Fee cannot be negative."
 console.log(validateFee(30000, 10000000)) // ""</code></pre>
@@ -1310,7 +1313,7 @@ console.log(validateFee(30000, 10000000)) // ""</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line60">line 60</a>
+        <a href="fees.js.html">fees.js</a>, <a href="fees.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -1363,7 +1366,8 @@ console.log(validateFee(30000, 10000000)) // ""</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validateFeeRate(-1)); // "Fee rate must be positive."
+    <pre class="prettyprint"><code>import {validateFeeRate} from "unchained-bitcoin";
+console.log(validateFeeRate(-1)); // "Fee rate must be positive."
 console.log(validateFeeRate(10000)); // "Fee rate is too high."
 console.log(validateFeeRate(250)); // ""</code></pre>
 
@@ -1385,13 +1389,13 @@ console.log(validateFeeRate(250)); // ""</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

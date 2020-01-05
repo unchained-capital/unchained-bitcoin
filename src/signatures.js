@@ -30,6 +30,11 @@ const bitcoin = require('bitcoinjs-lib');
  * @param {string} signerInputSignature - signature to validate
  * @returns {string|boolean} false if invalid or corresponding public key
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, TESTNET, P2SH,
+ *   unsignedMultisigTransaction,
+ *   validateMultisigSignature,
+ * } from "unchained-bitcoin";
  * const pubkey1 = "03a...";
  * const pubkey2 = "03b...";
  * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
@@ -44,7 +49,7 @@ const bitcoin = require('bitcoinjs-lib');
  * const outputs = [
  *   {
  *     address: "2N...",
- *     amountSats: BigNumber(90000),
+ *     amountSats: 90000,
  *   },
  *   // other outputs...
  * ];

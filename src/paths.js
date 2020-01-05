@@ -38,6 +38,7 @@ const MAX_BIP32_NODE_INDEX = Math.pow(2, 32) - 1;
  * @param {string} pathString - BIP32 derivation path string
  * @returns {number[]} the derivation indices
  * @example
+ * import {bip32PathToSequence} from "unchained-bitcoin";
  * console.log(bip32PathToSequence("m/45'/1/99")); // [2147483693, 1, 99]
  */
 export function bip32PathToSequence(pathString) {
@@ -60,6 +61,7 @@ export function bip32PathToSequence(pathString) {
  * @param {number[]} sequence - the derivation indices
  * @returns {string} BIP32 derivation path
  * @example
+ * import {bip32SequenceToPath} from "unchained-bitcoin";
  * console.log(bip32SequenceToPath([2147483693, 1, 99])); // m/45'/1/99
  */
 export function bip32SequenceToPath(sequence) {
@@ -86,6 +88,7 @@ export function bip32SequenceToPath(sequence) {
  * @param {string} [options.mode] - "hardened" or "unhardened"
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {validateBIP32Path} from "unchained-bitcoin";
  * console.log(validateBIP32Path("")); // "BIP32 path cannot be blank."
  * console.log(validateBIP32Path("foo")); // "BIP32 path is invalid."
  * console.log(validateBIP32Path("//45")); // "BIP32 path is invalid."
@@ -191,6 +194,7 @@ function validateBIP32PathSegment(segmentString) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} derivation path
  * @example
+ * import {multisigBIP32Root} from "unchained-bitcoin";
  * console.log(multisigBIP32Root(P2SH, MAINNET)); // m/45'/0'/0'
  * console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'
  */
@@ -217,6 +221,7 @@ export function multisigBIP32Root(addressType, network) {
  * @param {number|string} path - the relative path
  * @returns {string} derivation path
  * @example
+ * import {multisigBIP32Path} from "unchained-bitcoin";
  * console.log(multisigBIP32Path(P2SH, MAINNET, 0); // m/45'/0'/0'/0
  * console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'/4"
  */

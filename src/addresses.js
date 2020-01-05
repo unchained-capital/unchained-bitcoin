@@ -1,5 +1,6 @@
 /**
- * This modulde provides validation messages related to addresses.
+ * This module provides validation messages related to addresses.
+ * 
  * @module address
  */
 
@@ -22,6 +23,7 @@ const BECH32_ADDRESS_BODY_PATTERN = "[ac-hj-np-z02-9]+$";
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
+ * import {MAINNET, TESTNET, validateAddress} from "unchained-bitcoin";
  * console.log(validateAddress('', MAINNET)); // "Address cannot be blank"
  * console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', MAINNET)); // "Address must start with either of 'bc1', '1' or '3' followed by letters or digits."
  * console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', TESTNET)); // ""

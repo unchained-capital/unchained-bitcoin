@@ -9,9 +9,8 @@ import {toHexString} from "./utils";
 import {scriptToHex} from "./script";
 import {networkData, MAINNET} from "./networks";
 import {
-  TEST_MULTISIGS,
-  TEST_TRANSACTIONS,
-} from "./test_constants";
+  TEST_FIXTURES,
+} from "./fixtures";
 
 const bitcoin = require('bitcoinjs-lib');
 
@@ -95,62 +94,42 @@ describe("transactions", () => {
   describe("unsignedMultisigTransaction", () => {
 
     it("forces BIP69 ordering on inputs", () => {
+
+      const fixture = TEST_FIXTURES.transactions[0];
       // They come sorted, so permute them.
-      const unsortedUTXOs = [
-        TEST_MULTISIGS[0].utxos[2],
-        TEST_MULTISIGS[0].utxos[0],
-        TEST_MULTISIGS[0].utxos[1],
+      const unsortedInputs = [
+        fixture.inputs[2],
+        fixture.inputs[0],
+        fixture.inputs[1],
       ];
-      const transaction = unsignedMultisigTransaction(TEST_MULTISIGS[0].network, unsortedUTXOs, TEST_MULTISIGS[0].transaction.outputs);
-      expect(transaction.ins.length).toEqual(unsortedUTXOs.length);
+      const transaction = unsignedMultisigTransaction(fixture.network, unsortedInputs, fixture.outputs);
+      expect(transaction.ins.length).toEqual(unsortedInputs.length);
 
       const reversedTXIDBuffer0 = transaction.ins[0].hash;
       const reversedTXIDBuffer1 = transaction.ins[1].hash;
       const reversedTXIDBuffer2 = transaction.ins[2].hash;
-      expect(toHexString(Buffer.from(reversedTXIDBuffer0).reverse())).toEqual(TEST_MULTISIGS[0].utxos[0].txid);
-      expect(toHexString(Buffer.from(reversedTXIDBuffer1).reverse())).toEqual(TEST_MULTISIGS[0].utxos[1].txid);
-      expect(toHexString(Buffer.from(reversedTXIDBuffer2).reverse())).toEqual(TEST_MULTISIGS[0].utxos[2].txid);
+      expect(toHexString(Buffer.from(reversedTXIDBuffer0).reverse())).toEqual(fixture.inputs[0].txid);
+      expect(toHexString(Buffer.from(reversedTXIDBuffer1).reverse())).toEqual(fixture.inputs[1].txid);
+      expect(toHexString(Buffer.from(reversedTXIDBuffer2).reverse())).toEqual(fixture.inputs[2].txid);
     });
 
-
-    TEST_MULTISIGS.forEach((test) => {
-
-      it(`can construct an unsigned multisig transaction which ${test.description}`, () => {
-        const transaction = unsignedMultisigTransaction(test.network, test.utxos, test.transaction.outputs);
-        expect(transaction.ins.length).toEqual(test.utxos.length);
-        expect(transaction.outs.length).toEqual(test.transaction.outputs.length);
-        test.utxos.forEach((utxo, inputIndex) => {
-          expect(transaction.ins[inputIndex].index).toEqual(utxo.index);
+    TEST_FIXTURES.transactions.forEach((fixture) => {
+      it(`can construct an unsigned multisig transaction which ${fixture.description}`, () => {
+        const transaction = unsignedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs);
+        expect(transaction.ins.length).toEqual(fixture.inputs.length);
+        expect(transaction.outs.length).toEqual(fixture.outputs.length);
+        fixture.inputs.forEach((input, inputIndex) => {
+          expect(transaction.ins[inputIndex].index).toEqual(input.index);
           // TXIDs are displayed in reversed order
           const reversedTXIDBuffer = transaction.ins[inputIndex].hash;
           // Don't want to modify buffer in place so use Buffer.from
-          expect(toHexString(Buffer.from(reversedTXIDBuffer).reverse())).toEqual(utxo.txid);
+          expect(toHexString(Buffer.from(reversedTXIDBuffer).reverse())).toEqual(input.txid);
         });
-        test.transaction.outputs.forEach((output, outputIndex) => {
+        fixture.outputs.forEach((output, outputIndex) => {
           expect(transaction.outs[outputIndex].value).toEqual(output.amountSats.toNumber());
-          expect(bitcoin.address.fromOutputScript(transaction.outs[outputIndex].script, networkData(test.network))).toEqual(output.address);
+          expect(bitcoin.address.fromOutputScript(transaction.outs[outputIndex].script, networkData(fixture.network))).toEqual(output.address);
         });
-        expect(transaction.toHex()).toEqual(test.transaction.hex);
-      });
-    });
-
-    TEST_TRANSACTIONS.forEach((test) => {
-      it(`can construct an unsigned multisig transaction which ${test.description}`, () => {
-        const transaction = unsignedMultisigTransaction(test.network, test.utxos, test.outputs);
-        expect(transaction.ins.length).toEqual(test.utxos.length);
-        expect(transaction.outs.length).toEqual(test.outputs.length);
-        test.utxos.forEach((utxo, inputIndex) => {
-          expect(transaction.ins[inputIndex].index).toEqual(utxo.index);
-          // TXIDs are displayed in reversed order
-          const reversedTXIDBuffer = transaction.ins[inputIndex].hash;
-          // Don't want to modify buffer in place so use Buffer.from
-          expect(toHexString(Buffer.from(reversedTXIDBuffer).reverse())).toEqual(utxo.txid);
-        });
-        test.outputs.forEach((output, outputIndex) => {
-          expect(transaction.outs[outputIndex].value).toEqual(output.amountSats.toNumber());
-          expect(bitcoin.address.fromOutputScript(transaction.outs[outputIndex].script, networkData(test.network))).toEqual(output.address);
-        });
-        expect(transaction.toHex()).toEqual(test.hex);
+        expect(transaction.toHex()).toEqual(fixture.hex);
       });
     });
 

@@ -14,6 +14,7 @@ import BigNumber from "bignumber.js";
  * @returns {string} hex representation of input array
  * 
  * @example
+ * import {toHexString} from "unchained-bitcoin";
  * const hex = toHexString([255, 0, 15, 16, 31, 32]);
  * console.log(hex) // ff000f101f20
  * 
@@ -37,6 +38,7 @@ export function toHexString(byteArray) {
  * @returns {string} empty if valid or corresponding validation message if not
  * 
  * @example
+ * import {validateHex} from "unchained-bitcoin";
  * console.log(validateHex('00112233gg')) // "Invalid hex: ..."
  * console.log(validateHex('0xdeadbeef')) // "Invalid hex: ..."
  * console.log(validateHex('deadbeef')) // ""
@@ -64,6 +66,7 @@ export function validateHex(inputString) {
  * @returns {BigNumber} value in BTC
  * 
  * @example
+ * import {satoshisToBitcoins} from "unchained-bitcoin";
  * console.log(satoshisToBitcoins(123450000)); // 1.2345
  * console.log(satoshisToBitcoins('0.5')); // 0
  * console.log(satoshisToBitcoins('-100000000.5')); // -1.0
@@ -85,7 +88,9 @@ export function satoshisToBitcoins(satoshis) {
  * @returns {BigNumber} value in satoshis
  * 
  * @example
+ * import {bitcoinsToSatoshis} from "unchained-bitcoin";
  * console.log(bitcoinsToSatoshis(1.2345)); // 123450000
+ * console.log(bitcoinsToSatoshis(-1.2345)); // -123450000
  */
 export function bitcoinsToSatoshis(num) {
   return BigNumber(num).shiftedBy(8).integerValue(BigNumber.ROUND_DOWN);

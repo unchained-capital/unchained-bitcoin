@@ -329,7 +329,7 @@ representing the corresponding derivation indices.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line43">line 43</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -382,7 +382,8 @@ representing the corresponding derivation indices.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(bip32PathToSequence("m/45'/1/99")); // [2147483693, 1, 99]</code></pre>
+    <pre class="prettyprint"><code>import {bip32PathToSequence} from "unchained-bitcoin";
+console.log(bip32PathToSequence("m/45'/1/99")); // [2147483693, 1, 99]</code></pre>
 
 
 
@@ -495,7 +496,7 @@ BIP32 derivation path.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line65">line 65</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line67">line 67</a>
     </li></ul></dd>
     
 
@@ -548,7 +549,8 @@ BIP32 derivation path.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(bip32SequenceToPath([2147483693, 1, 99])); // m/45'/1/99</code></pre>
+    <pre class="prettyprint"><code>import {bip32SequenceToPath} from "unchained-bitcoin";
+console.log(bip32SequenceToPath([2147483693, 1, 99])); // m/45'/1/99</code></pre>
 
 
 
@@ -709,7 +711,7 @@ path for the given <code>addressType</code> and <code>network</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line223">line 223</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -762,7 +764,8 @@ path for the given <code>addressType</code> and <code>network</code>.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(multisigBIP32Path(P2SH, MAINNET, 0); // m/45'/0'/0'/0
+    <pre class="prettyprint"><code>import {multisigBIP32Path} from "unchained-bitcoin";
+console.log(multisigBIP32Path(P2SH, MAINNET, 0); // m/45'/0'/0'/0
 console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'/4"</code></pre>
 
 
@@ -914,7 +917,7 @@ console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line197">line 197</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line201">line 201</a>
     </li></ul></dd>
     
 
@@ -967,7 +970,8 @@ console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(multisigBIP32Root(P2SH, MAINNET)); // m/45'/0'/0'
+    <pre class="prettyprint"><code>import {multisigBIP32Root} from "unchained-bitcoin";
+console.log(multisigBIP32Root(P2SH, MAINNET)); // m/45'/0'/0'
 console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'</code></pre>
 
 
@@ -1193,7 +1197,7 @@ console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'</code></pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line104">line 104</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line107">line 107</a>
     </li></ul></dd>
     
 
@@ -1246,7 +1250,8 @@ console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'</code></pr
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validateBIP32Path("")); // "BIP32 path cannot be blank."
+    <pre class="prettyprint"><code>import {validateBIP32Path} from "unchained-bitcoin";
+console.log(validateBIP32Path("")); // "BIP32 path cannot be blank."
 console.log(validateBIP32Path("foo")); // "BIP32 path is invalid."
 console.log(validateBIP32Path("//45")); // "BIP32 path is invalid."
 console.log(validateBIP32Path("/45/")); // "BIP32 path is invalid."
@@ -1279,13 +1284,13 @@ console.log(validateBIP32Path("/0/0", {mode: "unhardened")); // ""</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

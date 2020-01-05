@@ -143,7 +143,13 @@ use the functions from API provided by this module.</p></div>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const pubkey1 = "03a...";
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigRequiredSigners, multisigTotalSigners,
+  multisigAddressType,
+  multisigPublicKeys,
+} from "unchained-bitcoin";
+const pubkey1 = "03a...";
 const pubkey2 = "03b...";
 // A mainnet 1-of-2 P2SH multisig
 const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, pubkey1, pubkey2);
@@ -230,7 +236,7 @@ console.log(multisigPublicKeys(multisig)); // ["03a...", "03b..."]</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line80">line 80</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line86">line 86</a>
     </li></ul></dd>
     
 
@@ -412,7 +418,7 @@ several address types, depending on context.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line135">line 135</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -465,7 +471,10 @@ several address types, depending on context.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const multisigScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromHex, MAINNET, P2SH, P2WSH,
+} from "unchained-bitcoin";
+const multisigScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
 const multisigP2SH = generateMultisigFromHex(MAINNET, P2SH, multisigScript);
 const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);</code></pre>
 
@@ -685,7 +694,7 @@ keys (N total).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line105">line 105</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line115">line 115</a>
     </li></ul></dd>
     
 
@@ -735,7 +744,11 @@ keys (N total).</p>
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// A 2-of-3 P2SH mainnte multisig built from 3 public keys.
-const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");</code></pre>
+import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH, P2WSH,
+} from "unchained-bitcoin";
+const multisigP2SH = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+const multisigP2WSH = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");</code></pre>
 
 
 
@@ -846,7 +859,7 @@ const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line319">line 319</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -895,6 +908,16 @@ const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigAddress,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+console.log(multisigAddress(multisig)); // "3j..."</code></pre>
 
 
 
@@ -1005,7 +1028,7 @@ const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line188">line 188</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line204">line 204</a>
     </li></ul></dd>
     
 
@@ -1058,7 +1081,10 @@ const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>function doSomething(multisig) {
+    <pre class="prettyprint"><code>import {
+  multisigAddressType, P2SH, P2SH_P2WSH, P2WSH,
+} from "unchained-bitcoin";
+function doSomething(multisig) {
   switch (multisigAddressType(multisig)) {
   case P2SH:
     // handle P2SH here
@@ -1182,7 +1208,7 @@ redeem/witness script.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line309">line 309</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -1231,6 +1257,16 @@ redeem/witness script.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2WSH,
+  multisigPublicKeys,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
+console.log(multisigPublicKeys(multisig)); // ["03a...", "03b...", "03c..."]</code></pre>
 
 
 
@@ -1343,7 +1379,7 @@ will return null.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line263">line 263</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line301">line 301</a>
     </li></ul></dd>
     
 
@@ -1391,6 +1427,16 @@ will return null.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigRedeemScript,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+console.log(multisigRedeemScript(multisig));</code></pre>
 
 
 
@@ -1502,7 +1548,7 @@ object.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line212">line 212</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line232">line 232</a>
     </li></ul></dd>
     
 
@@ -1555,7 +1601,11 @@ object.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigRequiredSigners,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
 console.log(multisigRequiredSigners(multisig)); // 2</code></pre>
 
 
@@ -1670,7 +1720,7 @@ be returned.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line240">line 240</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line271">line 271</a>
     </li></ul></dd>
     
 
@@ -1718,6 +1768,16 @@ be returned.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigScript,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+console.log(multisigScript(multisig));</code></pre>
 
 
 
@@ -1829,7 +1889,7 @@ be returned.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line226">line 226</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -1882,7 +1942,11 @@ be returned.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2SH,
+  multisigTotalSigners,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
 console.log(multisigTotalSigners(multisig)); // 3</code></pre>
 
 
@@ -1996,7 +2060,7 @@ return null.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line285">line 285</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line330">line 330</a>
     </li></ul></dd>
     
 
@@ -2044,6 +2108,16 @@ return null.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {
+  generateMultisigFromPublicKeys, MAINNET, P2WSH,
+  multisigWitnessScript,
+} from "unchained-bitcoin";
+const multisig = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
+console.log(multisigWitnessScript(multisig));</code></pre>
 
 
 
@@ -2117,7 +2191,7 @@ type:</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line56">line 56</a>
+        <a href="multisig.js.html">multisig.js</a>, <a href="multisig.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -2147,13 +2221,13 @@ type:</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

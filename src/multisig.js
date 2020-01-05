@@ -31,6 +31,12 @@
  *
  * @module multisig
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigRequiredSigners, multisigTotalSigners,
+ *   multisigAddressType,
+ *   multisigPublicKeys,
+ * } from "unchained-bitcoin";
  * const pubkey1 = "03a...";
  * const pubkey2 = "03b...";
  * // A mainnet 1-of-2 P2SH multisig
@@ -100,7 +106,11 @@ export const MULTISIG_ADDRESS_TYPES = {
  * @returns {Multisig}
  * @example
  * // A 2-of-3 P2SH mainnte multisig built from 3 public keys.
- * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH, P2WSH,
+ * } from "unchained-bitcoin";
+ * const multisigP2SH = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * const multisigP2WSH = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
  */
 export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
   const redeemScript = bitcoin.payments.p2ms({
@@ -128,6 +138,9 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  * @param {string} multisigScriptHex - hex representation of the redeem/witness script
  * @returns {Multisig} object for further parsing
  * @example
+ * import {
+ *   generateMultisigFromHex, MAINNET, P2SH, P2WSH,
+ * } from "unchained-bitcoin";
  * const multisigScript = "512103a90d10bf3794352bb1fa533dbd4ea75a0ffc98e0d05124938fcc3e10cdbe1a4321030d60e8d497fa8ce59a2b3203f0e597cd0182e1fe0cc3688f73497f2e99fbf64b52ae";
  * const multisigP2SH = generateMultisigFromHex(MAINNET, P2SH, multisigScript);
  * const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);
@@ -173,6 +186,9 @@ export function generateMultisigFromRedeemScript(addressType, redeemScript) {
  * @param {module:multisig.Multisig} multisig
  * @returns {module:multisig.MULTISIG_ADDRESS_TYPES} the address type
  * @example
+ * import {
+ *   multisigAddressType, P2SH, P2SH_P2WSH, P2WSH,
+ * } from "unchained-bitcoin";
  * function doSomething(multisig) {
  *   switch (multisigAddressType(multisig)) {
  *   case P2SH:
@@ -206,6 +222,10 @@ export function multisigAddressType(multisig) {
  * @param {module:multisig.Multisig} multisig
  * @returns {number} number of required signers
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigRequiredSigners,
+ * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
  * console.log(multisigRequiredSigners(multisig)); // 2
  */
@@ -220,6 +240,10 @@ export function multisigRequiredSigners(multisig) {
  * @param {module:multisig.Multisig} multisig
  * @returns {number} number of total signers
  * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigTotalSigners,
+ * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
  * console.log(multisigTotalSigners(multisig)); // 3
  */
@@ -236,6 +260,13 @@ export function multisigTotalSigners(multisig) {
  * 
  * @param {module:multisig.Multisig} multisig
  * @returns {Multisig|null}
+ * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigScript,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigScript(multisig));
  */
 export function multisigScript(multisig) {
   switch (multisigAddressType(multisig)) {
@@ -259,6 +290,13 @@ export function multisigScript(multisig) {
  * 
  * @param {module:multisig.Multisig} multisig
  * @returns {Multisig|null}
+ * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigRedeemScript,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigRedeemScript(multisig));
  */
 export function multisigRedeemScript(multisig) {
   switch (multisigAddressType(multisig)) {
@@ -281,6 +319,13 @@ export function multisigRedeemScript(multisig) {
  * 
  * @param {module:multisig.Multisig} multisig
  * @returns {Multisig|null}
+ * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2WSH,
+ *   multisigWitnessScript,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigWitnessScript(multisig));
  */
 export function multisigWitnessScript(multisig) {
   switch (multisigAddressType(multisig)) {
@@ -304,6 +349,13 @@ export function multisigWitnessScript(multisig) {
  * 
  * @param {module:multisig.Multisig} multisig
  * @returns {string[]} (compressed) public keys in hex
+ * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2WSH,
+ *   multisigPublicKeys,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigPublicKeys(multisig)); // ["03a...", "03b...", "03c..."]
  * 
  */
 export function multisigPublicKeys(multisig) {
@@ -315,6 +367,14 @@ export function multisigPublicKeys(multisig) {
  * 
  * @param {module:multisig.Multisig} multisig
  * @returns {string} the address
+ * @example
+ * import {
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   multisigAddress,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigAddress(multisig)); // "3j..."
+ * 
  */
 export function multisigAddress(multisig) {
   return multisig.address;

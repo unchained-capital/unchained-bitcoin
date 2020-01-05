@@ -246,7 +246,7 @@ keys and extended public keys.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line103">line 103</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line106">line 106</a>
     </li></ul></dd>
     
 
@@ -299,7 +299,8 @@ keys and extended public keys.</p></div>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5"));
+    <pre class="prettyprint"><code>import {compressPublicKey} from "unchained-bitcoin";
+console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5"));
 // "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"</code></pre>
 
 
@@ -458,7 +459,7 @@ given extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line156">line 156</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -511,7 +512,8 @@ given extended public key.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
+    <pre class="prettyprint"><code>import {deriveChildExtendedPublicKey, MAINNET} from "unchained-bitcoin";
+const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
 console.log(deriveChildExtendedPublicKey(xpub, "m/0/0", MAINNET));
 // "xpub6GYTTMaaN8bSEhicdKq7ji9H7B2SL4un33obThv9aekop4J7L7B3snYMnJUuwXJiUmsbSVSyZydbqLC97JMWnj3R4MHz6JNunMJhjEBKovS"
 console.log(deriveChildExtendedPublicKey(xpub, "0/0", MAINNET)); // without initial `m/`
@@ -673,7 +675,7 @@ extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line131">line 131</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line135">line 135</a>
     </li></ul></dd>
     
 
@@ -726,7 +728,8 @@ extended public key.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
+    <pre class="prettyprint"><code>import {deriveChildPublicKey, MAINNET} from "unchained-bitcoin";
+const xpub = "xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab";
 console.log(deriveChildPublicKey(xpub, "m/0/0", MAINNET));
 // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
 console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
@@ -868,7 +871,7 @@ console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line32">line 32</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -921,7 +924,8 @@ console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validateExtendedPublicKey("", MAINNET)); // "Extended public key cannot be blank."
+    <pre class="prettyprint"><code>import {validateExtendedPublicKey} from "unchained-bitcoin";
+console.log(validateExtendedPublicKey("", MAINNET)); // "Extended public key cannot be blank."
 console.log(validateExtendedPublicKey("foo", MAINNET)); // "Extended public key must begin with ..."
 console.log(validateExtendedPublicKey("xpub123", MAINNET)); // "Extended public key is too short."
 console.log(validateExtendedPublicKey("tpub123...", MAINNET)); // "Extended public key must begin with ...."
@@ -1041,7 +1045,7 @@ console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""</code></pre
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line77">line 77</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -1094,7 +1098,8 @@ console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""</code></pre
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>console.log(validatePublicKey("")); // "Public key cannot be blank."
+    <pre class="prettyprint"><code>import {validatePublicKey} from "unchained-bitcoin";
+console.log(validatePublicKey("")); // "Public key cannot be blank."
 console.log(validatePublicKey("zzzz")); // "Invalid hex..."
 console.log(validatePublicKey("deadbeef")); // "Invalid public key."
 console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee")); // ""</code></pre>
@@ -1117,13 +1122,13 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 13:24:46 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
