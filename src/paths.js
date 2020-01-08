@@ -13,21 +13,28 @@ import {P2WSH} from "./p2wsh";
 
 const bip32 = require('bip32');
 
-/**
- * Integer representation of the hardened path offset.
- *
- * @constant
- * @type {number}
- * @default 2^31
- * 
- */
-export const HARDENING_OFFSET = Math.pow(2, 31);
+const HARDENING_OFFSET = Math.pow(2, 31);
 
 const BIP32_PATH_REGEX = /^(m\/)?(\d+'?\/)*\d+'?$/;
 const BIP32_HARDENED_PATH_REGEX = /^(m\/)?(\d+'\/)*\d+'$/;
 const BIP32_UNHARDENED_PATH_REGEX = /^(m\/)?(\d+\/)*\d+$/;
 const MAX_BIP32_HARDENED_NODE_INDEX = Math.pow(2, 31) - 1;
 const MAX_BIP32_NODE_INDEX = Math.pow(2, 32) - 1;
+
+/**
+ * Return the hardened version of the given BIP32 index.
+ *
+ * Hardening is equivalent to adding 2^31.
+ * 
+ * @param {string|number} index - BIP32 index
+ * @returns {number} the hardened index
+ * @example
+ * import {hardenedBIP32Index} from "unchained-bitcoin";
+ * console.log(hardenedBIP32Index(44); // 2147483692
+ */
+export function hardenedBIP32Index(index) {
+  return parseInt(index) + HARDENING_OFFSET;
+}
 
 /**
  * Convert BIP32 derivation path to an array of integer values

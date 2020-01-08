@@ -1,13 +1,11 @@
-import BigNumber from "bignumber.js";
-
+import {generateMultisigFromHex} from "./multisig";
 import {
-  sortInputs,
-  validateOutputAmount,
   unsignedMultisigTransaction,
+  signedMultisigTransaction,
 } from './transactions';
 import {toHexString} from "./utils";
-import {scriptToHex} from "./script";
-import {networkData, MAINNET} from "./networks";
+import {P2SH} from "./p2sh";
+import {networkData, TESTNET} from "./networks";
 import {
   TEST_FIXTURES,
 } from "./fixtures";
@@ -16,102 +14,30 @@ const bitcoin = require('bitcoinjs-lib');
 
 describe("transactions", () => {
 
-  describe("sortInputs", () => {
-
-    it("sorts inputs in ascending lexicographic order by txid and index", () => {
-      const unsortedInputs = [
-        {
-          txid: "def123",
-          index: 0,
-        },
-        {
-          txid: "0123",
-          index: 2,
-        },
-        {
-          txid: "abc123",
-          index: 1,
-        },
-        {
-          txid: "abc123",
-          index: 0,
-        },
-      ];
-      const sortedInputs = sortInputs(unsortedInputs);
-      expect(sortedInputs[0].txid).toEqual("0123");
-      expect(sortedInputs[0].index).toEqual(2);
-      expect(sortedInputs[1].txid).toEqual("abc123");
-      expect(sortedInputs[1].index).toEqual(0);
-      expect(sortedInputs[2].txid).toEqual("abc123");
-      expect(sortedInputs[2].index).toEqual(1);
-      expect(sortedInputs[3].txid).toEqual("def123");
-      expect(sortedInputs[3].index).toEqual(0);
-    });
-
-  });
-
-  describe('validateOutputAmount', () => {
-
-    it("should return an error message for an unparseable output amount", () => {
-      expect(validateOutputAmount('foo', 100000)).toMatch(/invalid output amount/i);
-    });
-
-    it("should return an error message for an unparseable total input amount", () => {
-      expect(validateOutputAmount(100000, 'foo')).toMatch(/invalid total input amount/i);
-    });
-
-    it("should return an error message for a negative output amount", () => {
-      expect(validateOutputAmount(-10000, 100000)).toMatch(/output amount must be positive/i);
-    });
-
-    it("should return an error message for a zero output amount", () => {
-      expect(validateOutputAmount(0, 100000)).toMatch(/output amount must be positive/i);
-    });
-
-    it("should return an error message for a negative total input amount", () => {
-      expect(validateOutputAmount(100000, -1000000)).toMatch(/total input amount must be positive/i);
-    });
-
-    it("should return an error message for a zero total input amount", () => {
-      expect(validateOutputAmount(100000, 0)).toMatch(/total input amount must be positive/i);
-    });
-
-    it("should return an error message when the output is too small", () => {
-      expect(validateOutputAmount(100, 1000000)).toMatch(/output amount is too small/i);
-    });
-
-    it("should return an error message when the output is larger than the total input amount", () => {
-      expect(validateOutputAmount(100001, 100000)).toMatch(/output amount is too large/i);
-    });
-
-    it("should return an empty string on an acceptable amount", () => {
-      expect(validateOutputAmount(100000, 1000000)).toBe("");
-    });
-
-  });
-
-
   describe("unsignedMultisigTransaction", () => {
 
-    it("forces BIP69 ordering on inputs", () => {
+    describe("validating arguments", () => {
 
       const fixture = TEST_FIXTURES.transactions[0];
-      // They come sorted, so permute them.
-      const unsortedInputs = [
-        fixture.inputs[2],
-        fixture.inputs[0],
-        fixture.inputs[1],
-      ];
-      const transaction = unsignedMultisigTransaction(fixture.network, unsortedInputs, fixture.outputs);
-      expect(transaction.ins.length).toEqual(unsortedInputs.length);
 
-      const reversedTXIDBuffer0 = transaction.ins[0].hash;
-      const reversedTXIDBuffer1 = transaction.ins[1].hash;
-      const reversedTXIDBuffer2 = transaction.ins[2].hash;
-      expect(toHexString(Buffer.from(reversedTXIDBuffer0).reverse())).toEqual(fixture.inputs[0].txid);
-      expect(toHexString(Buffer.from(reversedTXIDBuffer1).reverse())).toEqual(fixture.inputs[1].txid);
-      expect(toHexString(Buffer.from(reversedTXIDBuffer2).reverse())).toEqual(fixture.inputs[2].txid);
+      it("throws an error when there are no inputs", () => {
+        expect(() => {unsignedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
+      });
+
+      it("throws an error when there an input is invalid", () => {
+        expect(() => {unsignedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
+      });
+
+      it("throws an error when there are no outputs", () => {
+        expect(() => {unsignedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
+      });
+
+      it("throws an error when there an output is invalid", () => {
+        expect(() => {unsignedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
+      });
+      
     });
+
 
     TEST_FIXTURES.transactions.forEach((fixture) => {
       it(`can construct an unsigned multisig transaction which ${fixture.description}`, () => {
@@ -135,33 +61,73 @@ describe("transactions", () => {
 
   });
 
+  describe("signedMultisigTransaction", () => {
+
+    const fixture = TEST_FIXTURES.transactions[0];
+
+    it("throws an error when there are no inputs", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
+    });
+
+    it("throws an error when there an input is invalid", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
+    });
+
+    it("throws an error when there are no outputs", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
+    });
+
+    it("throws an error when there an output is invalid", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
+    });
+
+    it("throws an error when there are no transaction signatures", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs); }).toThrow(/at least one transaction signature/i);
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs,  []); }).toThrow(/at least one transaction signature/i);
+    });
+
+    it("throws an error when there a transaction signature doesn't contain enough input signatures", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [[]]); }).toThrow(/insufficient input signatures/i);
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, []]); }).toThrow(/insufficient input signatures/i);
+    });
+
+    it("throws an error when too few input signatures are given", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature]); }).toThrow(/insufficient signatures for input/i);
+    });
+
+    it("throws an error when an invalid input signature is given", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, ["foo", "bar", "baz"]]); }).toThrow(/invalid signature for input/i);
+    });
+
+    it("throws an error when a duplicate input signature is given", () => {
+      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, fixture.signature]); }).toThrow(/duplicate signature for input/i);
+    });
+    
+    it("can construct a valid signed transaction", () => {
+      // This transaction has already been broadcast, but no matter.
+      const inputs = [
+        {
+          txid: "916d6c481237dfa78beaf0d931095bf0ce66a9d3d92a8c62a0f187f39f673ed7",
+          index: 1,
+          multisig: generateMultisigFromHex(TESTNET, P2SH, "522103684f6787d61cc6af5ea660129f97e312ce0e5276abaf569e842f167c4630126021030c58cc16013c7fdf510ab2b68be808e0de2b25d0f36bb17c60bafd11bb052d9e21020cc7153dd76284f35f8caa86a7d1cae228b10f1bb94dcdbc34ce579b2ea08e1053ae"),
+        }
+      ];
+      const outputs = [
+        {
+          address: "tb1quzdlt9ytvg8z7rprn08shrtucnnju5zhf7jlsf",
+          amountSats: 100000,
+        },
+        {
+          address: "tb1qf8xhpmszkvpkjnelq76up4hnfn8qep8406safy",
+          amountSats: 999318,
+        },
+      ];
+      const transactionSignature1 = ["30440220564e4623beaed42fb0302a2ee2e78e1e7cbee5ed256285b831450b70e8dbc2fa022018a29525a2deccbf397a4952d64a9b317bbd926d44418ec3f6cff4b2001b474c"];
+      const transactionSignature2 = ["30440220707beb7625cb4b9925bbae2668d34d44de78879728e14bc40d0c84ea7947c9860220230dcbde54882b481e287d852d2545bb0d955af13984d06ff62ba4bd1de6cd59"];
+      const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, [transactionSignature1, transactionSignature2]);
+      expect(signedTransaction.toHex()).toEqual("0100000001d73e679ff387f1a0628c2ad9d3a966cef05b0931d9f0ea8ba7df3712486c6d9101000000b4004730440220564e4623beaed42fb0302a2ee2e78e1e7cbee5ed256285b831450b70e8dbc2fa022018a29525a2deccbf397a4952d64a9b317bbd926d44418ec3f6cff4b2001b474c014c69522103684f6787d61cc6af5ea660129f97e312ce0e5276abaf569e842f167c4630126021030c58cc16013c7fdf510ab2b68be808e0de2b25d0f36bb17c60bafd11bb052d9e21020cc7153dd76284f35f8caa86a7d1cae228b10f1bb94dcdbc34ce579b2ea08e1053aeffffffff02a086010000000000160014e09bf5948b620e2f0c239bcf0b8d7cc4e72e5057963f0f000000000016001449cd70ee02b303694f3f07b5c0d6f34cce0c84f500000000");
+    });
+
+  });
+
 });
-
-
-  // describe("Test signedMultisigTransaction", () => {
-  //   it("should properly create signed transaction from an unsigned transaction and signatures for P2SH", () => {
-  //     const tx = getUnsigned(0);
-  //     const ms = generateMultisigFromHex(TESTNET, P2SH, redeemMulti);
-  //     const sigtx = signedMultisigTransaction(tx, [{ multisig: ms }], [
-  //       {
-  //         [p2shkey1]: sig1
-  //       }, {
-  //         [p2shkey2]: sig2
-  //       }]);
-
-  //     expect(sigtx.toHex()).toBe(signed)
-  //   });
-
-  //   it("should properly create signed transaction from an unsigned transaction and signatures for P2WSH", () => {
-  //     const tx = getUnsigned(1);
-  //     const ms = generateMultisigFromHex(TESTNET, P2WSH, p2wshredeem);
-  //     const sigtx = signedMultisigTransaction(tx, [{ multisig: ms }], [
-  //       {
-  //         [p2wshpub1]: p2wshsig1,
-  //         [p2wshpub2]: p2wshsig2
-  //       }
-  //     ]);
-
-  //     expect(sigtx.toHex()).toBe(p2wshsigned)
-  //   });
-  // })

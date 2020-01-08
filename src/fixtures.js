@@ -28,7 +28,7 @@ import {
   multisigRedeemScript,
   multisigWitnessScript,
 } from './multisig';
-import {sortInputs} from "./transactions";
+import {sortInputs} from "./inputs";
 import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
@@ -105,13 +105,14 @@ const MULTISIGS_BASE = [
   {
     network: TESTNET, 
     type: P2SH,
+    bip32Path: "m/45'/1'/100'/0/0",
+    publicKey: "02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4",
     publicKeys: ["02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4", "03938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba",],
     redeemScriptOps: "OP_2 02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4 03938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba OP_2 OP_CHECKMULTISIG",
     redeemScriptHex: "522102a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d42103938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba52ae",
     scriptOps: "OP_HASH160 8479072d5a550ee0900b5af7e70af575527a879d OP_EQUAL",
     scriptHex: "a9148479072d5a550ee0900b5af7e70af575527a879d87",
     address: "2N5KgAnFFpmk5TRMiCicRZDQS8FFNCKqKf1",
-    bip32Path: "m/45'/1'/100'/0/0",
     utxos:[
       {
         txid: "65e7ef764030dabfb46e3ae1c357b0666d0dda722c9809fb73245d6d68665284",
@@ -147,6 +148,8 @@ const MULTISIGS_BASE = [
   {
     network: TESTNET, 
     type: P2SH_P2WSH,
+    bip32Path: "m/48'/1'/100'/1'/0/0",
+    publicKey: "026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422",
     publicKeys: ["025566585b3a8066b7d0bba4d2b24c3c59a5f527d62c100bbb7073a7cb2565418c", "026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422"],
     witnessScriptOps: "OP_2 025566585b3a8066b7d0bba4d2b24c3c59a5f527d62c100bbb7073a7cb2565418c 026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422 OP_2 OP_CHECKMULTISIG",
     witnessScriptHex: "5221025566585b3a8066b7d0bba4d2b24c3c59a5f527d62c100bbb7073a7cb2565418c21026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a42252ae",
@@ -155,7 +158,6 @@ const MULTISIGS_BASE = [
     scriptOps: "OP_HASH160 dac0270cbf87a65c0cf4fd2295eb44c756b288ec OP_EQUAL",
     scriptHex: "a914dac0270cbf87a65c0cf4fd2295eb44c756b288ec87",
     address: "2NDBsV6VBe4d2Ukp2XB644dg2xZ2SuWGkyG",
-    bip32Path: "m/48'/1'/100'/1'/0/0",
     utxos:[
       {
         txid: "429da41d05db69d7c006e91b15031e6d47faab15adba3c97059eeea093c36a23",
@@ -191,13 +193,14 @@ const MULTISIGS_BASE = [
   {
     network: TESTNET, 
     type: P2WSH,
+    bip32Path: "m/48'/1'/100'/2'/0/0",
+    publicKey: "03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469",
     publicKeys: ["035a763e0480f858ef626b649fa0efe9eb647abbf77db54f3af904d2de50c4342d", "03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469"],
     witnessScriptOps: "OP_2 035a763e0480f858ef626b649fa0efe9eb647abbf77db54f3af904d2de50c4342d 03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469 OP_2 OP_CHECKMULTISIG",
     witnessScriptHex: "5221035a763e0480f858ef626b649fa0efe9eb647abbf77db54f3af904d2de50c4342d2103bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b7246952ae",
     scriptOps: "OP_0 ba2514cdd3a3c202eb4394e550a0fc116cb834f34662a019be8a52c62351d068",
     scriptHex: "0020ba2514cdd3a3c202eb4394e550a0fc116cb834f34662a019be8a52c62351d068",
     address: "tb1qhgj3fnwn50pq966rjnj4pg8uz9ktsd8nge32qxd73ffvvg636p5q54g7m0",
-    bip32Path: "m/48'/1'/100'/2'/0/0",
     utxos:[
       {
         txid: "84df8dcc9b86e8c7bb39ce0ba9f577ec750f0b64df97a5c9559cf39243a1f501",
@@ -233,13 +236,14 @@ const MULTISIGS_BASE = [
   {
     network: MAINNET, 
     type: P2SH,
+    bip32Path: "m/45'/0'/100'/0/0",
+    publicKey: "02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79",
     publicKeys: ["02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79", "02b024e76d6c2d8c22d9550467e97ced251ead5592529f9c813c1d818f7e89a35a"],
     redeemScriptOps: "OP_2 02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79 02b024e76d6c2d8c22d9550467e97ced251ead5592529f9c813c1d818f7e89a35a OP_2 OP_CHECKMULTISIG",
     redeemScriptHex: "522102583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace792102b024e76d6c2d8c22d9550467e97ced251ead5592529f9c813c1d818f7e89a35a52ae",
     scriptOps: "OP_HASH160 f18bcbf45f7805fe663339d838d5c8a086d79e53 OP_EQUAL",
     scriptHex: "a914f18bcbf45f7805fe663339d838d5c8a086d79e5387",
     address: "3PiCF26aq57Wo5DJEbFNTVwD1bLCUEpAYZ",
-    bip32Path: "m/45'/0'/100'/0/0",
     utxos:[
       {
         txid: "456813be8389d17e945c0b91b5112938a7268bb7c6721147bce6521eeabde7b0",
@@ -276,6 +280,8 @@ const MULTISIGS_BASE = [
   {
     network: MAINNET, 
     type: P2SH_P2WSH,
+    bip32Path: "m/48'/0'/100'/1'/0/0",
+    publicKey: "0342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c",
     publicKeys: ["0328b57c2f65c98ed7cde4bca54cc3a13afa4d47117fd9dae06663a4169e05ef86", "0342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c"],
     witnessScriptOps: "OP_2 0328b57c2f65c98ed7cde4bca54cc3a13afa4d47117fd9dae06663a4169e05ef86 0342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c OP_2 OP_CHECKMULTISIG",
     witnessScriptHex: "52210328b57c2f65c98ed7cde4bca54cc3a13afa4d47117fd9dae06663a4169e05ef86210342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c52ae",
@@ -284,7 +290,6 @@ const MULTISIGS_BASE = [
     scriptOps: "OP_HASH160 1abcf8cea321ca874de4beb4f975077fe864a54a OP_EQUAL",
     scriptHex: "a9141abcf8cea321ca874de4beb4f975077fe864a54a87",
     address: "348PsXezZAHcW7RjmCoMJ8PHWx1QBTXJvm",
-    bip32Path: "m/48'/0'/100'/1'/0/0",
     utxos:[
       {
         txid: "2062282a8c6644740d4a5c85a74ad21c6a0fda8d753e8a4bdfba09a26d20eb40",
@@ -320,13 +325,14 @@ const MULTISIGS_BASE = [
   {
     network: MAINNET, 
     type: P2WSH,
+    bip32Path: "m/48'/0'/100'/2'/0/0",
+    publicKey: "0369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f4",
     publicKeys: ["02e21b7318cfbd482bdbb66441420b9018e5b440bf9b0cdedd427626d81f32605b", "0369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f4"],
     witnessScriptOps: "OP_2 02e21b7318cfbd482bdbb66441420b9018e5b440bf9b0cdedd427626d81f32605b 0369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f4 OP_2 OP_CHECKMULTISIG",
     witnessScriptHex: "522102e21b7318cfbd482bdbb66441420b9018e5b440bf9b0cdedd427626d81f32605b210369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f452ae",
     scriptOps: "OP_0 497b026c3d3547a30e6d8006e385e0366af5eca2b5b455d8783875941e5c7fa9",
     scriptHex: "0020497b026c3d3547a30e6d8006e385e0366af5eca2b5b455d8783875941e5c7fa9",
     address: "bc1qf9asympax4r6xrndsqrw8p0qxe40tm9zkk69tkrc8p6eg8ju075sjeekkt",
-    bip32Path: "m/48'/0'/100'/2'/0/0",
     utxos:[
       {
         txid: "4ab356fef8b8205a3b96b4924e8e94f18c4b8ecdefa0bb1ee28ce19f091c3f58",
@@ -390,27 +396,37 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
 function selectFirstUTXOFromEach(tests) {
   let unsortedUTXOs = [];
   let unsortedBIP32Paths = [];
+  let unsortedPublicKeys = [];
   tests.forEach((test) => {
     unsortedUTXOs.push(test.utxos[0]);
     unsortedBIP32Paths.push(test.bip32Path);
+    unsortedPublicKeys.push(test.publicKey);
   });
   const sortedUTXOs = sortInputs(unsortedUTXOs);
-  const sortedBIP32Paths = sortedUTXOs.map((utxo) => {
-    return unsortedBIP32Paths[unsortedUTXOs.findIndex((otherUTXO) => (otherUTXO.txid === utxo.txid && otherUTXO.index === utxo.index))];
+  const sortedBIP32Paths = [];
+  const sortedPublicKeys = [];
+  sortedUTXOs.forEach((utxo) => {
+    const unsortedIndex = unsortedUTXOs.findIndex((otherUTXO) => (otherUTXO.txid === utxo.txid && otherUTXO.index === utxo.index));
+    sortedBIP32Paths.push(unsortedBIP32Paths[unsortedIndex]);
+    sortedPublicKeys.push(unsortedPublicKeys[unsortedIndex]);
   });
   return {
     inputs: sortedUTXOs,
     bip32Paths: sortedBIP32Paths,
+    publicKeys: sortedPublicKeys,
   };
 }
 
 function singleMultisigTransaction(test) {
   return {
     ...{
+      name: `Sign ${test.description}`,
       description: `spends multiple UTXOs from a single ${test.description}`,
       network: test.network,
       inputs: sortInputs(test.utxos),
       bip32Paths: test.utxos.map((utxo) => test.bip32Path),
+      publicKeys: test.utxos.map((utxo) => test.publicKey),
+      segwit: (test.type !== P2SH),
     },
     ...test.transaction,
   };
@@ -420,8 +436,10 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
   {
     ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === TESTNET)),
     ...{
+      name: `Sign across ${TESTNET} 2-of-2 multisig address types`,
       description: `spends a UTXO from each ${TESTNET} 2-of-2 address type`,
       network: TESTNET,
+      segwit: true,
       outputs: [
         {
           address: RECEIVING_ADDRESSES[TESTNET],
@@ -435,8 +453,10 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
   {
     ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === MAINNET)),
     ...{
+      name: `Sign across ${TESTNET} 2-of-2 multisig address types`,
       description: `spends a UTXO from each ${MAINNET} 2-of-2 address type`,
       network: MAINNET,
+      segwit: true,
       outputs: [
         {
           address: RECEIVING_ADDRESSES[MAINNET],
@@ -450,14 +470,23 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
 ]);
 
 /**
- * Useful test fixtures.
+ * A set of test fixtures all built from the same [BIP39 seed phrase]{@link https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki}.
+ *
+ * Initializing your keystore with this seed phrase will allow you to
+ * replicate many of the unit tests in this library on your
+ * hardware/software.  This is useful for functional testing.
  *
  * Includes the following properties:
  *
- * - `bip39Phrase` -- a BIP39 seed phrase for initializing a keystore
- * - `nodes` -- a collection of BIP32 nodes with extended & regular public keys
- * - `multisigs` -- a collection of multisig addresses derived from the BIP39 seed phrase above other (private) keys
- * - `transactions` -- a collection of transactions spending funds from the multisig addresses above
+ * - `bip39Phrase` -- the BIP39 seed phrase used for all other fixtures
+ * - `nodes` -- an object mapping BIP32 paths to the corresponding [HD node]{@link module:fixtures.HDNode} derived from the BIP39 seed phrase above.
+ * - `multisigs` -- an array of [multisig addresses]{@link module:fixtures.MultisigAddress} derived from the HD nodes above.
+ * - `transactions` -- an array of [transactions]{@link module:fixtures.MultisigTransaction} from the multisig address above.
+ *
+ * @example
+ * import {TEST_FIXTURES} from "unchained-bitcoin";
+ * console.log(TEST_FIXTURES.bip39Phrase);
+ * // merge alley lucky axis penalty manage latin gasp virus captain wheel deal chase fragile chapter boss zero dirt stadium tooth physical valve kid plunge
  * 
  */
 export const TEST_FIXTURES = {
@@ -466,3 +495,70 @@ export const TEST_FIXTURES = {
   multisigs: MULTISIGS,
   transactions: TRANSACTIONS,
 };
+
+/**
+ * An HD node fixture derived from the BIP39 seed phrase fixture.
+ *
+ * Not all HD node fixtures have all properties below.
+ * 
+ * @typedef module:fixtures.HDNode
+ * @type {Object}
+ * @property {string} pub - the (compressed) public key in hex
+ * @property {string} xpub - the extended public key formatted for mainnet
+ * @property {string} tpub - the extended public key formatted for testnet
+ */
+
+/**
+ * A multisig address fixture.  At least one of the public
+ * keys in the redeem/witness script for each address is derived from
+ * the BIP39 seed phrase fixture.
+ *
+ * @typedef module:fixtures.MultisigAddress
+ * @type {Object}
+ * @property {module:networks.NETWORKS} network - bitcoin network
+ * @property {module:multisig.MULTISIG_ADDRESS_TYPES} type - multisig address type
+ * @property {string} description - describes the multisig address
+ * @property {string} bip32Path - BIP32 derivation path to the public key used in this address from the BIP39 seed phrase fixture
+ * @property {string} publicKey - (compressed) public key (in hex) corresponding to BIP32 path
+ * @property {string[]} publicKeys - (compressed) public keys (in hex) (order matters)
+ * @property {string} multisigScriptHex - multisig script in hex (redeem/witneess script as appropriate)
+ * @property {string} multisigScriptOps - multisig script in opcodes (redeem/witneess script as appropriate)
+ * @property {string} redeemScriptHex - redeem script in hex (missing for P2WSH)
+ * @property {string} redeemScriptOps - redeem script in opcodes (missing for P2WSH)
+ * @property {string} witnessScriptHex - witness script in hex (missing for P2SH)
+ * @property {string} witnessScriptOps - witness script in opcodes (missing for P2SH)
+ * @property {string} address - bitcoin address 
+ * @property {string} scriptHex - script in hex
+ * @property {string} scriptOps - script in opcodes
+ * @property {module:multisig.Multisig} multisig - `Multisig` object for address
+ * @property {module:transactions.UTXO[]} utxos - UTXOs at this address
+ * 
+ */
+
+/**
+ * A transaction fixture with inputs from one or more multisig
+ * addresses.
+ *
+ * Each address contains at least one public key derived from the
+ * BIP39 seed phrase fixture.
+ *
+ * The signatures in these transaction fixtures can therefore be
+ * created by any keystore which loads this seed phrase.
+ *
+ * The inputs to these transactions should survive as the other
+ * signature(s) required to spend them cannot be produced publicly
+ * (their private keys are held by Unchained Capital).
+ *
+ * @typedef module:fixtures.MultisigTransaction
+ * @type {Object}
+ * @property {string} description - describes the transaction
+ * @property {module:networks.NETWORKS} network - bitcoin network
+ * @property {boolean} segwit - does the transaction have segwit inputs?
+ * @property {string[]} bip32Paths - BIP32 paths to the public key derived from the BIP39 seed phrase fixture, one per input
+ * @property {string[]} publicKeys - (compressed) public keys  (in hex) corresponding to each BIP32 path, one per input
+ * @property {module:transactions.UTXO[]} inputs - transaction inputs
+ * @property {module:transactions.TransactionOutput[]} outputs - transaction outputs
+ * @property {string} hex - unsigned transaction in hex
+ * @property {string[]} signature - one signature for the transaction (consisting of one signature per input)
+ * 
+ */

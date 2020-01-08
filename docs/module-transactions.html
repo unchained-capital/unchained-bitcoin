@@ -135,87 +135,6 @@ multisig transactions.</p></div>
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id="~DUST_LIMIT_SATS"><span class="type-signature">(inner, constant) </span>DUST_LIMIT_SATS<span class="type-signature"> :BigNumber</span></h4>
-
-
-
-
-<div class="description">
-    <p>Lowest acceptable output amount in Satoshis.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">BigNumber</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-default">Default Value:</dt>
-    <dd class="tag-default"><ul class="dummy">
-            <li>546 Satoshis</li>
-        </ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line58">line 58</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -226,7 +145,7 @@ multisig transactions.</p></div>
     
 
     
-    <h4 class="name" id=".signedMultisigTransaction"><span class="type-signature">(static) </span>signedMultisigTransaction<span class="signature">(unsignedTransaction, inputs, inputsSignaturesByPublicKey)</span><span class="type-signature"> &rarr; {Transaction}</span></h4>
+    <h4 class="name" id=".signedMultisigTransaction"><span class="type-signature">(static) </span>signedMultisigTransaction<span class="signature">(network, inputs, outputs, transactionSignatures)</span><span class="type-signature"> &rarr; {Transaction}</span></h4>
     
 
     
@@ -271,13 +190,13 @@ transaction, inputs, and their signatures.</p>
 
         <tr>
             
-                <td class="name"><code>unsignedTransaction</code></td>
+                <td class="name"><code>network</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Transaction</span>
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
 
 
             
@@ -287,7 +206,7 @@ transaction, inputs, and their signatures.</p>
 
             
 
-            <td class="description last"><p>generated transaction object from call to unsignedMultisigTransaction</p></td>
+            <td class="description last"><p>bitcoin network</p></td>
         </tr>
 
     
@@ -300,7 +219,7 @@ transaction, inputs, and their signatures.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="module-transactions.html#.UTXO">module:transactions.UTXO</a>></span>
+<span class="param-type">Array.&lt;<a href="module-inputs.html#.MultisigTransactionInput">module:inputs.MultisigTransactionInput</a>></span>
 
 
             
@@ -310,14 +229,37 @@ transaction, inputs, and their signatures.</p>
 
             
 
-            <td class="description last"><p>generated array of inputs to the transaction (blockExplorerGetAddresesUTXOs|bitcoindListUnspent)</p></td>
+            <td class="description last"><p>multisig transaction inputs</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>inputsSignaturesByPublicKey</code></td>
+                <td class="name"><code>outputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;module:inputs.TransactionOutput></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>transaction outputs</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>transactionSignatures</code></td>
             
 
             <td class="type">
@@ -333,7 +275,7 @@ transaction, inputs, and their signatures.</p>
 
             
 
-            <td class="description last"><p>array of mappings from public keys to signatures.</p></td>
+            <td class="description last"><p>array of transaction signatures, each an array of input signatures (1 per input)</p></td>
         </tr>
 
     
@@ -374,7 +316,7 @@ transaction, inputs, and their signatures.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line228">line 228</a>
+        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line131">line 131</a>
     </li></ul></dd>
     
 
@@ -429,7 +371,6 @@ transaction, inputs, and their signatures.</p>
     
     <pre class="prettyprint"><code>import {
   generateMultisigFromPublicKeys, TESTNET, P2SH,
-  unsignedMultisigTransaction,
   signedMultisigTransaction,
 } from "unchained-bitcoin";
 const pubkey1 = "03a...";
@@ -450,176 +391,19 @@ const outputs = [
   },
   // other outputs...
 ];
-const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
-const inputsSignaturesByPublicKey = [
-  // Each element is a map from public keys in the multisig
-  // to the corresponding signature for this input.
-  {
-    "03a...": "301a...",
-    "03b...": "301b...",
-  },
-  // Add another similar map for each additional input being signed.
+const transactionSignatures = [
+  // Each element is an array of signatures from a given key, one per input.
+  [
+    "301a...",
+    // more, 1 per input
+  ],
+  [
+    "301b...",
+    // more, 1 per input
+  ],
+  // More transaction signatures if required, based on inputs
 ];
-const signedTransaction = signedMultisigTransaction(unsignedTransaction, inputs, inputsSignaturesByPublicKey)</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".sortInputs"><span class="type-signature">(static) </span>sortInputs<span class="signature">(inputs)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="module-transactions.html#.UTXO">module:transactions.UTXO</a>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Sorts the given inputs according to the <a href="https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki#transaction-inputs">BIP69 standard</a>: ascending lexicographic order.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>inputs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="module-transactions.html#.UTXO">module:transactions.UTXO</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>inputs to sort</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line66">line 66</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>inputs sorted according to BIP69</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;<a href="module-transactions.html#.UTXO">module:transactions.UTXO</a>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
+const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, transactionSignatures)</code></pre>
 
 
 
@@ -704,7 +488,7 @@ and outputs.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="module-transactions.html#.UTXO">module:transactions.UTXO</a>></span>
+<span class="param-type">Array.&lt;<a href="module-inputs.html#.MultisigTransactionInput">module:inputs.MultisigTransactionInput</a>></span>
 
 
             
@@ -727,7 +511,7 @@ and outputs.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="module-transactions.html#.TransactionOutput">module:transactions.TransactionOutput</a>></span>
+<span class="param-type">Array.&lt;<a href="module-outputs.html#.TransactionOutput">module:outputs.TransactionOutput</a>></span>
 
 
             
@@ -778,7 +562,7 @@ and outputs.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line168">line 168</a>
+        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -856,549 +640,8 @@ const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id=".validateOutputAmount"><span class="type-signature">(static) </span>validateOutputAmount<span class="signature">(amountSats, inputsTotalSats)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Validate the given output amount (in Satoshis).</p>
-<ul>
-<li>
-<p>Must be a parseable as a number.</p>
-</li>
-<li>
-<p>Cannot be negative (zero is OK).</p>
-</li>
-<li>
-<p>Cannot exceed the total input amount.</p>
-</li>
-<li>
-<p>Cannot be smaller than the limit set by <code>DUST_LIMIT_SATS</code>.</p>
-</li>
-</ul>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>amountSats</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-|
-
-<span class="param-type">number</span>
-|
-
-<span class="param-type">BigNumber</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>output amount in Satoshis</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inputsTotalSats</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-|
-
-<span class="param-type">number</span>
-|
-
-<span class="param-type">BigNumber</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>total input amount in Satoshis</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line101">line 101</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>empty if valid or corresponding validation message if not</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>import {validateOutputAmount} from "unchained-bitcoin";
-console.log(validateOutputAmount(-100, 1000000) // "Output amount must be positive."
-console.log(validateOutputAmount(0, 1000000) // "Output amount must be positive."
-console.log(validateOutputAmount(10, 1000000) // "Output amount is too small."
-console.log(validateOutputAmount(1000000, 100000) // "Output amount is too large."
-console.log(validateOutputAmount(100000, 1000000) // ""</code></pre>
-
-
-
-        
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".TransactionOutput">TransactionOutput</h4>
-
-
-
-
-<div class="description">
-    <p>Represents an output in a transaction.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>address</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the output address</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>amountSats</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">BigNumber</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>output amount in Satoshis</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line40">line 40</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id=".UTXO">UTXO</h4>
-
-
-
-
-<div class="description">
-    <p>Represents an input (UTXO) in a transaction.</p>
-<p>The <code>Multisig</code> object represents
-the address the UTXO belongs to.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>txid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The transaction ID where funds were received</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>index</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The index in the transaction referred to by {txid}</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>multisig</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The multisig object encumbering this UTXO</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transactions.js.html">transactions.js</a>, <a href="transactions.js.html#line26">line 26</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
     
-</dl>
-
-
-
-
-
 
-            
     
 
     
@@ -1412,13 +655,13 @@ the address the UTXO belongs to.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Jan 07 2020 20:13:49 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

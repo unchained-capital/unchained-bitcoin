@@ -1,4 +1,5 @@
 import {
+  hardenedBIP32Index,
   bip32PathToSequence, 
   bip32SequenceToPath, 
   validateBIP32Path,
@@ -14,6 +15,13 @@ import {
 } from "./networks";
 
 describe('paths', () => {
+
+  describe('hardenedBIP32Index', () => {
+    it("returns the hardened version of the given index", () => {
+      expect(hardenedBIP32Index('0')).toEqual(2147483648);
+      expect(hardenedBIP32Index('44')).toEqual(2147483692);
+    });
+  });
 
   describe('bip32PathToSequence', () => {
 

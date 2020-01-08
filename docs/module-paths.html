@@ -135,87 +135,6 @@ validating BIP32 derivation paths.</p></div>
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".HARDENING_OFFSET"><span class="type-signature">(static, constant) </span>HARDENING_OFFSET<span class="type-signature"> :number</span></h4>
-
-
-
-
-<div class="description">
-    <p>Integer representation of the hardened path offset.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">number</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-default">Default Value:</dt>
-    <dd class="tag-default"><ul class="dummy">
-            <li>2^31</li>
-        </ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line24">line 24</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -236,7 +155,7 @@ validating BIP32 derivation paths.</p></div>
 <div class="description">
     <p>Convert BIP32 derivation path to an array of integer values
 representing the corresponding derivation indices.</p>
-<p>Hardened path segments will have the <a href="module-paths.html#.HARDENING_OFFSET">hardening offset</a> added to the index.</p>
+<p>Hardened path segments will have the hardening offset added to the index.</p>
 </div>
 
 
@@ -329,7 +248,7 @@ representing the corresponding derivation indices.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line44">line 44</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -496,7 +415,7 @@ BIP32 derivation path.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line67">line 67</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -551,6 +470,175 @@ BIP32 derivation path.</p>
     
     <pre class="prettyprint"><code>import {bip32SequenceToPath} from "unchained-bitcoin";
 console.log(bip32SequenceToPath([2147483693, 1, 99])); // m/45'/1/99</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".hardenedBIP32Index"><span class="type-signature">(static) </span>hardenedBIP32Index<span class="signature">(index)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the hardened version of the given BIP32 index.</p>
+<p>Hardening is equivalent to adding 2^31.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>BIP32 index</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line35">line 35</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the hardened index</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {hardenedBIP32Index} from "unchained-bitcoin";
+console.log(hardenedBIP32Index(44); // 2147483692</code></pre>
 
 
 
@@ -711,7 +799,7 @@ path for the given <code>addressType</code> and <code>network</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line228">line 228</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line235">line 235</a>
     </li></ul></dd>
     
 
@@ -917,7 +1005,7 @@ console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line201">line 201</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line208">line 208</a>
     </li></ul></dd>
     
 
@@ -1197,7 +1285,7 @@ console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'</code></pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line107">line 107</a>
+        <a href="paths.js.html">paths.js</a>, <a href="paths.js.html#line114">line 114</a>
     </li></ul></dd>
     
 
@@ -1284,13 +1372,13 @@ console.log(validateBIP32Path("/0/0", {mode: "unhardened")); // ""</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Jan 07 2020 20:13:49 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -157,13 +157,16 @@ multisig addresses in testnet and mainnet.</p>
 
 
 <div class="description">
-    <p>Useful test fixtures.</p>
+    <p>A set of test fixtures all built from the same <a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki">BIP39 seed phrase</a>.</p>
+<p>Initializing your keystore with this seed phrase will allow you to
+replicate many of the unit tests in this library on your
+hardware/software.  This is useful for functional testing.</p>
 <p>Includes the following properties:</p>
 <ul>
-<li><code>bip39Phrase</code> -- a BIP39 seed phrase for initializing a keystore</li>
-<li><code>nodes</code> -- a collection of BIP32 nodes with extended &amp; regular public keys</li>
-<li><code>multisigs</code> -- a collection of multisig addresses derived from the BIP39 seed phrase above other (private) keys</li>
-<li><code>transactions</code> -- a collection of transactions spending funds from the multisig addresses above</li>
+<li><code>bip39Phrase</code> -- the BIP39 seed phrase used for all other fixtures</li>
+<li><code>nodes</code> -- an object mapping BIP32 paths to the corresponding <a href="module-fixtures.html#.HDNode">HD node</a> derived from the BIP39 seed phrase above.</li>
+<li><code>multisigs</code> -- an array of <a href="module-fixtures.html#.MultisigAddress">multisig addresses</a> derived from the HD nodes above.</li>
+<li><code>transactions</code> -- an array of <a href="module-fixtures.html#.MultisigTransaction">transactions</a> from the multisig address above.</li>
 </ul>
 </div>
 
@@ -202,7 +205,193 @@ multisig addresses in testnet and mainnet.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="fixtures.js.html">fixtures.js</a>, <a href="fixtures.js.html#line463">line 463</a>
+        <a href="fixtures.js.html">fixtures.js</a>, <a href="fixtures.js.html#line492">line 492</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {TEST_FIXTURES} from "unchained-bitcoin";
+console.log(TEST_FIXTURES.bip39Phrase);
+// merge alley lucky axis penalty manage latin gasp virus captain wheel deal chase fragile chapter boss zero dirt stadium tooth physical valve kid plunge</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id=".HDNode">HDNode</h4>
+
+
+
+
+<div class="description">
+    <p>An HD node fixture derived from the BIP39 seed phrase fixture.</p>
+<p>Not all HD node fixtures have all properties below.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pub</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the (compressed) public key in hex</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>xpub</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the extended public key formatted for mainnet</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tpub</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the extended public key formatted for testnet</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="fixtures.js.html">fixtures.js</a>, <a href="fixtures.js.html#line499">line 499</a>
     </li></ul></dd>
     
 
@@ -218,11 +407,817 @@ multisig addresses in testnet and mainnet.</p>
 
 
 
+            
+                
+<h4 class="name" id=".MultisigAddress">MultisigAddress</h4>
+
+
+
+
+<div class="description">
+    <p>A multisig address fixture.  At least one of the public
+keys in the redeem/witness script for each address is derived from
+the BIP39 seed phrase fixture.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
         
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.MULTISIG_ADDRESS_TYPES">module:multisig.MULTISIG_ADDRESS_TYPES</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>multisig address type</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>description</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>describes the multisig address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bip32Path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>BIP32 derivation path to the public key used in this address from the BIP39 seed phrase fixture</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(compressed) public key (in hex) corresponding to BIP32 path</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(compressed) public keys (in hex) (order matters)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>multisigScriptHex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>multisig script in hex (redeem/witneess script as appropriate)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>multisigScriptOps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>multisig script in opcodes (redeem/witneess script as appropriate)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redeemScriptHex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>redeem script in hex (missing for P2WSH)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redeemScriptOps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>redeem script in opcodes (missing for P2WSH)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>witnessScriptHex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>witness script in hex (missing for P2SH)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>witnessScriptOps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>witness script in opcodes (missing for P2SH)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>address</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scriptHex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>script in hex</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scriptOps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>script in opcodes</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>multisig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p><code>Multisig</code> object for address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>utxos</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;module:transactions.UTXO></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>UTXOs at this address</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
     
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="fixtures.js.html">fixtures.js</a>, <a href="fixtures.js.html#line511">line 511</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".MultisigTransaction">MultisigTransaction</h4>
+
+
+
+
+<div class="description">
+    <p>A transaction fixture with inputs from one or more multisig
+addresses.</p>
+<p>Each address contains at least one public key derived from the
+BIP39 seed phrase fixture.</p>
+<p>The signatures in these transaction fixtures can therefore be
+created by any keystore which loads this seed phrase.</p>
+<p>The inputs to these transactions should survive as the other
+signature(s) required to spend them cannot be produced publicly
+(their private keys are held by Unchained Capital).</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>description</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>describes the transaction</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>segwit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>does the transaction have segwit inputs?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bip32Paths</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>BIP32 paths to the public key derived from the BIP39 seed phrase fixture, one per input</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(compressed) public keys  (in hex) corresponding to each BIP32 path, one per input</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;module:transactions.UTXO></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>transaction inputs</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>outputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;module:transactions.TransactionOutput></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>transaction outputs</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>unsigned transaction in hex</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>signature</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>one signature for the transaction (consisting of one signature per input)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="fixtures.js.html">fixtures.js</a>, <a href="fixtures.js.html#line538">line 538</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     
@@ -236,13 +1231,13 @@ multisig addresses in testnet and mainnet.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 16:46:19 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Jan 07 2020 20:13:49 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

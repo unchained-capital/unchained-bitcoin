@@ -27,24 +27,24 @@ $ npm install --save unchained-bitcoin
 The library provides a functional API which builds upon data
 structures used by `bitcoinjs-lib`.
 
-In particular, many functions accept a `multisig` argument which is
-the kind of object returned by functions such as
-`bitcoin.payments.p2ms`, `bitcoin.payments.p2sh`, &c. from
-`bitcoinjs-lib`.
+In particular, many functions accept a `Multisig` object which is the
+type name given by this library to the kind of object returned by
+functions such as `bitcoin.payments.p2ms`, `bitcoin.payments.p2sh`,
+&c. from `bitcoinjs-lib`.
 
 The examples below provide an initial idea of how to use this library,
-but see the
-[API documentation](https://unchained-capital.github.io/unchained-bitcoin)
+but see the [API
+documentation](https://unchained-capital.github.io/unchained-bitcoin)
 for full details.
 
 ### Interacting with a multisig address.
 
 #### Generating multisigs
 
-Multisignature objects can be generated with two functions:
+`Multisig` objects can be generated with two functions:
 
 * `generateMultisigFromPublicKeys` -- useful when directly passing public keys
-* `generateMultisigFromHex` -- useful when parsing an existing redeem script
+* `generateMultisigFromHex` -- useful when parsing an existing redeem/witness script
 
 Each of these functions accepts additional arguments which determines
 the multisig address type (e.g. P2SH or P2WSH).
@@ -52,25 +52,35 @@ the multisig address type (e.g. P2SH or P2WSH).
 ```javasacript
 import {
 	generateMultisigFromPublicKeys,
-	P2SH,                      // or: P2SH_P2WSH, P2WSH
-	MAINNET,                   // or: TESTNET
+	generateMultisigFromHex,
+	P2SH,                      // or: P2SH_P2WSH, P2WSH,
+	TESTNET,                   // or: MAINNET,
+	multisigAddress,
 } from "unchained-bitcoin";
 
 // Public keys are represented as compressed hex.
 const publicKeys = [
-	"03d703e0d7622f087f27e18b61b1c131d4a7b868a4960ab66d89c76f9daf1a1569",
-	"031c27e952c332fc0630e29d6ec2a10ba18c33cf096ccaeb7620983e0daf625946",
-	"03f6eed874ad71db090325dc92ccec9b722187dfd4aac19c9f54b9047bc4fac2b0",
+  "02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4",
+  "03938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba",
 ];
 
-// A mainnet P2SH 2-of-3 multisig.
-const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, ...publicKeys);
+// A testnet P2SH 2-of-2 multisig.
+const m1 = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, ...publicKeys);
+console.log(multisigAddress(m1))
+// 2N5KgAnFFpmk5TRMiCicRZDQS8FFNCKqKf1
+
+const redeemScript = "522102a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d42103938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba52ae";
+// Same as m2 but using redeem script
+const m2 = generateMultisigFromHex(TESTNET, P2SH, redeemScript);
+console.log(multisigAddress(m2))
+// 2N5KgAnFFpmk5TRMiCicRZDQS8FFNCKqKf1
 ```
+
 
 #### Querying multisigs
 
-The `multisig` object above can be passed around and queried with
-other functions in the API.
+`Multisig` objects can be passed around and queried with other
+functions in the API.
 
 ```javascript
 
@@ -78,12 +88,97 @@ multisigAddress(multisig); // Returns public address
 multisigAddressType(multisig); // P2SH
 multisigRequiredSigners(multisig); // 2
 multisigTotalSigners(multisig); // 3
-multisigRedeemScript(multisig); // Returns redeem script in hex
+multisigScript(multisig); // Returns redeem OR witness script, as appropriate
+multisigRedeemScript(multisig); // Returns redeem script in hex (null for P2WSH)
 multisigWitnessScript(multisig); // Returns witness script in hex (null for P2SH)
 multisigPublicKeys(multisig); // Returns publicKeys
 ```
 
-#### Validation
+
+See the [API
+documentation](https://unchained-capital.github.io/unchained-bitcoin)
+for full details on these functions.
+
+
+#### Multisig Transactions
+
+`Multisig` objects can be used to draft signed or unsigned
+transactions and to validate transaction signatures.
+
+```javascript
+import {
+  generateMultisigFromPublicKeys, TESTNET, P2SH,
+  unsignedMultisigTransaction,
+  validateMultisigSignature,
+} from "unchained-bitcoin";
+// Spending 3 UTXOs from the same multisig address.
+
+// First build the multisig for the address.
+const publicKeys = ["02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4", "03938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba"];
+const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, ...publicKeys);
+
+// All 3 UTXOs are at the same address so get decorated with the same multisig object.
+const inputs = [
+  {
+    txid: "65e7ef764030dabfb46e3ae1c357b0666d0dda722c9809fb73245d6d68665284",
+    index: 1,
+	multisig,
+  },
+  {
+    txid: "ae9e1aa8312e102e806fa11d8e65965a624f88459e6bb5bcf48156a0c53e022a",
+    index: 1,
+	multisig,
+  },
+  {
+    txid: "f243c1fbb85dd49da91477b89c76636202721be9c7df5ee6eee0c6a10861ae44",
+    index: 0,
+	multisig,
+  }
+];
+
+const outputs = [
+  {
+    address: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
+    amountSats: 291590,
+  }
+];
+
+
+const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
+
+// Pass the above unsigned transaction to some keystore device/software to obtain a signature.
+//
+// One signature value per input.
+const transactionSignature1 = [
+  "304402205397795a8b6e0b8d1c5a0b2b5b8fb8e49afb6dd150d1a186604fa9e71e23aaa20220514b7b7ed9ec43d983d7be5ea4ece5a55b29efa2193d90bf1fd087356fcbd54b",
+  "304402200ffcb2331655f1f24bf2f7e16984d81310e55d47c405b45e327abde524c8d31e022036460b70a665d1756ea91e131a1ed1022544dfdd2232f64117230d22f9deeb08",
+  "30440220167a35bccf4bb13073e8c66a1b094906d5c7879d6cdac730e435aef196d2f3eb02205a39e05763e511dc15deff56fa29eead850623076fda8a5e173dd0942197aaf4"
+];
+
+// Signatures can be validated.
+transactionSignature1.forEach((inputSignature, inputIndex) => {
+  const result = validateMultisigSignature(unsignedTransaction, inputIndex, inputs[inputIndex], inputSignature);
+  if (!result) {
+    console.error(`Invalid signature for input ${inputIndex + 1}`);
+  }
+})
+
+// Get the second required signature.
+const transactionSignature2 = [
+  "304a...",
+  "304b...",
+  "304c...",
+];
+
+// Combine signatures into a fully signed transaction.
+const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, transactionSignature1, transactionSignature2);
+
+// Broadcast this transaction somehow...
+console.log(signedTransaction.tHex());
+
+```
+
+### Validation
 
 This library contains several useful functions for validation not
 provided by `bitcoinjs-lib` or other libraries.  The validation

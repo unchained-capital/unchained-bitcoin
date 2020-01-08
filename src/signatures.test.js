@@ -1,7 +1,4 @@
 import {
-  multisigPublicKeys,
-} from './multisig';
-import {
   validateMultisigSignature,
 } from './signatures';
 import {
@@ -16,7 +13,6 @@ const bitcoin = require('bitcoinjs-lib');
 describe('signatures', () => {
 
   describe('validateMultisigSignature', () => {
-
 
     it("throws an error on an invalid signature", () => {
       const fixture = TEST_FIXTURES.transactions[0];
@@ -33,16 +29,14 @@ describe('signatures', () => {
 
         it("returns the public key corresponding to a valid input signature", () => {
           fixture.inputs.forEach((input, inputIndex) => {
-            const pubkey = validateMultisigSignature(unsignedTransaction, inputIndex, input, fixture.signature[inputIndex]);
-            const pubkeys = multisigPublicKeys(input.multisig);
-            expect(pubkey).not.toEqual(false);
-            expect(pubkeys).toContain(pubkey);
+            const publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, fixture.signature[inputIndex]);
+            expect(publicKey).toEqual(fixture.publicKeys[inputIndex]);
           });
         });
 
         it("returns false for a valid signature for a different input", () => {
-          const pubkey = validateMultisigSignature(unsignedTransaction, 0, fixture.inputs[0], fixture.signature[1]);
-          expect(pubkey).toEqual(false);
+          const publicKey = validateMultisigSignature(unsignedTransaction, 0, fixture.inputs[0], fixture.signature[1]);
+          expect(publicKey).toEqual(false);
         });
 
       });
