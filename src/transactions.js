@@ -88,7 +88,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * 
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
- * @param {module:inputs.TransactionOutput[]} outputs - transaction outputs
+ * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
  * @param {Object[]} transactionSignatures - array of transaction signatures, each an array of input signatures (1 per input)
  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
  * @example
@@ -155,7 +155,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
     inputSignatures.forEach((inputSignature) => {
       let publicKey;
       try {
-        publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+        publicKey = validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature);
       } catch(e) {
         throw new Error(`Invalid signature for input ${inputIndex + 1}: ${inputSignature} (${e})`);
       }

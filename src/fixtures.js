@@ -276,7 +276,6 @@ const MULTISIGS_BASE = [
     },
   },
 
-
   {
     network: MAINNET, 
     type: P2SH_P2WSH,
@@ -453,7 +452,7 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)).co
   {
     ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === MAINNET)),
     ...{
-      name: `Sign across ${TESTNET} 2-of-2 multisig address types`,
+      name: `Sign across ${MAINNET} 2-of-2 multisig address types`,
       description: `spends a UTXO from each ${MAINNET} 2-of-2 address type`,
       network: MAINNET,
       segwit: true,

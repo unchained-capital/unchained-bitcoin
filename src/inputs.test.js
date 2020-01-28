@@ -6,6 +6,8 @@ import {
   validateTransactionIndex,
 } from './inputs';
 
+const VALID_TXID = "65e7ef764030dabfb46e3ae1c357b0666d0dda722c9809fb73245d6d68665284";
+
 describe("inputs", () => {
 
   describe("sortInputs", () => {
@@ -48,8 +50,8 @@ describe("inputs", () => {
       expect(
         validateMultisigInputs(
           [
-            {txid: "deadbeef", index: 0},
-            {txid: "deadbeef", index: 1, multisig: true},
+            {txid: VALID_TXID, index: 0},
+            {txid: VALID_TXID, index: 1, multisig: true},
           ]
         )
       ).toMatch(/not have a multisig.+property/i);
@@ -59,8 +61,8 @@ describe("inputs", () => {
       expect(
         validateMultisigInputs(
           [
-            {txid: "deadbeef", index: 0, multisig: true},
-            {txid: "deadbeef", index: 0, multisig: true},
+            {txid: VALID_TXID, index: 0, multisig: true},
+            {txid: VALID_TXID, index: 0, multisig: true},
           ]
         )
       ).toMatch(/duplicate input/i);
@@ -70,8 +72,8 @@ describe("inputs", () => {
       expect(
         validateMultisigInputs(
           [
-            {txid: "deadbeef", index: 0, multisig: true},
-            {txid: "deadbeef", index: 1, multisig: true},
+            {txid: VALID_TXID, index: 0, multisig: true},
+            {txid: VALID_TXID, index: 1, multisig: true},
           ]
         )
       ).toEqual("");
@@ -90,15 +92,15 @@ describe("inputs", () => {
     });
 
     it("should return an error message for a missing index", () => {
-      expect(validateMultisigInput({txid: "deadbeef", multisig: true})).toMatch(/does not have.+index/i);
+      expect(validateMultisigInput({txid: VALID_TXID, multisig: true})).toMatch(/does not have.+index/i);
     });
 
     it("should return an error message for an invalid index", () => {
-      expect(validateMultisigInput({txid: "deadbeef", index: -1, multisig: true})).toMatch(/index cannot be negative/i);
+      expect(validateMultisigInput({txid: VALID_TXID, index: -1, multisig: true})).toMatch(/index cannot be negative/i);
     });
 
     it("should return an error message for a missing multisig", () => {
-      expect(validateMultisigInput({txid: "deadbeef", index: 0})).toMatch(/does not have.+multisig/i);
+      expect(validateMultisigInput({txid: VALID_TXID, index: 0})).toMatch(/does not have.+multisig/i);
     });
 
   });
@@ -109,10 +111,11 @@ describe("inputs", () => {
       expect(validateTransactionID()).toMatch(/cannot be blank/i);
       expect(validateTransactionID("")).toMatch(/cannot be blank/i);
       expect(validateTransactionID("hi there")).toMatch(/invalid hex/i);
+      expect(validateTransactionID("deadbeef")).toMatch(/invalid.+64/);
     });
 
     it("should return an empty string for a valid TXID", () => {
-      expect(validateTransactionID("deadbeef")).toEqual("");
+      expect(validateTransactionID(VALID_TXID)).toEqual("");
     });
     
   });

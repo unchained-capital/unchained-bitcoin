@@ -95,6 +95,8 @@ export function validateMultisigInput(input) {
   return "";
 }
 
+const TXID_LENGTH = 64;
+
 /**
  * Validates the given transaction ID.
  *
@@ -109,6 +111,9 @@ export function validateTransactionID(txid) {
   let error = validateHex(txid);
   if (error) {
     return `TXID is invalid (${error})`;
+  }
+  if (txid.length !== TXID_LENGTH) {
+    return `TXID is invalid (must be ${TXID_LENGTH}-characters)`;
   }
   return '';
 }

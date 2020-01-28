@@ -18,16 +18,20 @@ import {
   multisigPublicKeys,
   multisigTotalSigners,
 } from "./multisig";
+import {
+  unsignedMultisigTransaction,
+} from "./transactions";
 
 const bitcoin = require('bitcoinjs-lib');
 
 /**
  * Validate a multisig signature for given input and public key.
  * 
- * @param {Transaction} unsignedTransaction - transaction to validate
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
+ * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
  * @param {number} inputIndex - the index where the input appears in the transaction
- * @param {module:transactions.UTXO} input - the input itself
- * @param {string} signerInputSignature - signature to validate
+ * @param {string} inputSignature - signature to validate
  * @returns {string|boolean} false if invalid or corresponding public key
  * @example
  * import {
@@ -54,8 +58,10 @@ const bitcoin = require('bitcoinjs-lib');
  *   // other outputs...
  * ];
  * const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
- * const signature = "304...";
- * const result = validateMultisigSignature(unsignedTransaction, 0, inputs[0], signature);
+ * // Use unsignedTransaction to obtain a signature.
+ * const transactionSignature = ["304...", // other input signatures...];
+ * // Validate signature for input 0
+ * const result = validateMultisigSignature(TESTNET, inputs, outputs, 0, transactionSignature[0]);
  * switch (result) {
  *   case false:
  *     // signature was invalid
@@ -67,9 +73,10 @@ const bitcoin = require('bitcoinjs-lib');
  *     // ...
  * }
  */
-export function validateMultisigSignature(unsignedTransaction, inputIndex, input, signerInputSignature) {
-  const hash = multisigSignatureHash(unsignedTransaction, inputIndex, input);
-  const signatureBuffer = multisigSignatureBuffer(signatureNoSighashType(signerInputSignature));
+export function validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature) {
+  const hash = multisigSignatureHash(network, inputs, outputs, inputIndex);
+  const signatureBuffer = multisigSignatureBuffer(signatureNoSighashType(inputSignature));
+  const input = inputs[inputIndex];
   const publicKeys = multisigPublicKeys(input.multisig);
   for (var publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
     const publicKey = publicKeys[publicKeyIndex];
@@ -88,7 +95,9 @@ export function signatureNoSighashType(signature) {
   else return signature.slice(0, -2);
 }
 
-function multisigSignatureHash(unsignedTransaction, inputIndex, input) {
+function multisigSignatureHash(network, inputs, outputs, inputIndex) {
+  const unsignedTransaction = unsignedMultisigTransaction(network, inputs, outputs);
+  const input = inputs[inputIndex];
   if (multisigAddressType(input.multisig) === P2WSH || multisigAddressType(input.multisig) === P2SH_P2WSH) {
     return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, BigNumber(input.amountSats).toNumber(), bitcoin.Transaction.SIGHASH_ALL);
   } else {
