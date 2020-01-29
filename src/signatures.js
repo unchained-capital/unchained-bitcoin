@@ -8,7 +8,6 @@
 import BigNumber from 'bignumber.js';
 import bip66 from "bip66";
 
-import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import {
@@ -106,7 +105,7 @@ function multisigSignatureHash(network, inputs, outputs, inputIndex) {
 }
 
 function multisigSignatureBuffer(signature) {
-  const encodedSignerInputSignatureBuffer = new Buffer(signature, 'hex');
+  const encodedSignerInputSignatureBuffer = Buffer.from(signature, 'hex');
   const decodedSignerInputSignatureBuffer = bip66.decode(encodedSignerInputSignatureBuffer);
   const {r, s} = decodedSignerInputSignatureBuffer;
   // Ignore the leading 0 if r is 33 bytes
@@ -115,8 +114,8 @@ function multisigSignatureBuffer(signature) {
     rToUse = r.slice(1);
   }
 
-  const signatureBuffer = new Buffer(64);
-  signatureBuffer.set(new Buffer(rToUse), 0);
-  signatureBuffer.set(new Buffer(s), 32);
+  const signatureBuffer = Buffer.alloc(64);
+  signatureBuffer.set(Buffer.from(rToUse), 0);
+  signatureBuffer.set(Buffer.from(s), 32);
   return signatureBuffer;
 }

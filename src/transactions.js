@@ -8,7 +8,6 @@
 import BigNumber from 'bignumber.js';
 
 import {networkData} from  "./networks";
-import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import {
@@ -17,7 +16,7 @@ import {
   multisigAddressType,
   multisigRedeemScript,
   multisigWitnessScript,
-  generateMultisigFromRedeemScript,
+  generateMultisigFromRaw,
 } from "./multisig";
 import {
   validateMultisigSignature,
@@ -144,7 +143,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
 
     const inputSignatures = transactionSignatures
           .map((transactionSignature) => transactionSignature[inputIndex])
-          .filter((inputSignature) => !!inputSignature);
+          .filter((inputSignature) => Boolean(inputSignature));
     const requiredSignatures = multisigRequiredSigners(input.multisig);
 
     if (inputSignatures.length < requiredSignatures) {
@@ -203,10 +202,10 @@ function multisigScriptSig(multisig, signersInputSignatures) {
   const signatureOps = signersInputSignatures.map((signature) => (`${signatureNoSighashType(signature)}01`)).join(' '); // 01 => SIGHASH_ALL
   const inputScript = `OP_0 ${signatureOps}`;
   const inputScriptBuffer = bitcoin.script.fromASM(inputScript);
-  const redeemScript = bitcoin.payments.p2ms({
+  const rawMultisig = bitcoin.payments.p2ms({
     network: multisig.network,
     output: Buffer.from(multisigRedeemScript(multisig).output, 'hex'),
     input: inputScriptBuffer,
   });
-  return generateMultisigFromRedeemScript(multisigAddressType(multisig), redeemScript);
+  return generateMultisigFromRaw(multisigAddressType(multisig), rawMultisig);
 }

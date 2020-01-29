@@ -130,13 +130,13 @@ describe("keys", () => {
     });
 
     it('throws an error when asked to derive down a hardened path', () => {
-      expect(() => {deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
-      expect(() => {deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => { deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => { deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
     });
 
     it('throws an error when passed a mismatch extended public key and network', () => {
-      expect(() => {deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
-      expect(() => {deriveChildPublicKey(NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
+      expect(() => { deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
+      expect(() => { deriveChildPublicKey(NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
     });
 
   });
@@ -164,13 +164,13 @@ describe("keys", () => {
     });
 
     it('throws an error when asked to derive down a hardened path', () => {
-      expect(() => {deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
-      expect(() => {deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => { deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET); }).toThrow(/missing private key/i);
+      expect(() => { deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET); }).toThrow(/missing private key/i);
     });
 
     it('throws an error when passed a mismatch extended public key and network', () => {
-      expect(() => {deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
-      expect(() => {deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
+      expect(() => { deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].xpub, "m/0/0", TESTNET); }).toThrow(/invalid network/i);
+      expect(() => { deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].tpub, "m/0/0", MAINNET); }).toThrow(/invalid network/i);
     });
 
   });

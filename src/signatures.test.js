@@ -5,16 +5,14 @@ import {
   TEST_FIXTURES,
 } from "./fixtures";
 
-const bitcoin = require('bitcoinjs-lib');
-
 describe('signatures', () => {
 
   describe('validateMultisigSignature', () => {
 
     it("throws an error on an invalid signature", () => {
       const fixture = TEST_FIXTURES.transactions[0];
-      expect(() => {validateMultisigSignature(fixture.network, fixture.inputs, fixture.outputs, 0, "");}).toThrow(/is too short/i);
-      expect(() => {validateMultisigSignature(fixture.network, fixture.inputs, fixture.outputs, 0, "foobar");}).toThrow(/is too short/i);
+      expect(() => { validateMultisigSignature(fixture.network, fixture.inputs, fixture.outputs, 0, ""); }).toThrow(/is too short/i);
+      expect(() => { validateMultisigSignature(fixture.network, fixture.inputs, fixture.outputs, 0, "foobar"); }).toThrow(/is too short/i);
     });
 
     TEST_FIXTURES.transactions.forEach((fixture) => {

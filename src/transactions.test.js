@@ -21,19 +21,19 @@ describe("transactions", () => {
       const fixture = TEST_FIXTURES.transactions[0];
 
       it("throws an error when there are no inputs", () => {
-        expect(() => {unsignedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
+        expect(() => { unsignedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
       });
 
       it("throws an error when there an input is invalid", () => {
-        expect(() => {unsignedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
+        expect(() => { unsignedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
       });
 
       it("throws an error when there are no outputs", () => {
-        expect(() => {unsignedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
+        expect(() => { unsignedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
       });
 
       it("throws an error when there an output is invalid", () => {
-        expect(() => {unsignedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
+        expect(() => { unsignedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
       });
       
     });
@@ -66,41 +66,41 @@ describe("transactions", () => {
     const fixture = TEST_FIXTURES.transactions[0];
 
     it("throws an error when there are no inputs", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
+      expect(() => { signedMultisigTransaction(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
     });
 
     it("throws an error when there an input is invalid", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
+      expect(() => { signedMultisigTransaction(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
     });
 
     it("throws an error when there are no outputs", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
     });
 
     it("throws an error when there an output is invalid", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
     });
 
     it("throws an error when there are no transaction signatures", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs); }).toThrow(/at least one transaction signature/i);
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs,  []); }).toThrow(/at least one transaction signature/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs); }).toThrow(/at least one transaction signature/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs,  []); }).toThrow(/at least one transaction signature/i);
     });
 
     it("throws an error when there a transaction signature doesn't contain enough input signatures", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [[]]); }).toThrow(/insufficient input signatures/i);
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, []]); }).toThrow(/insufficient input signatures/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [[]]); }).toThrow(/insufficient input signatures/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, []]); }).toThrow(/insufficient input signatures/i);
     });
 
     it("throws an error when too few input signatures are given", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature]); }).toThrow(/insufficient signatures for input/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature]); }).toThrow(/insufficient signatures for input/i);
     });
 
     it("throws an error when an invalid input signature is given", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, ["foo", "bar", "baz"]]); }).toThrow(/invalid signature for input/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, ["foo", "bar", "baz"]]); }).toThrow(/invalid signature for input/i);
     });
 
     it("throws an error when a duplicate input signature is given", () => {
-      expect(() => {signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, fixture.signature]); }).toThrow(/duplicate signature for input/i);
+      expect(() => { signedMultisigTransaction(fixture.network, fixture.inputs, fixture.outputs, [fixture.signature, fixture.signature]); }).toThrow(/duplicate signature for input/i);
     });
     
     it("can construct a valid signed transaction", () => {

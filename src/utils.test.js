@@ -39,7 +39,7 @@ describe("utils", () => {
       expect(satoshisToBitcoins('-0.5')).toEqual(BigNumber(-0));
     });
 
-    it ('can convert a single Satoshi in absolute value', () => {
+    it('can convert a single Satoshi in absolute value', () => {
       expect(satoshisToBitcoins(1)).toEqual(BigNumber('0.00000001'));
       expect(satoshisToBitcoins('1')).toEqual(BigNumber('0.00000001'));
       expect(satoshisToBitcoins(-1)).toEqual(BigNumber('-0.00000001'));

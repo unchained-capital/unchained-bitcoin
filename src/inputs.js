@@ -29,10 +29,12 @@ import {validateHex} from './utils';
  */
 export function sortInputs(inputs) {
   return inputs.sort((input1, input2) => {
-    if (input1.txid > input2.txid) { return 1; }
-    else {
-      if (input1.txid < input2.txid) { return -1; }
-      else {
+    if (input1.txid > input2.txid) { 
+      return 1; 
+    } else {
+      if (input1.txid < input2.txid) { 
+        return -1; 
+      } else {
         return ((input1.index < input2.index) ? -1 : 1);
       }
     }
@@ -44,7 +46,6 @@ export function sortInputs(inputs) {
  *
  * Returns an error message if there are no inputs.  Passes each output to [`validateMultisigInput`]{@link module:transactions.validatOutput}.
  *
- * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - inputs to validate
  * @returns {string} empty if valid or corresponding validation message if not
  * 
@@ -121,7 +122,7 @@ export function validateTransactionID(txid) {
 /**
  * Validates the given transaction index.
  *
- * @param {string|number} index - transaction index to validate
+ * @param {string|number} indexString - transaction index to validate
  * @returns {string} empty if valid or corresponding validation message if not
  * 
  */
@@ -129,7 +130,7 @@ export function validateTransactionIndex(indexString) {
   if (indexString === null || indexString === undefined || indexString === '') {
     return "Index cannot be blank.";
   }
-  const index = parseInt(indexString);
+  const index = parseInt(indexString, 10);
   if (!isFinite(index)) {
     return "Index is invalid";
   }

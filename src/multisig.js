@@ -49,8 +49,6 @@
  *
  */
 
-import BigNumber from 'bignumber.js';
-
 import {networkData} from  "./networks";
 import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
@@ -103,7 +101,7 @@ export const MULTISIG_ADDRESS_TYPES = {
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {number} requiredSigners - number of signers required needed to spend funds (M)
  * @param  {...string} publicKeys - list of public keys, 1 per possible signer (N)
- * @returns {Multisig}
+ * @returns {Multisig} the corresponding `Multisig` object
  * @example
  * // A 2-of-3 P2SH mainnte multisig built from 3 public keys.
  * import {
@@ -113,12 +111,12 @@ export const MULTISIG_ADDRESS_TYPES = {
  * const multisigP2WSH = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
  */
 export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
-  const redeemScript = bitcoin.payments.p2ms({
+  const multisig = bitcoin.payments.p2ms({
     m: requiredSigners, 
     pubkeys: publicKeys.map((hex) => Buffer.from(hex, 'hex')),
     network: networkData(network),
   });
-  return generateMultisigFromRedeemScript(addressType, redeemScript);
+  return generateMultisigFromRaw(addressType, multisig);
 }
 
 /**
@@ -146,29 +144,35 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  * const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);
  */
 export function generateMultisigFromHex(network, addressType, multisigScriptHex) {
-  const redeemScript = bitcoin.payments.p2ms({
+  const multisig = bitcoin.payments.p2ms({
     output: Buffer.from(multisigScriptHex,'hex'),
     network: networkData(network),
   });
-  return generateMultisigFromRedeemScript(addressType, redeemScript);
+  return generateMultisigFromRaw(addressType, multisig);
 }
 
 /**
- * Adapter function for bitcoinjs-lib...used internally, do not use
- * externally.
+ * Return an M-of-N [`Multisig`]{@link module.multisig:Multisig}
+ * object by passing in a raw P2MS multisig object (from bitcoinjs-lib).
+ *
+ * This function is only used internally, do not call it directly.
  * 
+ * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
+ * @param {object} multisig - P2MS multisig object
+ * @returns {Multisig} object for further parsing
  * @ignore
+ * 
  */
-export function generateMultisigFromRedeemScript(addressType, redeemScript) {
+export function generateMultisigFromRaw(addressType, multisig) {
   switch (addressType) {
   case P2SH:
-    return bitcoin.payments.p2sh({redeem: redeemScript});
+    return bitcoin.payments.p2sh({redeem: multisig});
   case P2SH_P2WSH:
     return bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wsh({redeem: redeemScript}),
+      redeem: bitcoin.payments.p2wsh({redeem: multisig}),
     });
   case P2WSH:
-    return bitcoin.payments.p2wsh({redeem: redeemScript});
+    return bitcoin.payments.p2wsh({redeem: multisig});
   default:
     return null;
   }
@@ -183,7 +187,7 @@ export function generateMultisigFromRedeemScript(addressType, redeemScript) {
 /**
  * Return the [address type]{@link module:multisig.MULTISIG_ADDRESS_TYPES} of the given `Multisig` object.
  * 
- * @param {module:multisig.Multisig} multisig
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {module:multisig.MULTISIG_ADDRESS_TYPES} the address type
  * @example
  * import {
@@ -219,7 +223,7 @@ export function multisigAddressType(multisig) {
  * Return the number of required signers of the given `Multisig`
  * object.
  * 
- * @param {module:multisig.Multisig} multisig
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {number} number of required signers
  * @example
  * import {
@@ -237,7 +241,7 @@ export function multisigRequiredSigners(multisig) {
  * Return the number of total signers (public keys) of the given
  * `Multisig` object.
  * 
- * @param {module:multisig.Multisig} multisig
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {number} number of total signers
  * @example
  * import {
@@ -258,8 +262,8 @@ export function multisigTotalSigners(multisig) {
  * redeem script will be returned.  Otherwise, the witness script will
  * be returned.
  * 
- * @param {module:multisig.Multisig} multisig
- * @returns {Multisig|null}
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
+ * @returns {Multisig|null} the corresponding script
  * @example
  * import {
  *   generateMultisigFromPublicKeys, MAINNET, P2SH,
@@ -288,8 +292,8 @@ export function multisigScript(multisig) {
  * If the address type of the given multisig object is P2WSH, this
  * will return null.
  * 
- * @param {module:multisig.Multisig} multisig
- * @returns {Multisig|null}
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
+ * @returns {Multisig|null} the redeem script
  * @example
  * import {
  *   generateMultisigFromPublicKeys, MAINNET, P2SH,
@@ -317,8 +321,8 @@ export function multisigRedeemScript(multisig) {
  * If the address type of the given multisig object is P2SH, this will
  * return null.
  * 
- * @param {module:multisig.Multisig} multisig
- * @returns {Multisig|null}
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
+ * @returns {Multisig|null} the witness script
  * @example
  * import {
  *   generateMultisigFromPublicKeys, MAINNET, P2WSH,
@@ -347,7 +351,7 @@ export function multisigWitnessScript(multisig) {
  * The public keys are in the order used in the corresponding
  * redeem/witness script.
  * 
- * @param {module:multisig.Multisig} multisig
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {string[]} (compressed) public keys in hex
  * @example
  * import {
@@ -365,7 +369,7 @@ export function multisigPublicKeys(multisig) {
 /**
  * Return the address for a given `Multisig` object.
  * 
- * @param {module:multisig.Multisig} multisig
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {string} the address
  * @example
  * import {
