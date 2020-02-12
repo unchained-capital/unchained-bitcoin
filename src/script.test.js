@@ -1,10 +1,4 @@
 import { scriptToOps, scriptToHex } from './script';
-import { 
-  MULTISIG_ADDRESS_TYPES,
-  generateMultisigFromHex,
-  multisigRedeemScript,
-  multisigWitnessScript,
-} from './multisig';
 import { TEST_FIXTURES } from './fixtures';
 
 describe("scripts", () => {

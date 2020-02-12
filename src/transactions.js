@@ -8,7 +8,6 @@
 import BigNumber from 'bignumber.js';
 
 import {networkData} from  "./networks";
-import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import {
@@ -17,7 +16,7 @@ import {
   multisigAddressType,
   multisigRedeemScript,
   multisigWitnessScript,
-  generateMultisigFromRedeemScript,
+  generateMultisigFromRaw,
 } from "./multisig";
 import {
   validateMultisigSignature,
@@ -88,7 +87,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * 
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
- * @param {module:inputs.TransactionOutput[]} outputs - transaction outputs
+ * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
  * @param {Object[]} transactionSignatures - array of transaction signatures, each an array of input signatures (1 per input)
  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
  * @example
@@ -144,7 +143,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
 
     const inputSignatures = transactionSignatures
           .map((transactionSignature) => transactionSignature[inputIndex])
-          .filter((inputSignature) => !!inputSignature);
+          .filter((inputSignature) => Boolean(inputSignature));
     const requiredSignatures = multisigRequiredSigners(input.multisig);
 
     if (inputSignatures.length < requiredSignatures) {
@@ -155,7 +154,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
     inputSignatures.forEach((inputSignature) => {
       let publicKey;
       try {
-        publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+        publicKey = validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature);
       } catch(e) {
         throw new Error(`Invalid signature for input ${inputIndex + 1}: ${inputSignature} (${e})`);
       }
@@ -203,10 +202,10 @@ function multisigScriptSig(multisig, signersInputSignatures) {
   const signatureOps = signersInputSignatures.map((signature) => (`${signatureNoSighashType(signature)}01`)).join(' '); // 01 => SIGHASH_ALL
   const inputScript = `OP_0 ${signatureOps}`;
   const inputScriptBuffer = bitcoin.script.fromASM(inputScript);
-  const redeemScript = bitcoin.payments.p2ms({
+  const rawMultisig = bitcoin.payments.p2ms({
     network: multisig.network,
     output: Buffer.from(multisigRedeemScript(multisig).output, 'hex'),
     input: inputScriptBuffer,
   });
-  return generateMultisigFromRedeemScript(multisigAddressType(multisig), redeemScript);
+  return generateMultisigFromRaw(multisigAddressType(multisig), rawMultisig);
 }

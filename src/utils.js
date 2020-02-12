@@ -92,8 +92,8 @@ export function satoshisToBitcoins(satoshis) {
  * console.log(bitcoinsToSatoshis(1.2345)); // 123450000
  * console.log(bitcoinsToSatoshis(-1.2345)); // -123450000
  */
-export function bitcoinsToSatoshis(num) {
-  return BigNumber(num).shiftedBy(8).integerValue(BigNumber.ROUND_DOWN);
+export function bitcoinsToSatoshis(btc) {
+  return BigNumber(btc).shiftedBy(8).integerValue(BigNumber.ROUND_DOWN);
 }
 
 export const ZERO = BigNumber(0);
