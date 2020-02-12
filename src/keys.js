@@ -10,6 +10,17 @@ import {ECPair} from "bitcoinjs-lib";
 import {validateHex, toHexString} from "./utils";
 import {TESTNET, networkData} from "./networks";
 
+ /**
+ * A converted extendend public key with errors and message.
+ *
+ * @typedef module:keys.ConvertedExtendedPublicKey
+ * @type {Object}
+ * @property {string} extendedPublicKey - The converted extended public key in the target format
+ * @property {string} error - The conversion error message if any
+ * @property {string} message - The details of the conversion if a conversion took place, empty if no conversion needed
+ *
+ */
+
 const bip32 = require('bip32');
 const bs58check = require('bs58check');
 
@@ -38,6 +49,7 @@ function validatePrefix(prefix, prefixType) {
  * @param {string} extendedPublicKey - the extended public key to convert
  * @param {string} targetPrefix - the target format to convert to
  * @example
+ * import {extendedPublicKeyConvert} from "unchained-bitcoin";
  * const tpub = extendedPublicKeyConvert("xpub6CCH...", "tpub");
  * if (tpub.error) {
  *   // handle
@@ -81,9 +93,10 @@ export function extendedPublicKeyConvert(extendedPublicKey, targetPrefix) {
  * @param {string} extendedPublicKey - the extended public key to convert
  * @param {string} network - the bitcoin network
  * @example
+ * import {convertAndValidateExtendedPublicKey} from "unchained-bitcoin";
  * const xpub = convertAndValidateExtendedPublicKey('tpubDCZv...', MAINNET)
  * if (xpub.error) {
- *   // handle
+ *   // handle, see validateExtendedPublicKey for error messages
  * } else if (xpub.message === '') {
  *   // no conversion was needed
  * } else {
@@ -92,6 +105,8 @@ export function extendedPublicKeyConvert(extendedPublicKey, targetPrefix) {
  *   // Your extended public key has been converted from tpub to xpub
  * }
  * @returns {module:keys.ConvertedExtendedPublicKey}
+ * @see module:keys.validateExtendedPublicKey
+ * @see module:keys.extendedPublicKeyConvert
  */
 export function convertAndValidateExtendedPublicKey(extendedPublicKey, network) {
   const targetPrefix = network === TESTNET ? 'tpub' : 'xpub'

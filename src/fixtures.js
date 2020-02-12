@@ -578,3 +578,22 @@ export const TEST_FIXTURES = {
  * @property {string[]} signature - one signature for the transaction (consisting of one signature per input)
  *
  */
+
+ /**
+  * A set of conversions for various extended public key formatas
+  *
+  * All values are the equivelent of each other in the various formats
+  *
+  * @typedef module:fixtures.extendedPublicKeyConversions
+  * @type {Object}
+  * @property {string} xpub - the extended public key in xpub format
+  * @property {string} ypub - the extended public key in ypub format
+  * @property {string} zpub - the extended public key in zpub format
+  * @property {string} Ypub - the extended public key in Ypub format
+  * @property {string} Zpub - the extended public key in Zpub format
+  * @property {string} tpub - the extended public key in tpub format
+  * @property {string} upub - the extended public key in upub format
+  * @property {string} vpub - the extended public key in vpub format
+  * @property {string} Upub - the extended public key in Upub format
+  * @property {string} Vpub - the extended public key in Vpub format
+  */
