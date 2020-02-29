@@ -246,7 +246,7 @@ keys and extended public keys.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line252">line 252</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -311,7 +311,7 @@ console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
     
 
     
-    <h4 class="name" id=".convertAndValidateExtendedPublicKey"><span class="type-signature">(static) </span>convertAndValidateExtendedPublicKey<span class="signature">(extendedPublicKey, network)</span><span class="type-signature"> &rarr; {<a href="module-keys.html#.ConvertedExtendedPublicKey">module:keys.ConvertedExtendedPublicKey</a>}</span></h4>
+    <h4 class="name" id=".convertExtendedPublicKey"><span class="type-signature">(static) </span>convertExtendedPublicKey<span class="signature">(extendedPublicKey, targetPrefix)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -319,8 +319,7 @@ console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 
 
 <div class="description">
-    <p>Perform conversion to xpub or tpub based on the bitcoin network
-additional validation is performed on the converted extended public key</p>
+    <p>Convert an extended public key between formats</p>
 </div>
 
 
@@ -379,7 +378,7 @@ additional validation is performed on the converted extended public key</p>
 
         <tr>
             
-                <td class="name"><code>network</code></td>
+                <td class="name"><code>targetPrefix</code></td>
             
 
             <td class="type">
@@ -395,7 +394,7 @@ additional validation is performed on the converted extended public key</p>
 
             
 
-            <td class="description last"><p>the bitcoin network</p></td>
+            <td class="description last"><p>the target format to convert to</p></td>
         </tr>
 
     
@@ -436,21 +435,12 @@ additional validation is performed on the converted extended public key</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line111">line 111</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line47">line 47</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-keys.html#.validateExtendedPublicKey">module:keys.validateExtendedPublicKey</a></li>
-        
-            <li><a href="module-keys.html#.extendedPublicKeyConvert">module:keys.extendedPublicKeyConvert</a></li>
-        </ul>
-    </dd>
     
 
     
@@ -473,6 +463,10 @@ additional validation is performed on the converted extended public key</p>
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>converted extended public key</p>
+</div>
+
 
 
 <dl>
@@ -481,7 +475,7 @@ additional validation is performed on the converted extended public key</p>
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-keys.html#.ConvertedExtendedPublicKey">module:keys.ConvertedExtendedPublicKey</a></span>
+<span class="param-type">string</span>
 
 
     </dd>
@@ -494,17 +488,10 @@ additional validation is performed on the converted extended public key</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>import {convertAndValidateExtendedPublicKey} from "unchained-bitcoin";
-const xpub = convertAndValidateExtendedPublicKey('tpubDCZv...', MAINNET)
-if (xpub.error) {
-  // handle, see validateExtendedPublicKey for error messages
-} else if (xpub.message === '') {
-  // no conversion was needed
-} else {
-  console.log(xpub.extendedPublicKey, xpub.message)
-  // tpubDCZv...
-  // Your extended public key has been converted from tpub to xpub
-}</code></pre>
+    <pre class="prettyprint"><code>import {convertExtendedPublicKey} from "unchained-bitcoin";
+const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
+console.log(tpub.extendedPublicKey, tpub.message)
+// tpubDCZv...</code></pre>
 
 
 
@@ -662,7 +649,7 @@ given extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line307">line 307</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line236">line 236</a>
     </li></ul></dd>
     
 
@@ -878,7 +865,7 @@ extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line281">line 281</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line210">line 210</a>
     </li></ul></dd>
     
 
@@ -937,199 +924,6 @@ console.log(deriveChildPublicKey(xpub, "m/0/0", MAINNET));
 // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
 console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
 // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".extendedPublicKeyConvert"><span class="type-signature">(static) </span>extendedPublicKeyConvert<span class="signature">(extendedPublicKey, targetPrefix)</span><span class="type-signature"> &rarr; {<a href="module-keys.html#.ConvertedExtendedPublicKey">module:keys.ConvertedExtendedPublicKey</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Convert an extended public key between formats</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>extendedPublicKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the extended public key to convert</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>targetPrefix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the target format to convert to</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line65">line 65</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-keys.html#.ConvertedExtendedPublicKey">module:keys.ConvertedExtendedPublicKey</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>import {extendedPublicKeyConvert} from "unchained-bitcoin";
-const tpub = extendedPublicKeyConvert("xpub6CCH...", "tpub");
-if (tpub.error) {
-  // handle
-} else if (tpub.message === '') {
-  // no conversion was needed
-} else {
-  console.log(tpub.extendedPublicKey, tpub.message)
-  // tpubDCZv...
-  // Your extended public key has been converted from xpub to tpub
-}</code></pre>
 
 
 
@@ -1267,7 +1061,7 @@ if (tpub.error) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line179">line 179</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -1327,6 +1121,196 @@ console.log(validateExtendedPublicKey("xpub123", MAINNET)); // "Extended public 
 console.log(validateExtendedPublicKey("tpub123...", MAINNET)); // "Extended public key must begin with ...."
 console.log(validateExtendedPublicKey("xpub123%%!~~...", MAINNET)); // "Invalid extended public key"
 console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".validateExtendedPublicKeyForNetwork"><span class="type-signature">(static) </span>validateExtendedPublicKeyForNetwork<span class="signature">(extendedPublicKey, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Check to see if an extended public key is of the correct prefix for the network
+this can be used in conjuction with convertExtendedPublicKey to attempt to automatically convert</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>extendedPublicKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the extended public key to check</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>thie bitcoin network</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line77">line 77</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>a validation message or empty if valid</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {validateExtendedPublicKeyForNetwork} from "unchained-bitcoin";
+console.log(validateExtendedPublicKeyForNetwork('xpub...', MAINNET)) // empty
+console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extended public key must begin with ...."</code></pre>
 
 
 
@@ -1441,7 +1425,7 @@ console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""</code></pre
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line225">line 225</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -1506,180 +1490,6 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
     
 
     
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".ConvertedExtendedPublicKey">ConvertedExtendedPublicKey</h4>
-
-
-
-
-<div class="description">
-    <p>A converted extendend public key with errors and message.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>extendedPublicKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The converted extended public key in the target format</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The conversion error message if any</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The details of the conversion if a conversion took place, empty if no conversion needed</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-    
 
     
 </article>
@@ -1698,7 +1508,7 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Wed Feb 12 2020 11:51:53 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28 2020 19:30:48 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -38,24 +38,13 @@ import {ECPair} from "bitcoinjs-lib";
 import {validateHex, toHexString} from "./utils";
 import {TESTNET, networkData} from "./networks";
 
- /**
- * A converted extendend public key with errors and message.
- *
- * @typedef module:keys.ConvertedExtendedPublicKey
- * @type {Object}
- * @property {string} extendedPublicKey - The converted extended public key in the target format
- * @property {string} error - The conversion error message if any
- * @property {string} message - The details of the conversion if a conversion took place, empty if no conversion needed
- *
- */
-
 const bip32 = require('bip32');
 const bs58check = require('bs58check');
 
 export const extendedPublicKeyVersions = {
   xpub: "0488b21e",
   ypub: "049d7cb2",
-  zpub: "04b2430c",
+  zpub: "04b24746",
   Ypub: "0295b43f",
   Zpub: "02aa7ed3",
   tpub: "043587cf",
@@ -77,90 +66,43 @@ function validatePrefix(prefix, prefixType) {
  * @param {string} extendedPublicKey - the extended public key to convert
  * @param {string} targetPrefix - the target format to convert to
  * @example
- * import {extendedPublicKeyConvert} from "unchained-bitcoin";
- * const tpub = extendedPublicKeyConvert("xpub6CCH...", "tpub");
- * if (tpub.error) {
- *   // handle
- * } else if (tpub.message === '') {
- *   // no conversion was needed
- * } else {
- *   console.log(tpub.extendedPublicKey, tpub.message)
- *   // tpubDCZv...
- *   // Your extended public key has been converted from xpub to tpub
- * }
- * @returns {module:keys.ConvertedExtendedPublicKey}
+ * import {convertExtendedPublicKey} from "unchained-bitcoin";
+ * const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
+ * console.log(tpub.extendedPublicKey, tpub.message)
+ * // tpubDCZv...
+ * @returns {string} converted extended public key
  */
-export function extendedPublicKeyConvert(extendedPublicKey, targetPrefix) {
+export function convertExtendedPublicKey(extendedPublicKey, targetPrefix) {
   const targetError = validatePrefix(targetPrefix, 'target')
   if (targetError !== null) return {extendedPublicKey, error:targetError};
 
   const sourcePrefix = extendedPublicKey.slice(0, 4);
   const sourceError = validatePrefix(sourcePrefix, 'source')
-  if (sourceError !== null) return {extendedPublicKey, error:sourceError};
+  if (sourceError !== null) throw(new Error(sourceError))
 
   try {
     const decodedExtendedPublicKey = bs58check.decode(extendedPublicKey.trim());
     const extendedPublicKeyNoPrefix = decodedExtendedPublicKey.slice(4);
     const extendedPublicKeyNewPrefix = Buffer.concat([Buffer.from(extendedPublicKeyVersions[targetPrefix],'hex'), extendedPublicKeyNoPrefix]);
-    return {
-      extendedPublicKey: bs58check.encode(extendedPublicKeyNewPrefix),
-      message: `Your extended public key has been converted from ${sourcePrefix} to ${targetPrefix}`,
-      error: ""
-    }
+    return bs58check.encode(extendedPublicKeyNewPrefix)
   } catch (err) {
-    return {
-      extendedPublicKey,
-      error: "Unable to convert extended public key: "+err.message
-    };
+    throw(new Error("Unable to convert extended public key: "+err.message))
   }
 }
+
 
 /**
- * Perform conversion to xpub or tpub based on the bitcoin network
- * additional validation is performed on the converted extended public key
- * @param {string} extendedPublicKey - the extended public key to convert
- * @param {string} network - the bitcoin network
+ * Check to see if an extended public key is of the correct prefix for the network
+ * this can be used in conjuction with convertExtendedPublicKey to attempt to automatically convert
+ * @param {string} extendedPublicKey - the extended public key to check
+ * @param {string} network - thie bitcoin network
  * @example
- * import {convertAndValidateExtendedPublicKey} from "unchained-bitcoin";
- * const xpub = convertAndValidateExtendedPublicKey('tpubDCZv...', MAINNET)
- * if (xpub.error) {
- *   // handle, see validateExtendedPublicKey for error messages
- * } else if (xpub.message === '') {
- *   // no conversion was needed
- * } else {
- *   console.log(xpub.extendedPublicKey, xpub.message)
- *   // tpubDCZv...
- *   // Your extended public key has been converted from tpub to xpub
- * }
- * @returns {module:keys.ConvertedExtendedPublicKey}
- * @see module:keys.validateExtendedPublicKey
- * @see module:keys.extendedPublicKeyConvert
+ * import {validateExtendedPublicKeyForNetwork} from "unchained-bitcoin";
+ * console.log(validateExtendedPublicKeyForNetwork('xpub...', MAINNET)) // empty
+ * console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extended public key must begin with ...."
+ * @returns {string} a validation message or empty if valid
  */
-export function convertAndValidateExtendedPublicKey(extendedPublicKey, network) {
-  const targetPrefix = network === TESTNET ? 'tpub' : 'xpub'
-  const preliminaryErrors = preExtendedPublicKeyValidation(extendedPublicKey, network);
-  if (preliminaryErrors !== '') {
-    return {extendedPublicKey, error: preliminaryErrors};
-  } else {
-    const networkError = extendedPublicKeyNetworkValidateion(extendedPublicKey, network)
-    if (networkError === '') {
-      const extendedPublicKeyValidation = validateExtendedPublicKey(extendedPublicKey, network);
-      if (extendedPublicKeyValidation === '')
-        return {extendedPublicKey, message:"", error: ""}; // valid for network, use it
-      // else convert and validate below
-    }
-  }
-
-  const convertedExtendedPublicKey = extendedPublicKeyConvert(extendedPublicKey, targetPrefix);
-  if (convertedExtendedPublicKey.extendedPublicKey !== extendedPublicKey) { // a conversion happended
-    const extendedPublicKeyValidation = validateExtendedPublicKey(convertedExtendedPublicKey.extendedPublicKey, network);
-    if (extendedPublicKeyValidation === '') return convertedExtendedPublicKey;
-    else return {extendedPublicKey, error: extendedPublicKeyValidation}
-  } else return convertedExtendedPublicKey;
-
-}
-
-function extendedPublicKeyNetworkValidateion(extendedPublicKey, network) {
+export function validateExtendedPublicKeyForNetwork(extendedPublicKey, network) {
   let requiredPrefix = "'xpub'";
   if (network === TESTNET) {
     requiredPrefix += " or 'tpub'";
@@ -171,19 +113,6 @@ function extendedPublicKeyNetworkValidateion(extendedPublicKey, network) {
     return notXpubError;
   }
   return '';
-}
-
-function preExtendedPublicKeyValidation(extendedPublicKey, network) {
-  if (extendedPublicKey === null || extendedPublicKey === undefined || extendedPublicKey === '') {
-    return "Extended public key cannot be blank.";
-  }
-
-  if (extendedPublicKey.length &lt; 111) {
-    return "Extended public key length is too short.";
-  }
-
-  return '';
-
 }
 
 /**
@@ -356,7 +285,7 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Wed Feb 12 2020 11:51:53 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28 2020 19:30:48 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
