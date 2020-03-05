@@ -3,15 +3,29 @@ node_js:
   - 8
 
 deploy:
-  provider: script
-  script: "cp .npmrc.template $HOME/.npmrc && npm publish"
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: script
+    script: "cp .npmrc.template $HOME/.npmrc && npm publish"
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: script
+    script: "npm run docs"
+    skip_cleanup: true
+    on:
+      branch: master
+
+git:
+  depth: false
 
 notifications:
   email:
     recipients:
-    - chris@unchained-capital.com
+      - chris@unchained-capital.com
     on_success: change
     on_failure: always
+
+before_deploy:
+  - npm install
+  - git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+  - git config --global user.email "Travis CI<ci@unchained-capital.com>"
+  - git config --global user.name "TravisCI"

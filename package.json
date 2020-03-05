@@ -30,7 +30,7 @@
     "pretest": "npm run compile",
     "prepare": "npm run compile",
     "test": "jest lib",
-    "docs": "jsdoc -c docs/config.json -d docs -r src README.md",
+    "docs": "./bin/build-docs.sh",
     "lint": "eslint src"
   },
   "bin": {},
