@@ -5,10 +5,10 @@
  * @module paths
  */
 
-import {MAINNET} from "./networks";
-import {P2SH} from "./p2sh";
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
+import { MAINNET } from "./networks";
+import { P2SH } from "./p2sh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
 
 const HARDENING_OFFSET = Math.pow(2, 31);
 
@@ -113,29 +113,29 @@ export function validateBIP32Path(pathString, options) {
     return "BIP32 path cannot be blank.";
   }
 
-  if (! pathString.match(BIP32_PATH_REGEX)) {
+  if (!pathString.match(BIP32_PATH_REGEX)) {
     return "BIP32 path is invalid.";
   }
 
   if (options && options.mode === 'hardened') {
-    if (! pathString.match(BIP32_HARDENED_PATH_REGEX)) {
+    if (!pathString.match(BIP32_HARDENED_PATH_REGEX)) {
       return "BIP32 path must be fully-hardened.";
     }
   }
 
   if (options && options.mode === 'unhardened') {
-    if (! pathString.match(BIP32_UNHARDENED_PATH_REGEX)) {
+    if (!pathString.match(BIP32_UNHARDENED_PATH_REGEX)) {
       return "BIP32 path cannot include hardened segments.";
     }
   }
-  
+
   const segmentStrings = pathString.toLowerCase().split('/');
 
   return validateBIP32PathSegments(segmentStrings.slice(1));
 }
 
 function validateBIP32PathSegments(segmentStrings) {
-  for (let i=0; i<segmentStrings.length; i++) {
+  for (let i = 0; i < segmentStrings.length; i++) {
     const segmentString = segmentStrings[i];
     const error = validateBIP32PathSegment(segmentString);
     if (error !== '') { return error; }
@@ -147,7 +147,7 @@ function validateBIP32PathSegment(segmentString) {
   if (segmentString === null || segmentString === undefined || segmentString === '') {
     return "BIP32 path segment cannot be blank.";
   }
-  
+
   let numberString, hardened;
   if (segmentString.substr(segmentString.length - 1) === "'") {
     numberString = segmentString.substr(0, segmentString.length - 1);
@@ -163,7 +163,7 @@ function validateBIP32PathSegment(segmentString) {
   let number;
   try {
     number = parseInt(numberString, 10);
-  } catch(parseError) {
+  } catch (parseError) {
     // shouldn't reach here b/c we already applied a regex check
     return numberError;
   }
@@ -205,14 +205,14 @@ function validateBIP32PathSegment(segmentString) {
 export function multisigBIP32Root(addressType, network) {
   const coinPath = (network === MAINNET ? "0'" : "1'");
   switch (addressType) {
-  case P2SH:
-    return `m/45'/${coinPath}/0'`;
-  case P2SH_P2WSH:
-    return `m/48'/${coinPath}/0'/1'`;
-  case P2WSH:
-    return `m/48'/${coinPath}/0'/2'`;
-  default:
-    return null;
+    case P2SH:
+      return `m/45'/${coinPath}/0'`;
+    case P2SH_P2WSH:
+      return `m/48'/${coinPath}/0'/1'`;
+    case P2WSH:
+      return `m/48'/${coinPath}/0'/2'`;
+    default:
+      return null;
   }
 }
 
@@ -235,4 +235,20 @@ export function multisigBIP32Path(addressType, network, relativePath) {
     return root + `/${relativePath || "0"}`;
   }
   return null;
+}
+
+/**
+ * Get the path of the parent of the given path
+ * @param {string} bip32Path 
+ * @returns {string} parent path
+ * @example
+ * import {getParentPath} from "unchained-bitcoin";
+ * console.log(getParentPath("m/45'/0'/0'/0"); // m/45'/0'/0'
+ */
+export function getParentPath(bip32Path) {
+  // first validate the input
+  let validated = validateBIP32Path(bip32Path)
+  if (validated.length) return validated
+  // then slice off then last item in the path
+  return bip32Path.split("/").slice(0, -1).join("/");
 }

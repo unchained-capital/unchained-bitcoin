@@ -26,10 +26,12 @@
   },
   "scripts": {
     "compile": "babel -d lib/ src/",
+    "compile:watch": "babel --watch -d lib/ src/",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
     "prepare": "npm run compile",
     "test": "jest lib",
+    "test:watch": "jest --watch src",
     "docs": "./bin/build-docs.sh",
     "lint": "eslint src"
   },
