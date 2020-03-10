@@ -5,10 +5,10 @@
  * @module paths
  */
 
-import { MAINNET } from "./networks";
-import { P2SH } from "./p2sh";
-import { P2SH_P2WSH } from "./p2sh_p2wsh";
-import { P2WSH } from "./p2wsh";
+import {MAINNET} from "./networks";
+import {P2SH} from "./p2sh";
+import {P2SH_P2WSH} from "./p2sh_p2wsh";
+import {P2WSH} from "./p2wsh";
 
 const HARDENING_OFFSET = Math.pow(2, 31);
 
@@ -205,14 +205,14 @@ function validateBIP32PathSegment(segmentString) {
 export function multisigBIP32Root(addressType, network) {
   const coinPath = (network === MAINNET ? "0'" : "1'");
   switch (addressType) {
-    case P2SH:
-      return `m/45'/${coinPath}/0'`;
-    case P2SH_P2WSH:
-      return `m/48'/${coinPath}/0'/1'`;
-    case P2WSH:
-      return `m/48'/${coinPath}/0'/2'`;
-    default:
-      return null;
+  case P2SH:
+    return `m/45'/${coinPath}/0'`;
+  case P2SH_P2WSH:
+    return `m/48'/${coinPath}/0'/1'`;
+  case P2WSH:
+    return `m/48'/${coinPath}/0'/2'`;
+  default:
+    return null;
   }
 }
 
