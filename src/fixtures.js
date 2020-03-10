@@ -51,6 +51,7 @@ const NODES = {
   "m/45'/0'/0'/0": {
     pub: "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee",
     xpub: "xpub6EW9kGJQLjEGWpuKjViLuEw3pkNX5k2DzXhM3ctfHawh12aLXnrzYuRcvwTfv2VD2a8uzFCDJfLnrrD9Z46NbLyPHUQbbb4QyxKjf6c1gh4",
+    tpub: "tpubDEsnGW8641Bind6BBghS7AGR9sUB58XHYAHeQAwodVhakKF3c1i5hM6TAyYTSXSSpUfpbpi5qmAqZ2hkwuwcUnRgM59uH7ieZuv9RAEJ5Rp",
     chaincode: "4522d0dc37c97548c43adc8fbbe285eea27921e8437562574d13c013e85c0fd3",
     fingerprint: 2213579839,
   },

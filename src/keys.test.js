@@ -7,9 +7,11 @@ import {
     deriveChildPublicKey, 
     deriveChildExtendedPublicKey,
     getFingerprintFromPublicKey,
+    deriveExtendedPublicKey,
+    isKeyCompressed,
 } from './keys';
 
-import { TESTNET, MAINNET } from './networks';
+import { TESTNET, MAINNET, networkData } from './networks';
 
 import {TEST_FIXTURES} from "./fixtures";
 import { bitcoinsToSatoshis } from './utils';
@@ -179,13 +181,22 @@ describe("keys", () => {
 
   });
 
+  describe('isKeyCompressed', () => {
+    it('checks if a key is compressed or uncompressed', () => {
+      const uncompressedPubkey = '0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907'
+      expect(isKeyCompressed(uncompressedPubkey)).toBeFalsy()
+      expect(isKeyCompressed(compressPublicKey(uncompressedPubkey))).toBeTruthy()
+    })
+  })
+
   describe('getFingerprintFromPublicKey', () => {
     it('derives the correct fingerprint from a given key', () => {
       const node = NODES["m/45'/0'/0'/0"]
       const parentNode = NODES["m/45'/0'/0'"]
+
       const fingerprint = getFingerprintFromPublicKey(parentNode.pub)
       const decodedXpub = bs58.decode(node.xpub).toString('hex')
-      console.log('fingerprint:', fingerprint)
+  
       // the child node should have its parent's fingerprint in the xpub
       expect(node.fingerprint).toEqual(fingerprint)
       // we should also be able to find the fingerprint in the decoded xpub
@@ -193,4 +204,17 @@ describe("keys", () => {
     })
   })
 
+  describe('deriveExtendedPublicKey', () => {
+    it('derives a valid bip32 node with all matching HD wallet properties', () => {
+      const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"]
+
+      for (const path of paths) {
+        const { fingerprint, chaincode, xpub, pub, tpub } = NODES[path]
+        const derivedXpub = deriveExtendedPublicKey(path, pub, chaincode, fingerprint, MAINNET)
+        const derivedTpub = deriveExtendedPublicKey(path, pub, chaincode, fingerprint, TESTNET) 
+        expect(derivedXpub).toEqual(xpub)
+        expect(derivedTpub).toEqual(tpub)
+      }
+    })
+  })
 });
