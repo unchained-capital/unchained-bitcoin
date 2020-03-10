@@ -6,6 +6,7 @@
  */
 
 import BigNumber from "bignumber.js";
+import bitcoin from "bitcoinjs-lib";
 
 /**
  * Converts a byte array to its hex representation.
@@ -20,7 +21,7 @@ import BigNumber from "bignumber.js";
  * 
  */
 export function toHexString(byteArray) {
-  return Array.prototype.map.call(byteArray, function(byte) {
+  return Array.prototype.map.call(byteArray, function (byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
   }).join('');
 }
@@ -97,3 +98,13 @@ export function bitcoinsToSatoshis(btc) {
 }
 
 export const ZERO = BigNumber(0);
+
+/**
+ * Given a buffer as a digest, pass through sha256 and ripemd160
+ * hash functions. Returns the result
+ * @param {Buffer} buf - buffer to get hash160 of
+ * @returns {Buffer}
+ */
+export function hash160(buf) {
+  return bitcoin.crypto.ripemd160(bitcoin.crypto.sha256(buf))
+}
