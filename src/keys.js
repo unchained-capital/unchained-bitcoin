@@ -7,9 +7,8 @@
 
 import {ECPair} from "bitcoinjs-lib";
 
-import {validateHex, toHexString} from "./utils";
+import {validateHex, toHexString, hash160} from "./utils";
 import {TESTNET, networkData} from "./networks";
-
 const bip32 = require('bip32');
 
 /**
@@ -165,4 +164,25 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
   const node = bip32.fromBase58(extendedPublicKey, networkData(network));
   const child = node.derivePath(bip32Path);
   return child.toBase58();
+}
+
+/**
+ * Gets fingerprint for a given pubkey. This is useful for generating xpubs
+ * which need the fingerprint of the parent pubkey. If not a compressed key
+ * then this function will attempt to compress it.
+ * @param {string} pubkey - pubkey to derive fingerprint from
+ * @returns {string} fingerprint
+ * @example
+ * import {getFingerprintFromPublicKey, compressPublicKey} from "unchained-bitcoin"
+ * const pubkey = "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
+ * console.log(getFingerprintFromPublicKey(pubkey)) // 2213579839
+ */
+export function getFingerprintFromPublicKey(pubkey) {
+  // compress the key if it is not compressed
+  if (pubkey.length !== 66 && (pubkey[1] !== 2 || pubkey[1] !== 3)) {
+    pubkey = compressPublicKey(pubkey) 
+  }
+  const pubkeyBuffer = Buffer.from(pubkey, 'hex')
+  const hash = hash160(pubkeyBuffer)
+  return ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) >>> 0;
 }

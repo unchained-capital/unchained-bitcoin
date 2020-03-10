@@ -1,14 +1,18 @@
+import bs58 from 'bs58'
+
 import { 
     validateExtendedPublicKey, 
     validatePublicKey, 
     compressPublicKey, 
     deriveChildPublicKey, 
     deriveChildExtendedPublicKey,
+    getFingerprintFromPublicKey,
 } from './keys';
 
 import { TESTNET, MAINNET } from './networks';
 
 import {TEST_FIXTURES} from "./fixtures";
+import { bitcoinsToSatoshis } from './utils';
 
 const NODES = TEST_FIXTURES.nodes;
 
@@ -174,5 +178,19 @@ describe("keys", () => {
     });
 
   });
+
+  describe('getFingerprintFromPublicKey', () => {
+    it('derives the correct fingerprint from a given key', () => {
+      const node = NODES["m/45'/0'/0'/0"]
+      const parentNode = NODES["m/45'/0'/0'"]
+      const fingerprint = getFingerprintFromPublicKey(parentNode.pub)
+      const decodedXpub = bs58.decode(node.xpub).toString('hex')
+      console.log('fingerprint:', fingerprint)
+      // the child node should have its parent's fingerprint in the xpub
+      expect(node.fingerprint).toEqual(fingerprint)
+      // we should also be able to find the fingerprint in the decoded xpub
+      expect(decodedXpub).toContain(fingerprint.toString(16))
+    })
+  })
 
 });
