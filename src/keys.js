@@ -6,11 +6,11 @@
  */
 
 import {ECPair} from "bitcoinjs-lib";
+import bip32 from "bip32";
 
-import {validateHex, toHexString} from "./utils";
-import {TESTNET, networkData} from "./networks";
-
-const bip32 = require('bip32');
+import {validateHex, toHexString, hash160} from "./utils";
+import {bip32PathToSequence} from "./paths"
+import {TESTNET, networkData, MAINNET} from "./networks";
 
 /**
  * Validate the given extended public key.
@@ -165,4 +165,73 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
   const node = bip32.fromBase58(extendedPublicKey, networkData(network));
   const child = node.derivePath(bip32Path);
   return child.toBase58();
+}
+
+/**
+ * Check if a given pubkey is compressed or not by checking its length
+ * and the possible prefixes
+ * @param {string | Buffer} pubkey 
+ * @returns {boolean}
+ * @example
+ * import {isKeyCompressed} from "unchained-bitcoin"
+ * const uncompressed = "0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907"
+ * const compressed = "0387cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03"
+ * console.log(isKeyCompressed(uncompressed)) // false
+ * console.log(isKeyCompressed(compressed)) // true
+ */
+export function isKeyCompressed(pubkey) {
+  if (!Buffer.isBuffer(pubkey))
+    pubkey = Buffer.from(pubkey, 'hex')
+
+  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) 
+    return true
+  return false
+}
+
+/**
+ * Get fingerprint for a given pubkey. This is useful for generating xpubs
+ * which need the fingerprint of the parent pubkey. If not a compressed key
+ * then this function will attempt to compress it.
+ * @param {string} pubkey - pubkey to derive fingerprint from
+ * @returns {string} fingerprint
+ * @example
+ * import {getFingerprintFromPublicKey, compressPublicKey} from "unchained-bitcoin"
+ * const pubkey = "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
+ * console.log(getFingerprintFromPublicKey(pubkey)) // 2213579839
+ */
+export function getFingerprintFromPublicKey(pubkey) {
+  // compress the key if it is not compressed
+  if (!isKeyCompressed(pubkey)) {
+    pubkey = compressPublicKey(pubkey) 
+  }
+  const pubkeyBuffer = Buffer.from(pubkey, 'hex')
+  const hash = hash160(pubkeyBuffer)
+  return ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) >>> 0;
+}
+
+/**
+ * Derive base58 encoded xpub given known information about
+ * BIP32 Wallet Node
+ * @param {string} bip32Path 
+ * @param {string} pubkey 
+ * @param {string} chaincode 
+ * @param {string} fingerprint - fingerprint of parent public key
+ * @param {string} network - mainnet or testnet
+ * @returns {string} base58 encoded extended public key (xpub or tpub)
+ */
+export function deriveExtendedPublicKey(bip32Path, pubkey, chaincode, fingerprint, network = MAINNET) {
+  if (!isKeyCompressed(pubkey)) 
+    pubkey = compressPublicKey(pubkey)
+  
+  // get the hd wallet node and fill in missing properties
+  const node = bip32.fromPublicKey(Buffer.from(pubkey, 'hex'),
+    Buffer.from(chaincode, 'hex'), networkData(network));
+  
+   // extended key fingerprint is from the parent pubkey
+  node.parentFingerprint = fingerprint
+  node.depth = bip32Path.split("/").length - 1;
+  const sequence = bip32PathToSequence(bip32Path);
+  node.index = sequence.slice(-1)[0];
+  node.path = bip32Path;
+  return node.toBase58()
 }

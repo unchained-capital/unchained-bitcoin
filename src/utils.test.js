@@ -1,5 +1,12 @@
 import BigNumber from "bignumber.js";
-import { validateHex, toHexString, satoshisToBitcoins, bitcoinsToSatoshis } from './utils';
+import {
+  validateHex,
+  toHexString,
+  satoshisToBitcoins,
+  bitcoinsToSatoshis,
+  hash160
+} from './utils';
+import crypto from 'crypto'
 
 describe("utils", () => {
 
@@ -105,6 +112,13 @@ describe("utils", () => {
 
   });
 
+  describe('hash160', () => {
+    it('should take a buffer and hash it with sha256 and ripemd160', () => {
+      const val = Buffer.from('a2bc6de234a4b2fe10fe582f29c39de52b8161624ef310ca6cccff5d6d7d591a', 'hex')
+      const expected = Buffer.from('d06d0dadca1f9cf3aedd5514e0669c2fffa7bc81', 'hex')
+      expect(hash160(val)).toEqual(expected)
+    })
+  })
 });
 
 
