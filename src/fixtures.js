@@ -37,6 +37,8 @@ import { TESTNET, MAINNET } from './networks';
 const RECEIVING_ADDRESSES = {};
 RECEIVING_ADDRESSES[MAINNET] = "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs";
 RECEIVING_ADDRESSES[TESTNET] = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
+RECEIVING_ADDRESSES['mainnet_bech32'] = "bc1qf9asympax4r6xrndsqrw8p0qxe40tm9zkk69tkrc8p6eg8ju075sjeekkt"
+RECEIVING_ADDRESSES['testnet_bech32'] = "tb1qhgj3fnwn50pq966rjnj4pg8uz9ktsd8nge32qxd73ffvvg636p5q54g7m0"
 
 const BIP39_PHRASE = ['merge', 'alley', 'lucky', 'axis', 'penalty', 'manage', 'latin', 'gasp', 'virus', 'captain', 'wheel', 'deal', 'chase', 'fragile', 'chapter', 'boss', 'zero', 'dirt', 'stadium', 'tooth', 'physical', 'valve', 'kid', 'plunge'];
 
@@ -236,12 +238,12 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES['testnet_bech32'],
           amountSats: '291590',
         }
       ],
       hex: "010000000301f5a14392f39c55c9a597df640b0f75ec77f5a90bce39bbc7e8869bcc8ddf840000000000ffffffff723d6f648fb35b6230bc79a38988195f6dcd53f74aa32b6c635533038e9910f00000000000ffffffff8342873aa48ba6b2e5a796f34b7431bb56f9c569a6bd8f7e539cb3147a86b3f80100000000ffffffff01067304000000000017a914e3ba1151b75effbf7adc4673c83c8feec3ddc3678700000000",
-      signature: ["3044022006af7cbad3b34ca8b7ba0b72e2424b918ce57798603e5473a05d83abaad697b4022014696327ff1c17cdf1af27460e5b196ebdb4fa0f4650289696642ecea5399c0301","3045022100b8cf09c3abecaa59a677f3633375a3c608031b827497d6476beaae15b4641732022036156d23d4adcc32424c8ea08ba8fcf171f82b947f1b3f09f95b0731ea4e898301","304402204971879ff546217adafafa0f2fdf0a351c304af8bd32bb1241b2eb0043d45e8102202cebfab10ba08156a8165fec341af12635a204cbeb07cb0deb16d2726d744bc501"],
+      signature: ["304402202b18f1ef0f574a767a8ec530f1265407da4801ce93d7031d69b57f53ff23d65502200f6686c196946ff0fdad652c03ef79024685b52f2ebbabb39d46ec0d66d0642601", "3045022100abc3a114f1bc864c007f27e564f8c9c2fa0a11791b8a7633b090de8ab86974010220408377b5ad599962bcdd04f3b2988d53d7b2434852374debbe8f5d745682caa601", "304402205de87964a6f7ff5b0c011706337262f3dd6df1d4b552fafdf5f4530ad6fd96b302204ac60b2eca6c06221b33ed14359cf9b3ba3c70522f7d64a61b75dddcf9f6f36f01"],
     },
   },
 
@@ -367,7 +369,7 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES["mainnet_bech32"],
           amountSats: '21590',
         }
       ],
