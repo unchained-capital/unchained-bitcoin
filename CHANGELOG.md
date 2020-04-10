@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.9
+
+### Changed
+
+Include Bech32 outputs for P2WSH fixtures & tests.
+
 ## Version 0.0.8
 
 ### Added
