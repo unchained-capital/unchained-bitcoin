@@ -48,6 +48,7 @@ const NODES = {
     xpub: "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv",
     tpub: "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px",
     zpub: "zpub6qrp73tcNs5GxSEZPtZgs1a8sTjMxuDBvnatMQJrawC5ucyJtXwNNjYrcAmavk6kkhi99GgribUGcVq4w9CCqowdTX1UfX9NXMZzG2XWQdj",
+    ypub: "ypub6X2YoPDhEBXo793SZXn4evUdhVav2HDh1g4fa1QyCvpCrXA5dsmokftiaxozvqSqM4bLPo6JFw7ijDDWDSnC3aG2bBK45cKtFdWLsUKgtyo",
     Ypub: "Ypub6hvdvcx8o96AXiCpWCF3UzpSRHdBEduHKwiLVGgWahecUhizQHA5qnkePfmUVGfjaXfKGP6R99WDrNqGWfw9C4NhReRTV1nt9MnDTNALmuh",
     Zpub: "Zpub72kuEHd3wpdeP1PwLZ2fh5uwbFmdBFtnF4EZGfaPxi2VXoYDewKeTrQnQsj4VBKezAn81rgybormjfSqENM9zJ4JHz7t4vcNR5qrqv8qja7",
     upub: "upub5DhVaiY2dTMshxGyE6dZpa6d1d18FoFhMDynSRqRguJge7uAdF7ZGRGAW8yewCq9iW87Pti4RHhXC4mFLf88rdXd7pXMjy3wAjFmK6jyHiX",
