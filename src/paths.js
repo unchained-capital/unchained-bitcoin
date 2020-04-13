@@ -239,7 +239,7 @@ export function multisigBIP32Path(addressType, network, relativePath) {
 
 /**
  * Get the path of the parent of the given path
- * @param {string} bip32Path 
+ * @param {string} bip32Path e.g. "m/45'/0'/0'/0"
  * @returns {string} parent path
  * @example
  * import {getParentPath} from "unchained-bitcoin";

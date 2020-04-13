@@ -103,7 +103,7 @@ export const ZERO = BigNumber(0);
  * Given a buffer as a digest, pass through sha256 and ripemd160
  * hash functions. Returns the result
  * @param {Buffer} buf - buffer to get hash160 of
- * @returns {Buffer}
+ * @returns {Buffer} hash160 of the given buffer
  */
 export function hash160(buf) {
   return bitcoin.crypto.ripemd160(bitcoin.crypto.sha256(buf))

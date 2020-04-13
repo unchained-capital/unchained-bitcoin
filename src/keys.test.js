@@ -10,10 +10,11 @@ import {
   getFingerprintFromPublicKey,
   deriveExtendedPublicKey,
   convertExtendedPublicKey,
+  validatePrefix,
   EXTENDED_PUBLIC_KEY_VERSIONS,
 } from './keys';
 
-import { TESTNET, MAINNET, networkData } from './networks';
+import { TESTNET, MAINNET } from './networks';
 
 import { TEST_FIXTURES } from "./fixtures";
 
@@ -171,6 +172,20 @@ describe("keys", () => {
     });
 
   });
+  
+  describe('validatePrefix', () => {
+    it('should return null if valid or throw otherwise', () => {
+      Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach(prefix => {
+        expect(validatePrefix(prefix)).toBe(null)
+      })
+
+      function invalidPrefix() { 
+        validatePrefix('jpub')
+      }
+      
+      expect(invalidPrefix).toThrow()
+    })
+  })
 
   describe("Test convertExtendedPublicKey", () => {
     Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertTo) => {

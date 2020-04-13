@@ -26,10 +26,14 @@ export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   Vpub: "02575483"
 }
 
-function validatePrefix(prefix, prefixType) {
-  if (!~Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).indexOf(prefix)) {
-    return `Invalid ${prefixType} version for extended public key conversion`;
-  }
+/**
+ * Validate whether or not a string is a valid extended public key prefix
+ * @param {string} prefix string to be tested
+ * @returns {null} returns null if valid
+ * @throws Error with message indicating the invalid prefix.
+ */
+export function validatePrefix(prefix) {
+  if (!EXTENDED_PUBLIC_KEY_VERSIONS[prefix]) throw new Error(`Invalid prefix "${prefix}" for extended public key.`);
   return null;
 }
 
@@ -42,22 +46,23 @@ function validatePrefix(prefix, prefixType) {
  * const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
  * console.log(tpub.extendedPublicKey, tpub.message)
  * // tpubDCZv...
- * @returns {string} converted extended public key
+ * @returns {(string|object)} converted extended public key or error object
+ * with the failed key and error message
  */
 export function convertExtendedPublicKey(extendedPublicKey, targetPrefix) {
-  const targetError = validatePrefix(targetPrefix, 'target')
-  if (targetError !== null) return {extendedPublicKey, error:targetError};
-  const sourcePrefix = extendedPublicKey.slice(0, 4);
-  const sourceError = validatePrefix(sourcePrefix, 'source')
-  if (sourceError !== null) throw(new Error(sourceError))
-
   try {
+    const sourcePrefix = extendedPublicKey.slice(0, 4);
+    validatePrefix(targetPrefix)
+    validatePrefix(sourcePrefix)
     const decodedExtendedPublicKey = bs58check.decode(extendedPublicKey.trim());
     const extendedPublicKeyNoPrefix = decodedExtendedPublicKey.slice(4);
-    const extendedPublicKeyNewPrefix = Buffer.concat([Buffer.from(EXTENDED_PUBLIC_KEY_VERSIONS[targetPrefix],'hex'), extendedPublicKeyNoPrefix]);
+    const extendedPublicKeyNewPrefix = Buffer.concat(
+      [Buffer.from(EXTENDED_PUBLIC_KEY_VERSIONS[targetPrefix],'hex'), 
+      extendedPublicKeyNoPrefix]
+    );
     return bs58check.encode(extendedPublicKeyNewPrefix)
   } catch (err) {
-    throw(new Error("Unable to convert extended public key: "+err.message))
+    throw new Error("Unable to convert extended public key: "+err.message)
   }
 }
 
@@ -244,8 +249,8 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
 /**
  * Check if a given pubkey is compressed or not by checking its length
  * and the possible prefixes
- * @param {string | Buffer} pubkey 
- * @returns {boolean}
+ * @param {string | Buffer} _pubkey pubkey to check
+ * @returns {boolean} true if compressed, otherwise false
  * @example
  * import {isKeyCompressed} from "unchained-bitcoin"
  * const uncompressed = "0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907"
@@ -253,12 +258,11 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
  * console.log(isKeyCompressed(uncompressed)) // false
  * console.log(isKeyCompressed(compressed)) // true
  */
-export function isKeyCompressed(pubkey) {
-  if (!Buffer.isBuffer(pubkey))
-    pubkey = Buffer.from(pubkey, 'hex')
+export function isKeyCompressed(_pubkey) {
+  let pubkey = _pubkey
+  if (!Buffer.isBuffer(_pubkey)) pubkey = Buffer.from(_pubkey, 'hex')
 
-  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) 
-    return true
+  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) return true
   return false
 }
 
@@ -266,17 +270,18 @@ export function isKeyCompressed(pubkey) {
  * Get fingerprint for a given pubkey. This is useful for generating xpubs
  * which need the fingerprint of the parent pubkey. If not a compressed key
  * then this function will attempt to compress it.
- * @param {string} pubkey - pubkey to derive fingerprint from
+ * @param {string} _pubkey - pubkey to derive fingerprint from
  * @returns {string} fingerprint
  * @example
  * import {getFingerprintFromPublicKey, compressPublicKey} from "unchained-bitcoin"
  * const pubkey = "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
  * console.log(getFingerprintFromPublicKey(pubkey)) // 2213579839
  */
-export function getFingerprintFromPublicKey(pubkey) {
+export function getFingerprintFromPublicKey(_pubkey) {
+  let pubkey = _pubkey
   // compress the key if it is not compressed
-  if (!isKeyCompressed(pubkey)) {
-    pubkey = compressPublicKey(pubkey) 
+  if (!isKeyCompressed(_pubkey)) {
+    pubkey = compressPublicKey(_pubkey) 
   }
   const pubkeyBuffer = Buffer.from(pubkey, 'hex')
   const hash = hash160(pubkeyBuffer)
@@ -286,16 +291,16 @@ export function getFingerprintFromPublicKey(pubkey) {
 /**
  * Derive base58 encoded xpub given known information about
  * BIP32 Wallet Node
- * @param {string} bip32Path 
- * @param {string} pubkey 
- * @param {string} chaincode 
+ * @param {string} bip32Path e.g. m/45'/0'/0
+ * @param {string} _pubkey pubkey to derive from 
+ * @param {string} chaincode chaincode corresponding to pubkey and path
  * @param {string} fingerprint - fingerprint of parent public key
  * @param {string} network - mainnet or testnet
  * @returns {string} base58 encoded extended public key (xpub or tpub)
  */
-export function deriveExtendedPublicKey(bip32Path, pubkey, chaincode, fingerprint, network = MAINNET) {
-  if (!isKeyCompressed(pubkey)) 
-    pubkey = compressPublicKey(pubkey)
+export function deriveExtendedPublicKey(bip32Path, _pubkey, chaincode, fingerprint, network = MAINNET) {
+  let pubkey = _pubkey
+  if (!isKeyCompressed(pubkey)) pubkey = compressPublicKey(_pubkey)
   
   // get the hd wallet node and fill in missing properties
   const node = bip32.fromPublicKey(Buffer.from(pubkey, 'hex'),

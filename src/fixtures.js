@@ -37,8 +37,8 @@ import { TESTNET, MAINNET } from './networks';
 const RECEIVING_ADDRESSES = {};
 RECEIVING_ADDRESSES[MAINNET] = "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs";
 RECEIVING_ADDRESSES[TESTNET] = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
-RECEIVING_ADDRESSES["mainnet_p2wsh"] = "bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh"
-RECEIVING_ADDRESSES["testnet_p2wsh"] = "tb1q9hj5j7mh9f7t6cwdvz34nj6pyzva5ftj2ecarcdqph5wc3n49hyqchh3cg"
+RECEIVING_ADDRESSES.mainnet_p2wsh = "bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh"
+RECEIVING_ADDRESSES.testnet_p2wsh = "tb1q9hj5j7mh9f7t6cwdvz34nj6pyzva5ftj2ecarcdqph5wc3n49hyqchh3cg"
 
 const BIP39_PHRASE = ['merge', 'alley', 'lucky', 'axis', 'penalty', 'manage', 'latin', 'gasp', 'virus', 'captain', 'wheel', 'deal', 'chase', 'fragile', 'chapter', 'boss', 'zero', 'dirt', 'stadium', 'tooth', 'physical', 'valve', 'kid', 'plunge'];
 
@@ -54,7 +54,7 @@ const NODES = {
     upub: "upub5DhVaiY2dTMshxGyE6dZpa6d1d18FoFhMDynSRqRguJge7uAdF7ZGRGAW8yewCq9iW87Pti4RHhXC4mFLf88rdXd7pXMjy3wAjFmK6jyHiX",
     vpub: "vpub5YXktPCwn8uMZFU64TRC2fC8Bb9aCRFCGLW1DpjK4ugZhDiPsuH7tUvJXLwEw7V589Ev9NJcsx455MNp4MY9esDDzADnKssRSTKQhgCrtoZ",
     Upub: "Upub5QbahxGUCQvF8XSMAm6YeeSRjR3PU9wHfVdTMh6y4g96GJU5PeVqMY86Jqw8Ve43wyC6GUiBJW62KEP1dtH617eHxHdm9NWw4TXdu1aWzdx",
-    Vpub: "Vpub5jRr1cwPM6TiypdU17tArjXvuPBqQmvnac9g95zrSgWyKQHJeJfPybnEL3tiVYhyMcJu1xJjmASaCWzaMah6oMKtpdLBjHLRLBbHHcy3jDH",
+    Jpub: "Vpub5jRr1cwPM6TiypdU17tArjXvuPBqQmvnac9g95zrSgWyKQHJeJfPybnEL3tiVYhyMcJu1xJjmASaCWzaMah6oMKtpdLBjHLRLBbHHcy3jDH",
     chaincode: "470bb034dbc8e7b5f5c0b19f747e3e768f0cc9ff298361b2741e1b7fd70d376d",
     fingerprint: 1240308660,
   },
@@ -246,7 +246,7 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES['testnet_p2wsh'],
+          address: RECEIVING_ADDRESSES.testnet_p2wsh,
           amountSats: '291590',
         }
       ],
@@ -377,7 +377,7 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES["mainnet_p2wsh"],
+          address: RECEIVING_ADDRESSES.mainnet_p2wsh,
           amountSats: '21590',
         }
       ],
