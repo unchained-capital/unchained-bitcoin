@@ -2,6 +2,13 @@
 
 ## Version 0.0.9
 
+### Added
+
+* Support for conversion between different xpub prefixes/versions
+* Test fixtures for different extended public key versions
+
+## Version 0.0.9
+
 ### Changed
 
 Include Bech32 outputs for P2WSH fixtures & tests.
