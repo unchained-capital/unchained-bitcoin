@@ -1,23 +1,102 @@
 /**
  * This module provides functions for validating & deriving public
  * keys and extended public keys.
- * 
+ *
  * @module keys
  */
 
 import {ECPair} from "bitcoinjs-lib";
 import bip32 from "bip32";
+import bs58check from 'bs58check'
 
 import {validateHex, toHexString, hash160} from "./utils";
 import {bip32PathToSequence} from "./paths"
 import {TESTNET, networkData, MAINNET} from "./networks";
+
+export const EXTENDED_PUBLIC_KEY_VERSIONS = {
+  xpub: "0488b21e",
+  ypub: "049d7cb2",
+  zpub: "04b24746",
+  Ypub: "0295b43f",
+  Zpub: "02aa7ed3",
+  tpub: "043587cf",
+  upub: "044a5262",
+  vpub: "045f1cf6",
+  Upub: "024289ef",
+  Vpub: "02575483"
+}
+
+/**
+ * Validate whether or not a string is a valid extended public key prefix
+ * @param {string} prefix string to be tested
+ * @returns {null} returns null if valid
+ * @throws Error with message indicating the invalid prefix.
+ */
+export function validatePrefix(prefix) {
+  if (!EXTENDED_PUBLIC_KEY_VERSIONS[prefix]) throw new Error(`Invalid prefix "${prefix}" for extended public key.`);
+  return null;
+}
+
+/**
+ * Convert an extended public key between formats
+ * @param {string} extendedPublicKey - the extended public key to convert
+ * @param {string} targetPrefix - the target format to convert to
+ * @example
+ * import {convertExtendedPublicKey} from "unchained-bitcoin";
+ * const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
+ * console.log(tpub.extendedPublicKey, tpub.message)
+ * // tpubDCZv...
+ * @returns {(string|object)} converted extended public key or error object
+ * with the failed key and error message
+ */
+export function convertExtendedPublicKey(extendedPublicKey, targetPrefix) {
+  try {
+    const sourcePrefix = extendedPublicKey.slice(0, 4);
+    validatePrefix(targetPrefix)
+    validatePrefix(sourcePrefix)
+    const decodedExtendedPublicKey = bs58check.decode(extendedPublicKey.trim());
+    const extendedPublicKeyNoPrefix = decodedExtendedPublicKey.slice(4);
+    const extendedPublicKeyNewPrefix = Buffer.concat(
+      [Buffer.from(EXTENDED_PUBLIC_KEY_VERSIONS[targetPrefix],'hex'), 
+      extendedPublicKeyNoPrefix]
+    );
+    return bs58check.encode(extendedPublicKeyNewPrefix)
+  } catch (err) {
+    throw new Error("Unable to convert extended public key: "+err.message)
+  }
+}
+
+
+/**
+ * Check to see if an extended public key is of the correct prefix for the network
+ * this can be used in conjuction with convertExtendedPublicKey to attempt to automatically convert
+ * @param {string} extendedPublicKey - the extended public key to check
+ * @param {string} network - thie bitcoin network
+ * @example
+ * import {validateExtendedPublicKeyForNetwork} from "unchained-bitcoin";
+ * console.log(validateExtendedPublicKeyForNetwork('xpub...', MAINNET)) // empty
+ * console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extended public key must begin with ...."
+ * @returns {string} a validation message or empty if valid
+ */
+export function validateExtendedPublicKeyForNetwork(extendedPublicKey, network) {
+  let requiredPrefix = "'xpub'";
+  if (network === TESTNET) {
+    requiredPrefix += " or 'tpub'";
+  }
+  const notXpubError = `Extended public key must begin with ${requiredPrefix}.`;
+  const prefix = extendedPublicKey.slice(0, 4);
+  if (! (prefix === 'xpub' || (network === TESTNET && prefix === 'tpub'))) {
+    return notXpubError;
+  }
+  return '';
+}
 
 /**
  * Validate the given extended public key.
  *
  * - Must start with the appropriate (network-dependent) prefix.
  * - Must be a valid BIP32 extended public key
- * 
+ *
  * @param {string} xpubString - base58 encoded extended public key (`xpub...`)
  * @param {module:networks.NETWORKS} network  - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
@@ -95,7 +174,7 @@ export function validatePublicKey(pubkeyHex) {
 
 /**
  * Compresses the given public key.
- * 
+ *
  * @param {string} publicKey - (uncompressed) public key in hex
  * @returns {string} compressed public key in hex
  * @example
@@ -130,7 +209,7 @@ export function compressPublicKey(publicKey) {
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
  * console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
- * 
+ *
  */
 export function deriveChildPublicKey(extendedPublicKey, bip32Path, network) {
   if (bip32Path.slice(0, 2) === 'm/') {
@@ -144,7 +223,7 @@ export function deriveChildPublicKey(extendedPublicKey, bip32Path, network) {
 /**
  * Return the extended public key at the given BIP32 path below the
  * given extended public key.
- * 
+ *
  * @param {string} extendedPublicKey - base58 encoded extended public key (`xpub...`)
  * @param {string} bip32Path - BIP32 derivation path string (with or without initial `m/`)
  * @param {module:networks.NETWORKS} network - bitcoin network
@@ -170,8 +249,8 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
 /**
  * Check if a given pubkey is compressed or not by checking its length
  * and the possible prefixes
- * @param {string | Buffer} pubkey 
- * @returns {boolean}
+ * @param {string | Buffer} _pubkey pubkey to check
+ * @returns {boolean} true if compressed, otherwise false
  * @example
  * import {isKeyCompressed} from "unchained-bitcoin"
  * const uncompressed = "0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907"
@@ -179,12 +258,11 @@ export function deriveChildExtendedPublicKey(extendedPublicKey, bip32Path, netwo
  * console.log(isKeyCompressed(uncompressed)) // false
  * console.log(isKeyCompressed(compressed)) // true
  */
-export function isKeyCompressed(pubkey) {
-  if (!Buffer.isBuffer(pubkey))
-    pubkey = Buffer.from(pubkey, 'hex')
+export function isKeyCompressed(_pubkey) {
+  let pubkey = _pubkey
+  if (!Buffer.isBuffer(_pubkey)) pubkey = Buffer.from(_pubkey, 'hex')
 
-  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) 
-    return true
+  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) return true
   return false
 }
 
@@ -192,17 +270,18 @@ export function isKeyCompressed(pubkey) {
  * Get fingerprint for a given pubkey. This is useful for generating xpubs
  * which need the fingerprint of the parent pubkey. If not a compressed key
  * then this function will attempt to compress it.
- * @param {string} pubkey - pubkey to derive fingerprint from
+ * @param {string} _pubkey - pubkey to derive fingerprint from
  * @returns {string} fingerprint
  * @example
  * import {getFingerprintFromPublicKey, compressPublicKey} from "unchained-bitcoin"
  * const pubkey = "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
  * console.log(getFingerprintFromPublicKey(pubkey)) // 2213579839
  */
-export function getFingerprintFromPublicKey(pubkey) {
+export function getFingerprintFromPublicKey(_pubkey) {
+  let pubkey = _pubkey
   // compress the key if it is not compressed
-  if (!isKeyCompressed(pubkey)) {
-    pubkey = compressPublicKey(pubkey) 
+  if (!isKeyCompressed(_pubkey)) {
+    pubkey = compressPublicKey(_pubkey) 
   }
   const pubkeyBuffer = Buffer.from(pubkey, 'hex')
   const hash = hash160(pubkeyBuffer)
@@ -212,16 +291,16 @@ export function getFingerprintFromPublicKey(pubkey) {
 /**
  * Derive base58 encoded xpub given known information about
  * BIP32 Wallet Node
- * @param {string} bip32Path 
- * @param {string} pubkey 
- * @param {string} chaincode 
+ * @param {string} bip32Path e.g. m/45'/0'/0
+ * @param {string} _pubkey pubkey to derive from 
+ * @param {string} chaincode chaincode corresponding to pubkey and path
  * @param {string} fingerprint - fingerprint of parent public key
  * @param {string} network - mainnet or testnet
  * @returns {string} base58 encoded extended public key (xpub or tpub)
  */
-export function deriveExtendedPublicKey(bip32Path, pubkey, chaincode, fingerprint, network = MAINNET) {
-  if (!isKeyCompressed(pubkey)) 
-    pubkey = compressPublicKey(pubkey)
+export function deriveExtendedPublicKey(bip32Path, _pubkey, chaincode, fingerprint, network = MAINNET) {
+  let pubkey = _pubkey
+  if (!isKeyCompressed(pubkey)) pubkey = compressPublicKey(_pubkey)
   
   // get the hd wallet node and fill in missing properties
   const node = bip32.fromPublicKey(Buffer.from(pubkey, 'hex'),

@@ -6,7 +6,6 @@ import {
   bitcoinsToSatoshis,
   hash160
 } from './utils';
-import crypto from 'crypto'
 
 describe("utils", () => {
 
