@@ -1,3 +1,4 @@
+import bs58check from "bs58check";
 import bs58 from "bs58";
 
 import {
@@ -376,13 +377,13 @@ describe("keys", () => {
       const decodedXpub = bs58.decode(node.xpub).toString("hex");
 
       // the child node should have its parent's fingerprint in the xpub
-      expect(node.fingerprint).toEqual(fingerprint);
+      expect(node.parentFingerprint).toEqual(fingerprint);
       // we should also be able to find the fingerprint in the decoded xpub
       expect(decodedXpub).toContain(fingerprint.toString(16));
     });
   });
 
-  describe.only("deriveExtendedPublicKey", () => {
+  describe("deriveExtendedPublicKey", () => {
     it("derives a valid bip32 node with all matching HD wallet properties", () => {
       const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"];
       for (const path of paths) {
@@ -419,23 +420,23 @@ describe("keys", () => {
           pubkey,
           chaincode,
           parentFingerprint,
-          network: MAINNET,
-        });
-        const extendedTestnetPubkey = new ExtendedPublicKey({
-          path,
-          pubkey,
-          chaincode,
-          parentFingerprint,
-          network: TESTNET,
         });
 
-        expect(extendedPubkey.toBase58()).toEqual(xpub);
-        expect(extendedTestnetPubkey.toBase58()).toEqual(tpub);
+        expect(extendedPubkey.toBase58(MAINNET)).toEqual(xpub);
+        expect(extendedPubkey.toBase58(TESTNET)).toEqual(tpub);
 
-        // test decoding
-        const decodedXpub = ExtendedPublicKey.decode(extendedPubkey.encode());
+        // test fromBase58
+        expect(ExtendedPublicKey.fromBase58(xpub).toBase58(MAINNET)).toEqual(
+          xpub
+        );
+        expect(ExtendedPublicKey.fromBase58(tpub).toBase58(TESTNET)).toEqual(
+          tpub
+        );
+
+        // test decoding (same as fromBase58)
+        const decodedXpub = ExtendedPublicKey.decode(bs58check.decode(xpub));
         const decodedTestnetXpub = ExtendedPublicKey.decode(
-          extendedTestnetPubkey.encode()
+          bs58check.decode(tpub)
         );
 
         expect(decodedXpub.version).toEqual(EXTENDED_PUBLIC_KEY_VERSIONS.xpub);
@@ -445,11 +446,11 @@ describe("keys", () => {
         expect(decodedXpub.parentFingerprint).toEqual(parentFingerprint);
         expect(decodedTestnetXpub.parentFingerprint).toEqual(parentFingerprint);
 
-        expect(extendedPubkey.pubkey).toEqual(pubkey);
-        expect(extendedTestnetPubkey.pubkey).toEqual(pubkey);
+        expect(decodedXpub.pubkey).toEqual(pubkey);
+        expect(decodedTestnetXpub.pubkey).toEqual(pubkey);
 
-        expect(extendedPubkey.chaincode).toEqual(chaincode);
-        expect(extendedTestnetPubkey.chaincode).toEqual(chaincode);
+        expect(decodedTestnetXpub.chaincode).toEqual(chaincode);
+        expect(decodedTestnetXpub.chaincode).toEqual(chaincode);
       }
     });
   });

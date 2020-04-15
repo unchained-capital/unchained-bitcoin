@@ -313,6 +313,11 @@ export function getFingerprintFromPublicKey(_pubkey) {
  * @param {string} options.chaincode chaincode corresponding to pubkey and path
  * @param {string} options.parentFingerprint - fingerprint of parent public key
  * @param {string} [options.network = mainnet] - mainnet or testnet
+ * @example
+ * import { ExtendedPublicKey } from "unchained-bitcoin"
+ * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
+ * console.log(xpub.encode()) // returns raw Buffer of xpub encoded as per BIP32
+ * console.log(xpub.toBase58()) // returns base58 check encoded xpub
  */
 export class ExtendedPublicKey extends Struct {
   constructor(options) {
@@ -351,14 +356,11 @@ export class ExtendedPublicKey extends Struct {
         `Expected network to be one of ${MAINNET} or ${TESTNET}.`
       );
       this.network = options.network;
-    } else {
-      this.network = MAINNET;
+      this.version =
+        this.network === MAINNET
+          ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
+          : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
     }
-
-    this.version =
-      this.network === MAINNET
-        ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
-        : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
   }
 
   /**
@@ -376,8 +378,17 @@ export class ExtendedPublicKey extends Struct {
     return this;
   }
 
-  toBase58() {
+  toBase58(network = MAINNET) {
+    this.network = network;
+    this.version =
+      network === MAINNET
+        ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
+        : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
     return bs58check.encode(this.encode());
+  }
+
+  static fromBase58(data) {
+    return new this().decode(bs58check.decode(data));
   }
 
   /**
@@ -420,8 +431,7 @@ export function deriveExtendedPublicKey(
     pubkey,
     chaincode,
     parentFingerprint,
-    network,
   });
 
-  return xpub.toBase58();
+  return xpub.toBase58(network);
 }
