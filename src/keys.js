@@ -36,9 +36,115 @@ export const EXTENDED_PUBLIC_KEY_VERSIONS = {
  * @throws Error with message indicating the invalid prefix.
  */
 export function validatePrefix(prefix) {
-  if (!EXTENDED_PUBLIC_KEY_VERSIONS[prefix])
+  if (!EXTENDED_PUBLIC_KEY_VERSIONS[prefix]) {
     throw new Error(`Invalid prefix "${prefix}" for extended public key.`);
+  }
   return null;
+}
+
+/**
+ * Struct object for encoding and decoding extended public keys.
+ * base58 encoded serialization of the following information:
+ * [ version ][ depth ][ parent fingerprint ][ key index ][ chain code ][ pubkey ]
+ * @param {string} options.bip32Path e.g. m/45'/0'/0
+ * @param {string} options.pubkey pubkey to derive from
+ * @param {string} options.chaincode chaincode corresponding to pubkey and path
+ * @param {string} options.parentFingerprint - fingerprint of parent public key
+ * @param {string} [options.network = mainnet] - mainnet or testnet
+ * @example
+ * import { ExtendedPublicKey } from "unchained-bitcoin"
+ * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
+ * console.log(xpub.encode()) // returns raw Buffer of xpub encoded as per BIP32
+ * console.log(xpub.toBase58()) // returns base58 check encoded xpub
+ */
+export class ExtendedPublicKey extends Struct {
+  constructor(options) {
+    super();
+    if (!options || !Object.keys(options).length) {
+      return this;
+    }
+
+    const pathError = validateBIP32Path(options.path);
+    assert(!pathError.length, pathError);
+    this.path = options.path;
+    this.sequence = bip32PathToSequence(this.path);
+    this.index = this.sequence[this.sequence.length - 1];
+    this.depth = this.path.split("/").length - 1;
+
+    const pubKeyError = validatePublicKey(options.pubkey);
+    assert(!pubKeyError.length, pubKeyError);
+    this.pubkey = isKeyCompressed(options.pubkey)
+      ? options.pubkey
+      : compressPublicKey(options.pubkey);
+
+    assert(
+      options.chaincode.length === 64,
+      "xpub derivation requires 32-byte chaincode"
+    );
+    const chaincodeError = validateHex(options.chaincode);
+    assert(!chaincodeError.length, chaincodeError);
+    this.chaincode = options.chaincode;
+
+    assert(typeof options.parentFingerprint === "number");
+    this.parentFingerprint = options.parentFingerprint;
+
+    if (options.network) {
+      assert(
+        [MAINNET, TESTNET].includes(options.network),
+        `Expected network to be one of ${MAINNET} or ${TESTNET}.`
+      );
+      this.network = options.network;
+      this.version =
+        this.network === MAINNET
+          ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
+          : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
+    }
+  }
+
+  /**
+   *
+   * @param {bufio.BufferWriter} bw BufferWriter
+   * @returns {Buffer} returns raw ExtendedPublicKey
+   */
+  write(bw) {
+    bw.writeString(this.version, "hex");
+    bw.writeU8(this.depth);
+    bw.writeU32BE(this.parentFingerprint);
+    bw.writeU32BE(this.index);
+    bw.writeString(this.chaincode, "hex");
+    bw.writeString(this.pubkey, "hex");
+    return this;
+  }
+
+  toBase58(network = MAINNET) {
+    this.network = network;
+    this.version =
+      network === MAINNET
+        ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
+        : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
+    return bs58check.encode(this.encode());
+  }
+
+  static fromBase58(data) {
+    return new this().decode(bs58check.decode(data));
+  }
+
+  /**
+   * Used by the decoder to convert a raw xpub Buffer into
+   * an ExtendedPublicKey class
+   * @param {bufio.BufferReader} br - A Buffer Reader
+   * @returns {ExtendedPublicKey} new instance of Extended Public Key
+   */
+  read(br) {
+    this.version = br.readString(4, "hex");
+    this.depth = br.readU8();
+    this.parentFingerprint = br.readU32BE();
+    this.index = br.readU32BE();
+    this.chaincode = br.readString(32, "hex");
+    this.pubkey = br.readString(33, "hex");
+
+    return this;
+  }
 }
 
 /**
@@ -137,7 +243,7 @@ export function validateExtendedPublicKey(xpubString, network) {
   }
 
   try {
-    bip32.fromBase58(xpubString, networkData(network));
+    ExtendedPublicKey.fromBase58(xpubString);
   } catch (e) {
     return "Invalid extended public key.";
   }
@@ -302,111 +408,6 @@ export function getFingerprintFromPublicKey(_pubkey) {
   const pubkeyBuffer = Buffer.from(pubkey, "hex");
   const hash = hash160(pubkeyBuffer);
   return ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) >>> 0;
-}
-
-/**
- * Struct object for encoding and decoding extended public keys.
- * base58 encoded serialization of the following information:
- * [ version ][ depth ][ parent fingerprint ][ key index ][ chain code ][ pubkey ]
- * @param {string} options.bip32Path e.g. m/45'/0'/0
- * @param {string} options.pubkey pubkey to derive from
- * @param {string} options.chaincode chaincode corresponding to pubkey and path
- * @param {string} options.parentFingerprint - fingerprint of parent public key
- * @param {string} [options.network = mainnet] - mainnet or testnet
- * @example
- * import { ExtendedPublicKey } from "unchained-bitcoin"
- * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
- * console.log(xpub.encode()) // returns raw Buffer of xpub encoded as per BIP32
- * console.log(xpub.toBase58()) // returns base58 check encoded xpub
- */
-export class ExtendedPublicKey extends Struct {
-  constructor(options) {
-    super();
-    if (!options || !Object.keys(options).length) {
-      return this;
-    }
-
-    const pathError = validateBIP32Path(options.path);
-    assert(!pathError.length, pathError);
-    this.path = options.path;
-    this.sequence = bip32PathToSequence(this.path);
-    this.index = this.sequence[this.sequence.length - 1];
-    this.depth = this.path.split("/").length - 1;
-
-    const pubKeyError = validatePublicKey(options.pubkey);
-    assert(!pubKeyError.length, pubKeyError);
-    this.pubkey = isKeyCompressed(options.pubkey)
-      ? options.pubkey
-      : compressPublicKey(options.pubkey);
-
-    assert(
-      options.chaincode.length === 64,
-      "xpub derivation requires 32-byte chaincode"
-    );
-    const chaincodeError = validateHex(options.chaincode);
-    assert(!chaincodeError.length, chaincodeError);
-    this.chaincode = options.chaincode;
-
-    assert(typeof options.parentFingerprint === "number");
-    this.parentFingerprint = options.parentFingerprint;
-
-    if (options.network) {
-      assert(
-        [MAINNET, TESTNET].includes(options.network),
-        `Expected network to be one of ${MAINNET} or ${TESTNET}.`
-      );
-      this.network = options.network;
-      this.version =
-        this.network === MAINNET
-          ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
-          : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
-    }
-  }
-
-  /**
-   *
-   * @param {bufio.BufferWriter} bw BufferWriter
-   * @returns {Buffer} returns raw ExtendedPublicKey
-   */
-  write(bw) {
-    bw.writeString(this.version, "hex");
-    bw.writeU8(this.depth);
-    bw.writeU32BE(this.parentFingerprint);
-    bw.writeU32BE(this.index);
-    bw.writeString(this.chaincode, "hex");
-    bw.writeString(this.pubkey, "hex");
-    return this;
-  }
-
-  toBase58(network = MAINNET) {
-    this.network = network;
-    this.version =
-      network === MAINNET
-        ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
-        : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
-    return bs58check.encode(this.encode());
-  }
-
-  static fromBase58(data) {
-    return new this().decode(bs58check.decode(data));
-  }
-
-  /**
-   * Used by the decoder to convert a raw xpub Buffer into
-   * an ExtendedPublicKey class
-   * @param {bufio.BufferReader} br - A Buffer Reader
-   * @returns {ExtendedPublicKey} new instance of Extended Public Key
-   */
-  read(br) {
-    this.version = br.readString(4, "hex");
-    this.depth = br.readU8();
-    this.parentFingerprint = br.readU32BE();
-    this.index = br.readU32BE();
-    this.chaincode = br.readString(32, "hex");
-    this.pubkey = br.readString(33, "hex");
-
-    return this;
-  }
 }
 
 /**
