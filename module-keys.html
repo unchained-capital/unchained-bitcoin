@@ -88,7 +88,7 @@ keys and extended public keys.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line1">line 1</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line2">line 2</a>
     </li></ul></dd>
     
 
@@ -126,6 +126,13 @@ keys and extended public keys.</p></div>
 
     
 
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></dt>
+            <dd></dd>
+        </dl>
     
 
     
@@ -246,7 +253,7 @@ keys and extended public keys.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line185">line 185</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line324">line 324</a>
     </li></ul></dd>
     
 
@@ -435,7 +442,7 @@ console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line52">line 52</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line188">line 188</a>
     </li></ul></dd>
     
 
@@ -653,7 +660,7 @@ given extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line240">line 240</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line380">line 380</a>
     </li></ul></dd>
     
 
@@ -869,7 +876,7 @@ extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line214">line 214</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line354">line 354</a>
     </li></ul></dd>
     
 
@@ -937,7 +944,7 @@ console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
     
 
     
-    <h4 class="name" id=".deriveExtendedPublicKey"><span class="type-signature">(static) </span>deriveExtendedPublicKey<span class="signature">(bip32Path, _pubkey, chaincode, fingerprint, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".deriveExtendedPublicKey"><span class="type-signature">(static) </span>deriveExtendedPublicKey<span class="signature">(bip32Path, pubkey, chaincode, parentFingerprint, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -946,7 +953,7 @@ console.log(deriveChildPublicKey(xpub, "0/0", MAINNET)); // w/o leading `m/`
 
 <div class="description">
     <p>Derive base58 encoded xpub given known information about
-BIP32 Wallet Node</p>
+BIP32 Wallet Node.</p>
 </div>
 
 
@@ -1005,7 +1012,7 @@ BIP32 Wallet Node</p>
 
         <tr>
             
-                <td class="name"><code>_pubkey</code></td>
+                <td class="name"><code>pubkey</code></td>
             
 
             <td class="type">
@@ -1051,7 +1058,7 @@ BIP32 Wallet Node</p>
 
         <tr>
             
-                <td class="name"><code>fingerprint</code></td>
+                <td class="name"><code>parentFingerprint</code></td>
             
 
             <td class="type">
@@ -1131,7 +1138,7 @@ BIP32 Wallet Node</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line301">line 301</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line449">line 449</a>
     </li></ul></dd>
     
 
@@ -1292,7 +1299,7 @@ then this function will attempt to compress it.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line280">line 280</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line428">line 428</a>
     </li></ul></dd>
     
 
@@ -1462,7 +1469,7 @@ and the possible prefixes</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line261">line 261</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line409">line 409</a>
     </li></ul></dd>
     
 
@@ -1657,7 +1664,7 @@ console.log(isKeyCompressed(compressed)) // true</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line112">line 112</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -1851,7 +1858,7 @@ this can be used in conjuction with convertExtendedPublicKey to attempt to autom
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line81">line 81</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line216">line 216</a>
     </li></ul></dd>
     
 
@@ -2017,7 +2024,7 @@ console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extende
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line35">line 35</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -2192,7 +2199,7 @@ console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extende
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line158">line 158</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line295">line 295</a>
     </li></ul></dd>
     
 
@@ -2269,13 +2276,13 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Apr 14 2020 20:52:22 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Apr 16 2020 18:43:34 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>
