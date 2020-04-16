@@ -94,15 +94,18 @@ export class ExtendedPublicKey extends Struct {
         `Expected network to be one of ${MAINNET} or ${TESTNET}.`
       );
       this.network = options.network;
-      this.version =
-        this.network === MAINNET
-          ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
-          : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
+    } else {
+      this.network = MAINNET;
     }
+    this.version =
+      this.network === MAINNET
+        ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
+        : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
   }
 
   /**
-   *
+   * A Buffer Writer used to encode an xpub. This is called
+   * by the `encode` and `toBase58` methods
    * @param {bufio.BufferWriter} bw BufferWriter
    * @returns {Buffer} returns raw ExtendedPublicKey
    */
@@ -116,15 +119,38 @@ export class ExtendedPublicKey extends Struct {
     return this;
   }
 
-  toBase58(network = MAINNET) {
+  /**
+   * Given a network string, will update the network and matching
+   * version magic bytes used for generating xpub
+   * @param {string} network - one of "mainnet" or "testnet"
+   * @returns {void}
+   */
+  setNetwork(network) {
+    assert(
+      [MAINNET, TESTNET].includes(network),
+      `Expected network to be one of ${MAINNET} or ${TESTNET}.`
+    );
     this.network = network;
     this.version =
-      network === MAINNET
+      this.network === MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
+  }
+
+  /**
+   * Return the base58 encoded xpub, adding the
+   * @returns {string} base58check encoded xpub, prefixed by network
+   */
+  toBase58() {
     return bs58check.encode(this.encode());
   }
 
+  /**
+   * Return a new Extended Public Key class given
+   * an xpub string
+   * @param {string} data base58 check encoded xpub
+   * @returns {ExtendedPublicKey} new ExtendedPublicKey instance
+   */
   static fromBase58(data) {
     return new this().decode(bs58check.decode(data));
   }
@@ -432,7 +458,8 @@ export function deriveExtendedPublicKey(
     pubkey,
     chaincode,
     parentFingerprint,
+    network,
   });
 
-  return xpub.toBase58(network);
+  return xpub.toBase58();
 }

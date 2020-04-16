@@ -422,16 +422,13 @@ describe("keys", () => {
           parentFingerprint,
         });
 
-        expect(extendedPubkey.toBase58(MAINNET)).toEqual(xpub);
-        expect(extendedPubkey.toBase58(TESTNET)).toEqual(tpub);
+        expect(extendedPubkey.toBase58()).toEqual(xpub);
+        extendedPubkey.setNetwork(TESTNET);
+        expect(extendedPubkey.toBase58()).toEqual(tpub);
 
         // test fromBase58
-        expect(ExtendedPublicKey.fromBase58(xpub).toBase58(MAINNET)).toEqual(
-          xpub
-        );
-        expect(ExtendedPublicKey.fromBase58(tpub).toBase58(TESTNET)).toEqual(
-          tpub
-        );
+        expect(ExtendedPublicKey.fromBase58(xpub).toBase58()).toEqual(xpub);
+        expect(ExtendedPublicKey.fromBase58(tpub).toBase58()).toEqual(tpub);
 
         // test decoding (same as fromBase58)
         const decodedXpub = ExtendedPublicKey.decode(bs58check.decode(xpub));
