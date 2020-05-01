@@ -630,8 +630,7 @@ function singleMultisigTransaction(test) {
   };
 }
 
-const TRANSACTIONS = MULTISIGS.map((test) =>
-  singleMultisigTransaction(test)
+const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)
 ).concat([
   // {
   //   ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === TESTNET)),
