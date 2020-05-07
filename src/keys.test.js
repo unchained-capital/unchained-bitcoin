@@ -343,8 +343,9 @@ describe("keys", () => {
             convertFrom === convertTo ||
             !extendedPubKeyNode[convertFrom] ||
             !extendedPubKeyNode[convertTo]
-          )
+          ) {
             return;
+          }
           it(`should properly convert extended public key from ${convertFrom} to ${convertTo}`, () => {
             const converted = convertExtendedPublicKey(
               extendedPubKeyNode[convertFrom],
