@@ -21,6 +21,7 @@ describe("p2wsh", () => {
       n: 3
     })
     // from actual p2wsh payment with vsize 306
+    // e6147766e23d57933968c1a5600f7e10ab91ea85ed1f033fa344519e78996846
     expect(vsize).toBeGreaterThanOrEqual(306); 
     expect(vsize).toBeLessThanOrEqual(307);
   });

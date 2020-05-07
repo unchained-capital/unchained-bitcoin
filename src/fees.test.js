@@ -110,13 +110,15 @@ describe("fees", () => {
     });
 
     it("should estimate for P2WSH transactions", () => {
+      // fee amounts from real tbtc tx
+      // 0c18cb0ac72a3bd610bc3cd9c79a6fc5d3786a8d9777c26a3a264a3181862db2
       const params = {
         addressType: P2WSH,
-        numInputs: 2,
+        numInputs: 3,
         numOutputs: 3,
         m: 2,
         n: 3,
-        feesInSatoshis: "3500",
+        feesInSatoshis: "4550",
         feesPerByteInSatoshis: "10"
       };
       const fee = estimateMultisigTransactionFee(params);
