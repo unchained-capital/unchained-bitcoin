@@ -3,6 +3,7 @@ import {
   bip32PathToSequence,
   bip32SequenceToPath,
   validateBIP32Path,
+  validateBIP32Index,
   multisigBIP32Root,
   multisigBIP32Path,
   getParentPath,
@@ -67,8 +68,8 @@ describe('paths', () => {
     });
 
     it("returns an error message when a derivation index is too high", () => {
-      expect(validateBIP32Path("m/8589934592")).toMatch(/index is too high/i);
-      expect(validateBIP32Path("m/45/8589934592")).toMatch(/index is too high/i);
+      expect(validateBIP32Path("m/4294967296")).toMatch(/index is too high/i);
+      expect(validateBIP32Path("m/45'/2147483648'/0")).toMatch(/index is too high/i);
     });
 
     it("returns an empty string on valid paths", () => {
@@ -92,6 +93,59 @@ describe('paths', () => {
 
   });
 
+  describe('validateBIP32Index', () => {
+
+    it("returns an error message on invalid indices", () => {
+      expect(validateBIP32Index("")).toMatch(/cannot be blank/i);
+      expect(validateBIP32Index("foo")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("/45")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m//45")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/45''")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/-45")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/4.5")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/4f")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/45/0")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("m/44'/0'")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("-45")).toMatch(/is invalid/i);
+      expect(validateBIP32Index("-0")).toMatch(/is invalid/i);      
+    });
+
+    it("returns an error message when the index is too high", () => {
+      expect(validateBIP32Index("85899345929999999999999999999999999999")).toMatch(/Invalid BIP32 index/i);
+      expect(validateBIP32Index("4294967296")).toMatch(/index is too high/i);
+      expect(validateBIP32Index("2147483648'")).toMatch(/index is too high/i);
+    });
+
+    it("returns an empty string on valid paths", () => {
+      expect(validateBIP32Index("45")).toEqual("");
+      expect(validateBIP32Index("45'")).toEqual("");
+      expect(validateBIP32Index("0")).toEqual("");
+      expect(validateBIP32Index("0'")).toEqual("");
+      expect(validateBIP32Index("4294967295")).toEqual("");
+      expect(validateBIP32Index("2147483647")).toEqual("");
+      expect(validateBIP32Index("2147483647'")).toEqual("");
+    });
+
+    it("enforces mode=hardened if asked", () => {
+      expect(validateBIP32Index("45'")).toEqual("");
+      expect(validateBIP32Index("45")).toEqual("");
+      expect(validateBIP32Index("45'", { mode: "hardened" })).toEqual("");            
+      
+      expect(validateBIP32Index("2147483648", { mode: "hardened" })).toEqual("");            
+      expect(validateBIP32Index("45", { mode: "hardened" })).toMatch(/must be hardened/i);
+    });
+
+    it("enforces mode=unhardened if asked", () => {
+      expect(validateBIP32Index("45'")).toEqual("");
+      expect(validateBIP32Index("45")).toEqual("");
+      expect(validateBIP32Index("45", { mode: "unhardened" })).toEqual("");
+      expect(validateBIP32Index("45'", { mode: "unhardened" })).toMatch(/cannot be hardened/i);
+      expect(validateBIP32Index("2147483648", {mode: "unhardened"})).toMatch(/cannot be hardened/i);      
+    });
+
+  });
+
+  
   describe('multisigBIP32Root', () => {
 
     it("returns the correct root BIP32 path for each combination of address type and network", () => {
