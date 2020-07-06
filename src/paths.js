@@ -15,6 +15,7 @@ const HARDENING_OFFSET = Math.pow(2, 31);
 const BIP32_PATH_REGEX = /^(m\/)?(\d+'?\/)*\d+'?$/;
 const BIP32_HARDENED_PATH_REGEX = /^(m\/)?(\d+'\/)*\d+'$/;
 const BIP32_UNHARDENED_PATH_REGEX = /^(m\/)?(\d+\/)*\d+$/;
+const BIP32_INDEX_REGEX = /^\d+'?$/;
 const MAX_BIP32_HARDENED_NODE_INDEX = Math.pow(2, 31) - 1;
 const MAX_BIP32_NODE_INDEX = Math.pow(2, 32) - 1;
 
@@ -136,35 +137,74 @@ export function validateBIP32Path(pathString, options) {
 
 function validateBIP32PathSegments(segmentStrings) {
   for (let i = 0; i < segmentStrings.length; i++) {
-    const segmentString = segmentStrings[i];
-    const error = validateBIP32PathSegment(segmentString);
+    const indexString = segmentStrings[i];
+    const error = validateBIP32Index(indexString);
     if (error !== '') { return error; }
   }
   return '';
 }
 
-function validateBIP32PathSegment(segmentString) {
-  if (segmentString === null || segmentString === undefined || segmentString === '') {
-    return "BIP32 path segment cannot be blank.";
+/**
+ * Validate a given BIP32 index string.
+ *
+ * - Path segments are validated numerically as well as statically
+ *   (the value of 2^33 is an invalid path segment).
+ *
+ * - By default, 0-4294967295 and 0'-2147483647' are valid.
+ * 
+ * - The `mode` option can be pass to validate index is hardened
+ *   `unhardened` paths.
+ *
+ * - `hardened` paths include 0'-2147483647' and 2147483648-4294967295
+ *
+ * - `unharded` paths include 0-2147483647
+ * 
+ * @param {string} indexString - BIP32 index string
+ * @param {Object} [options] - additional options
+ * @param {string} [options.mode] - "hardened" or "unhardened"
+ * @returns {string} empty if valid or corresponding validation message if not
+ * @example
+ * import {validateBIP32Path} from "unchained-bitcoin";
+ * console.log(validateBIP32Path("")); // "BIP32 index cannot be blank."
+ * console.log(validateBIP32Path("foo")); // "BIP32 index is invalid."
+ * console.log(validateBIP32Path("//45")); // "BIP32 index is invalid."
+ * console.log(validateBIP32Path("/45/")); // "BIP32 index is invalid."
+ * console.log(validateBIP32Index("4294967296")); // "BIP32 index is too high."
+ * console.log(validateBIP32Index("2147483648'")); // "BIP32 index is too high."
+ * console.log(validateBIP32Index("45", { mode: "hardened" })); // "BIP32 index must be hardened."
+ * console.log(validateBIP32Index("45'", { mode: "unhardened" })); // "BIP32 index cannot be hardened."
+ * console.log(validateBIP32Index("2147483648", {mode: "unhardened"})); // "BIP32 index cannot be hardened."
+ * console.log(validateBIP32Index("45")); // ""
+ * console.log(validateBIP32Index("45'")); // ""
+ * console.log(validateBIP32Index("0")); // ""
+ * console.log(validateBIP32Index("0'")); // ""
+ * console.log(validateBIP32Index("4294967295")); // ""
+ * console.log(validateBIP32Index("2147483647")); // ""
+ * console.log(validateBIP32Index("2147483647'")); // ""
+ */
+export function validateBIP32Index(indexString, options) {
+  if (indexString === null || indexString === undefined || indexString === '') {
+    return "BIP32 index cannot be blank.";
   }
 
+  if (!indexString.match(BIP32_INDEX_REGEX)) {
+    return "BIP32 index is invalid.";
+  }
+  
   let numberString, hardened;
-  if (segmentString.substr(segmentString.length - 1) === "'") {
-    numberString = segmentString.substr(0, segmentString.length - 1);
+  if (indexString.substr(indexString.length - 1) === "'") {
+    numberString = indexString.substr(0, indexString.length - 1);
     hardened = true;
   } else {
-    numberString = segmentString;
+    numberString = indexString;
     hardened = false;
   }
 
-  // We should never actually wind up throwing this error b/c of an
-  // earlier check against BIP32_PATH_REGEX.
-  const numberError = "Invalid BIP32 path segment.";
+  const numberError = "Invalid BIP32 index.";
   let number;
   try {
     number = parseInt(numberString, 10);
   } catch (parseError) {
-    // shouldn't reach here b/c we already applied a regex check
     return numberError;
   }
   if (Number.isNaN(number) || number.toString().length !== numberString.length) {
@@ -174,9 +214,25 @@ function validateBIP32PathSegment(segmentString) {
     return numberError;
   }
 
+  // allows up to 4294967295 or 2147483647'
   if (number > (hardened ? MAX_BIP32_HARDENED_NODE_INDEX : MAX_BIP32_NODE_INDEX)) {
     return "BIP32 index is too high.";
   }
+
+  // allows 0'-2147483647' or 2147483648-4294967295
+  if (options && options.mode === 'hardened') {
+    if (!hardened && number <= MAX_BIP32_HARDENED_NODE_INDEX) {
+      return "BIP32 index must be hardened.";
+    }
+  }
+
+  // allows 0-2147483647
+  if (options && options.mode === 'unhardened') {
+    if (hardened || number > MAX_BIP32_HARDENED_NODE_INDEX) {
+      return "BIP32 index cannot be hardened.";
+    }
+  }
+  
 
   return '';
 }
