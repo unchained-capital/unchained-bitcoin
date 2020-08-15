@@ -11,6 +11,7 @@ export * from "./p2sh";
 export * from "./p2sh_p2wsh";
 export * from "./p2wsh";
 export * from "./paths";
+export * from './psbt';
 export * from "./script";
 export * from "./signatures";
 export * from "./transactions";

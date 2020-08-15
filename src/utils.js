@@ -6,7 +6,7 @@
  */
 
 import BigNumber from "bignumber.js";
-import bitcoin from "bitcoinjs-lib";
+import { crypto } from "bitcoinjs-lib";
 
 /**
  * Converts a byte array to its hex representation.
@@ -106,5 +106,5 @@ export const ZERO = BigNumber(0);
  * @returns {Buffer} hash160 of the given buffer
  */
 export function hash160(buf) {
-  return bitcoin.crypto.ripemd160(bitcoin.crypto.sha256(buf))
+  return crypto.ripemd160(crypto.sha256(buf));
 }
