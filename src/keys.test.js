@@ -14,6 +14,7 @@ import {
   validatePrefix,
   EXTENDED_PUBLIC_KEY_VERSIONS,
   ExtendedPublicKey,
+  fingerprintToFixedLengthHex,
 } from "./keys";
 
 import { TESTNET, MAINNET } from "./networks";
@@ -383,6 +384,28 @@ describe("keys", () => {
       expect(decodedXpub).toContain(fingerprint.toString(16));
     });
   });
+
+  describe("fingerprintToFixedLengthHex", () => {
+    it("returns 4-byte zero-padded hex string", () => {
+      const hexOutputs = {
+        '00000007': 7,
+        '0000007b': 123,
+        '00000943': 2371,
+        '0000d2bb': 53947,
+        '0004ec4f': 322639,
+        '00f4a5bc': 16033212,
+        '01808a52': 25201234,
+        '32a7ae1c': 849849884,
+        'fa8cae68': 8498490984, // should be 1fa8cae68 but truncated front 1
+      };
+
+      for (const [xfpHex, xfpNumber] of Object.entries(hexOutputs)) {
+        const hexFingerprint = fingerprintToFixedLengthHex(xfpNumber);
+        expect(hexFingerprint.length).toEqual(8);
+        expect(hexFingerprint).toEqual(xfpHex)
+      }
+    })
+  })
 
   describe("deriveExtendedPublicKey", () => {
     it("derives a valid bip32 node with all matching HD wallet properties", () => {

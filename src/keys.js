@@ -419,11 +419,14 @@ export function isKeyCompressed(_pubkey) {
  * which need the fingerprint of the parent pubkey. If not a compressed key
  * then this function will attempt to compress it.
  * @param {string} _pubkey - pubkey to derive fingerprint from
- * @returns {string} fingerprint
+ * @returns {number} fingerprint
  * @example
- * import {getFingerprintFromPublicKey, compressPublicKey} from "unchained-bitcoin"
+ * import {getFingerprintFromPublicKey} from "unchained-bitcoin"
  * const pubkey = "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
- * console.log(getFingerprintFromPublicKey(pubkey)) // 2213579839
+ * console.log(getFingerprintFromPublicKey(pubkey)) // 724365675
+ *
+ * const uncompressedPubkey = "04dccdc7fc599ed379c415fc2bb398b1217f0142af23692359057094ce306cd3930e6634c71788b9ed283219ca2fea102aaf137cd74e025cce97b94478a02029cf"
+ * console.log(getFingerprintFromPublicKey(uncompressedPubkey)) // 247110101
  */
 export function getFingerprintFromPublicKey(_pubkey) {
   let pubkey = _pubkey;
@@ -434,6 +437,25 @@ export function getFingerprintFromPublicKey(_pubkey) {
   const pubkeyBuffer = Buffer.from(pubkey, "hex");
   const hash = hash160(pubkeyBuffer);
   return ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) >>> 0;
+}
+
+/**
+ * Take a fingerprint and return a zero-padded, hex-formatted string
+ * that is exactly eight characters long.
+ *
+ * @param {number} xfp the fingerprint
+ * @returns {string} zero-padded, fixed-length hex xfp
+ *
+ * @example
+ * import {fingerprintToFixedLengthHex} from "unchained-bitcoin"
+ * const pubkeyFingerprint = 724365675
+ * console.log(fingerprintToFixedLengthHex(pubkeyFingerprint)) // 2b2cf16b
+ *
+ * const uncompressedPubkeyFingerprint = 247110101
+ * console.log(fingerprintToFixedLengthHex(uncompressedPubkeyFingerprint)) // 0eba99d5
+ */
+export function fingerprintToFixedLengthHex(xfp) {
+  return (xfp + 0x100000000).toString(16).substr(-8);
 }
 
 /**
