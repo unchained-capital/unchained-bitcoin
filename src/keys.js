@@ -204,9 +204,9 @@ export function convertExtendedPublicKey(extendedPublicKey, targetPrefix) {
 
 /**
  * Check to see if an extended public key is of the correct prefix for the network
- * this can be used in conjuction with convertExtendedPublicKey to attempt to automatically convert
+ * this can be used in conjunction with convertExtendedPublicKey to attempt to automatically convert
  * @param {string} extendedPublicKey - the extended public key to check
- * @param {string} network - thie bitcoin network
+ * @param {string} network - the bitcoin network
  * @example
  * import {validateExtendedPublicKeyForNetwork} from "unchained-bitcoin";
  * console.log(validateExtendedPublicKeyForNetwork('xpub...', MAINNET)) // empty
