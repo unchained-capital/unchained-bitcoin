@@ -42,7 +42,7 @@
     "bignumber.js": "^8.1.1",
     "bip32": "^2.0.5",
     "bitcoin-address-validation": "^0.2.9",
-    "bitcoinjs-lib": "^4.0.5",
+    "bitcoinjs-lib": "^5.1.10",
     "bs58check": "^2.1.2",
     "bufio": "^1.0.6",
     "core-js": "^2.6.10"
