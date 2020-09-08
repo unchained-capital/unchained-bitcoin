@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: address</title>
+    <title>JSDoc: Module: psbt</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: address</h1>
+    <h1 class="page-title">Module: psbt</h1>
 
     
 
@@ -38,7 +38,8 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>This module provides validation messages related to addresses.</p></div>
+            <div class="description"><p>This module provides functions for interacting with PSBTs, see BIP174
+https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki</p></div>
         
 
         
@@ -87,7 +88,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="addresses.js.html">addresses.js</a>, <a href="addresses.js.html#line1">line 1</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -144,7 +145,7 @@
     
 
     
-    <h4 class="name" id=".validateAddress"><span class="type-signature">(static) </span>validateAddress<span class="signature">(address, network)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".parseSignaturesFromPSBT"><span class="type-signature">(static) </span>parseSignaturesFromPSBT<span class="signature">(psbtFromFile)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -152,8 +153,8 @@
 
 
 <div class="description">
-    <p>Validate a given bitcoin address.</p>
-<p>Address must be a valid address on the given bitcoin network.</p>
+    <p>Extracts the signature(s) from a PSBT.
+NOTE: there should be one signature per input, per signer.</p>
 </div>
 
 
@@ -189,13 +190,13 @@
 
         <tr>
             
-                <td class="name"><code>address</code></td>
+                <td class="name"><code>psbtFromFile</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -205,30 +206,7 @@
 
             
 
-            <td class="description last"><p>the address to validate</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>network</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>bitcoin network</p></td>
+            <td class="description last"><p>base64 or hex</p></td>
         </tr>
 
     
@@ -269,7 +247,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="addresses.js.html">addresses.js</a>, <a href="addresses.js.html#line32">line 32</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -298,7 +276,8 @@
 
         
 <div class="param-desc">
-    <p>empty if valid or corresponding validation message if not</p>
+    <p>returns an object with signatureSet(s) - an object with format
+{pubkey : [signature(s)]}</p>
 </div>
 
 
@@ -309,7 +288,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -318,14 +297,6 @@
     
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>import {MAINNET, TESTNET, validateAddress} from "unchained-bitcoin";
-console.log(validateAddress('', MAINNET)); // "Address cannot be blank"
-console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', MAINNET)); // "Address must start with either of 'bc1', '1' or '3' followed by letters or digits."
-console.log(validateAddress('2Mx6Y8VRj8rmSdLfwrvnpBR7ctjctPLzpWs', TESTNET)); // ""</code></pre>
 
 
 

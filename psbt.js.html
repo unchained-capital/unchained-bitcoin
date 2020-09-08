@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: script.js</title>
+    <title>JSDoc: Source: psbt.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: script.js</h1>
+    <h1 class="page-title">Source: psbt.js</h1>
 
     
 
@@ -26,51 +26,65 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * This module provides functions for converting generic bitcoin
- * scripts to hex or opcodes.
- * 
- * @module script
- */
-
-const bitcoin = require('bitcoinjs-lib');
+            <pre class="prettyprint source linenums"><code>import {Psbt} from "bitcoinjs-lib";
+import {toHexString} from './utils';
 
 /**
- * Extracts the ASM (opcode) representation of a script from a
- * `Multisig` object.
- * 
- * @param {Multisig} script - Multisig object
- * @returns {string} ASM representation of script
- * @example
- * import {
- *   generateMultisigFromPublicKeys, MAINNET, P2SH,
- *   scriptToOps,
- * } from "unchained-bitcoin";
- * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, "03a...", "03b...");
- * console.log(scriptToOps(multisig)) // "OP_1 03a... 03b... OP_2 OP_CHECKMULTISIG"
- * 
+ * This module provides functions for interacting with PSBTs, see BIP174
+ * https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki
+ *
+ * @module psbt
  */
-export function scriptToOps(script) {
-  return bitcoin.script.toASM(script.output);
-}
 
 /**
- * Extracts the hex representation of a script from a `Multisig`
- * object.
- * 
- * @param {Multisig} script - Multisig object
- * @returns {string} hex representation of script
- * @example
- * import {
- *   generateMultisigFromPublicKeys, MAINNET, P2SH,
- *   scriptToHex,
- * } from "unchained-bitcoin";
- * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, "03a...", "03b...");
- * console.log(scriptToHex(multisig)) // "5121024f355bdcb...5871aa52ae"
- * 
+ * Extracts the signature(s) from a PSBT.
+ * NOTE: there should be one signature per input, per signer.
+ *
+ * @param {String} psbtFromFile -  base64 or hex
+ * @returns {Object} returns an object with signatureSet(s) - an object with format
+ * {pubkey : [signature(s)]}
+ *
  */
-export function scriptToHex(script) {
-  return script.output.toString('hex');
+export function parseSignaturesFromPSBT(psbtFromFile) {
+  let psbt = {};
+
+  // Auto-detect and decode Base64 and Hex.
+  if (psbtFromFile.substring(0, 10) === '70736274ff') {
+    psbt = Psbt.fromHex(psbtFromFile);
+  } else if (psbtFromFile.substring(0, 6) === 'cHNidP') {
+    psbt = Psbt.fromBase64(psbtFromFile);
+  } else {
+    return null;
+  }
+
+  const partialSignatures = (
+    psbt &amp;&amp;
+    psbt.data &amp;&amp;
+    psbt.data.inputs &amp;&amp;
+    psbt.data.inputs[0]
+  ) ? psbt.data.inputs[0].partialSig : undefined;
+  const numSigners = partialSignatures === undefined ? 0 : partialSignatures.length;
+
+  const signatureSet = {};
+  let pubKey = '';
+  const inputs = psbt.data.inputs;
+  // Find signatures in the PSBT
+  if (numSigners >= 1) {
+    // return array of arrays of signatures
+    for (let i = 0; i &lt; inputs.length; i++) {
+      for (let j = 0; j &lt; numSigners; j++) {
+        pubKey = toHexString(Array.prototype.slice.call(inputs[i].partialSig[j].pubkey));
+        if (pubKey in signatureSet) {
+          signatureSet[pubKey].push(inputs[i].partialSig[j].signature.toString("hex"));
+        } else {
+          signatureSet[pubKey] = [inputs[i].partialSig[j].signature.toString("hex")];
+        }
+      }
+    }
+  } else {
+    return null;
+  }
+  return signatureSet;
 }
 </code></pre>
         </article>
