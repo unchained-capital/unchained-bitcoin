@@ -46,13 +46,6 @@ export function validateAddress(address, network) {
     }
   }
 
-  // try {
-  //   // FIXME does this support Bech32 addresses?
-  //   bitcoin.address.toOutputScript(address, network);
-  // } catch (e) {
-  //   return `Address is invalid: ${e}`;
-  // }
-
   const result = bitcoinAddressValidation(address);
   if (result) {
     if (network === TESTNET && (!result.testnet)) {
