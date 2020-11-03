@@ -1,5 +1,5 @@
 /**
- * This modulde provides functions for validating and handling
+ * This module provides functions for validating and handling
  * multisig transaction signatures.
  * 
  * @module signatures
@@ -77,10 +77,10 @@ export function validateMultisigSignature(network, inputs, outputs, inputIndex, 
   const signatureBuffer = multisigSignatureBuffer(signatureNoSighashType(inputSignature));
   const input = inputs[inputIndex];
   const publicKeys = multisigPublicKeys(input.multisig);
-  for (var publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
+  for (let publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
     const publicKey = publicKeys[publicKeyIndex];
     const publicKeyBuffer = Buffer.from(publicKey, 'hex');
-    const keyPair = bitcoin.ECPair.fromPublicKey(publicKeyBuffer);
+    const  keyPair = bitcoin.ECPair.fromPublicKey(publicKeyBuffer);
     if (keyPair.verify(hash, signatureBuffer)) {
       return publicKey;
     }
@@ -90,7 +90,7 @@ export function validateMultisigSignature(network, inputs, outputs, inputIndex, 
 
 export function signatureNoSighashType(signature) {
   const len = parseInt(signature.slice(2,4), 16);
-  if (len == (signature.length - 4) / 2) return signature;
+  if (len === (signature.length - 4) / 2) return signature;
   else return signature.slice(0, -2);
 }
 

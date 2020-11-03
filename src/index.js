@@ -1,5 +1,6 @@
 export * from "./addresses";
 export * from "./block_explorer";
+export * from "./braid";
 export * from "./fees";
 export * from "./fixtures";
 export * from "./inputs";

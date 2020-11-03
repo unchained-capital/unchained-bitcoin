@@ -5,6 +5,9 @@ import {
   TEST_FIXTURES,
 } from "./fixtures";
 
+// FIXME: transactionbuilder is deprecating, but we know this. remove this after addressing.
+console.warn = jest.fn();
+
 describe('signatures', () => {
 
   describe('validateMultisigSignature', () => {

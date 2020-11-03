@@ -1,7 +1,7 @@
 /**
  * This module contains various utility functions for converting and
  * validating BIP32 derivation paths.
- * 
+ *
  * @module paths
  */
 
@@ -23,7 +23,7 @@ const MAX_BIP32_NODE_INDEX = Math.pow(2, 32) - 1;
  * Return the hardened version of the given BIP32 index.
  *
  * Hardening is equivalent to adding 2^31.
- * 
+ *
  * @param {string|number} index - BIP32 index
  * @returns {number} the hardened index
  * @example
@@ -39,7 +39,7 @@ export function hardenedBIP32Index(index) {
  * representing the corresponding derivation indices.
  *
  * Hardened path segments will have the [hardening offset]{@link module:paths.HARDENING_OFFSET} added to the index.
- * 
+ *
  * @param {string} pathString - BIP32 derivation path string
  * @returns {number[]} the derivation indices
  * @example
@@ -62,7 +62,7 @@ export function bip32PathToSequence(pathString) {
  * BIP32 derivation path.
  *
  * Indices above the [hardening offset]{@link * module:paths.HARDENING_OFFSET} will be represented wiith hardened * path segments (using a trailing single-quote).
- * 
+ *
  * @param {number[]} sequence - the derivation indices
  * @returns {string} BIP32 derivation path
  * @example
@@ -84,10 +84,10 @@ export function bip32SequenceToPath(sequence) {
  *
  * - Path segments are validated numerically as well as statically
  *   (the value of 2^33 is an invalid path segment).
- * 
+ *
  * - The `mode` option can be pass to validate fully `hardened` or
  *   `unhardened` paths.
- * 
+ *
  * @param {string} pathString - BIP32 derivation path string
  * @param {Object} [options] - additional options
  * @param {string} [options.mode] - "hardened" or "unhardened"
@@ -139,7 +139,9 @@ function validateBIP32PathSegments(segmentStrings) {
   for (let i = 0; i < segmentStrings.length; i++) {
     const indexString = segmentStrings[i];
     const error = validateBIP32Index(indexString);
-    if (error !== '') { return error; }
+    if (error !== '') {
+      return error;
+    }
   }
   return '';
 }
@@ -151,14 +153,14 @@ function validateBIP32PathSegments(segmentStrings) {
  *   (the value of 2^33 is an invalid path segment).
  *
  * - By default, 0-4294967295 and 0'-2147483647' are valid.
- * 
+ *
  * - The `mode` option can be pass to validate index is hardened
  *   `unhardened` paths.
  *
  * - `hardened` paths include 0'-2147483647' and 2147483648-4294967295
  *
  * - `unharded` paths include 0-2147483647
- * 
+ *
  * @param {string} indexString - BIP32 index string
  * @param {Object} [options] - additional options
  * @param {string} [options.mode] - "hardened" or "unhardened"
@@ -190,8 +192,9 @@ export function validateBIP32Index(indexString, options) {
   if (!indexString.match(BIP32_INDEX_REGEX)) {
     return "BIP32 index is invalid.";
   }
-  
-  let numberString, hardened;
+
+  let numberString,
+    hardened;
   if (indexString.substr(indexString.length - 1) === "'") {
     numberString = indexString.substr(0, indexString.length - 1);
     hardened = true;
@@ -200,17 +203,11 @@ export function validateBIP32Index(indexString, options) {
     hardened = false;
   }
 
+  // This comes after the regex, so no need to test that parseInt fails.
   const numberError = "Invalid BIP32 index.";
-  let number;
-  try {
-    number = parseInt(numberString, 10);
-  } catch (parseError) {
-    return numberError;
-  }
+  let number = parseInt(numberString, 10);
+
   if (Number.isNaN(number) || number.toString().length !== numberString.length) {
-    return numberError;
-  }
-  if (number < 0) {
     return numberError;
   }
 
@@ -232,7 +229,7 @@ export function validateBIP32Index(indexString, options) {
       return "BIP32 index cannot be hardened.";
     }
   }
-  
+
 
   return '';
 }
@@ -249,7 +246,7 @@ export function validateBIP32Index(indexString, options) {
  *   - P2SH: m/45'/1'/0'
  *   - P2SH-P2WSH: m/48'/1'/0'/1'
  *   - P2WSH: m/48'/1'/0'/2'
- * 
+ *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} derivation path
@@ -261,21 +258,21 @@ export function validateBIP32Index(indexString, options) {
 export function multisigBIP32Root(addressType, network) {
   const coinPath = (network === MAINNET ? "0'" : "1'");
   switch (addressType) {
-  case P2SH:
-    return `m/45'/${coinPath}/0'`;
-  case P2SH_P2WSH:
-    return `m/48'/${coinPath}/0'/1'`;
-  case P2WSH:
-    return `m/48'/${coinPath}/0'/2'`;
-  default:
-    return null;
+    case P2SH:
+      return `m/45'/${coinPath}/0'`;
+    case P2SH_P2WSH:
+      return `m/48'/${coinPath}/0'/1'`;
+    case P2WSH:
+      return `m/48'/${coinPath}/0'/2'`;
+    default:
+      return null;
   }
 }
 
 /**
  * Returns a BIP32 path at the given `relativePath` under the default
  * BIP32 root path for the given `addressType` and `network`.
- * 
+ *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - type from which to calculate BIP32 root path
  * @param {module:networks.NETWORKS} network - bitcoin network from which to calculate BIP32 root path
  * @param {number|string} relativePath - the relative BIP32 path (no leading `/`)
@@ -303,8 +300,8 @@ export function multisigBIP32Path(addressType, network, relativePath) {
  */
 export function getParentPath(bip32Path) {
   // first validate the input
-  let validated = validateBIP32Path(bip32Path)
-  if (validated.length) return validated
+  let validated = validateBIP32Path(bip32Path);
+  if (validated.length) return validated;
   // then slice off then last item in the path
   return bip32Path.split("/").slice(0, -1).join("/");
 }

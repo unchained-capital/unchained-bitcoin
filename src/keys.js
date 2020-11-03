@@ -11,7 +11,6 @@ import * as bip32 from "bip32";
 import bs58check from "bs58check";
 import { Struct } from "bufio";
 import assert from "assert";
-
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
 import { TESTNET, networkData, MAINNET } from "./networks";
@@ -43,14 +42,27 @@ export function validatePrefix(prefix) {
 }
 
 /**
+ * checks length, is string, and valid hex
+ * @param {string} rootFingerprint - fingerprint to validate
+ * @return {void}
+ */
+export function validateRootFingerprint(rootFingerprint) {
+  assert(typeof rootFingerprint === "string", 'Root fingerprint must be a string.');
+  assert(rootFingerprint.length === 8, `Expected hex value of length 8`);
+  const rootXfpError = validateHex(rootFingerprint);
+  assert(!rootXfpError.length, `Root fingerprint must be valid hex`);
+}
+
+/**
  * Struct object for encoding and decoding extended public keys.
  * base58 encoded serialization of the following information:
  * [ version ][ depth ][ parent fingerprint ][ key index ][ chain code ][ pubkey ]
  * @param {string} options.bip32Path e.g. m/45'/0'/0
- * @param {string} options.pubkey pubkey to derive from
+ * @param {string} options.pubkey pubkey found at bip32Path
  * @param {string} options.chaincode chaincode corresponding to pubkey and path
  * @param {string} options.parentFingerprint - fingerprint of parent public key
  * @param {string} [options.network = mainnet] - mainnet or testnet
+ * @param {string} [options.rootFingerprint] - the root fingerprint of the device, e.g. 'ca2ab33f'
  * @example
  * import { ExtendedPublicKey } from "unchained-bitcoin"
  * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
@@ -70,13 +82,11 @@ export class ExtendedPublicKey extends Struct {
     this.sequence = bip32PathToSequence(this.path);
     this.index = this.sequence[this.sequence.length - 1];
     this.depth = this.path.split("/").length - 1;
-
     const pubKeyError = validatePublicKey(options.pubkey);
     assert(!pubKeyError.length, pubKeyError);
     this.pubkey = isKeyCompressed(options.pubkey)
       ? options.pubkey
       : compressPublicKey(options.pubkey);
-
     assert(
       options.chaincode.length === 64,
       "xpub derivation requires 32-byte chaincode"
@@ -101,12 +111,19 @@ export class ExtendedPublicKey extends Struct {
       this.network === MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
+
+    if (options.rootFingerprint) {
+      validateRootFingerprint(options.rootFingerprint);
+      this.rootFingerprint = options.rootFingerprint;
+    }
+
+    this.base58String = this.toBase58();
   }
 
   /**
    * A Buffer Writer used to encode an xpub. This is called
    * by the `encode` and `toBase58` methods
-   * @param {bufio.BufferWriter} bw BufferWriter
+   * @param {BufferWriter} bw bufio.BufferWriter
    * @returns {Buffer} returns raw ExtendedPublicKey
    */
   write(bw) {
@@ -138,6 +155,25 @@ export class ExtendedPublicKey extends Struct {
   }
 
   /**
+   * @param {string} bip32Path set this xpub's path
+   * @returns {void}
+   */
+  setBip32Path(bip32Path) {
+    const pathError = validateBIP32Path(bip32Path);
+    assert(!pathError.length, pathError);
+    this.path = bip32Path;
+  }
+
+  /**
+   * @param {string} rootFingerprint fingerprint of pubkey at m/
+   * @returns {void}
+   */
+  setRootFingerprint(rootFingerprint) {
+    validateRootFingerprint(rootFingerprint);
+    this.rootFingerprint = rootFingerprint;
+  }
+
+  /**
    * Return the base58 encoded xpub, adding the
    * @returns {string} base58check encoded xpub, prefixed by network
    */
@@ -156,9 +192,20 @@ export class ExtendedPublicKey extends Struct {
   }
 
   /**
+   * Sometimes we hop back and forth between a "Rich ExtendedPublicKey"
+   * (a Struct with a couple extra parameters set) and the minimal
+   * Struct - let's keep the actual string of the Struct around
+   * for easy usage in other functions
+   * @returns {void}
+   */
+  addBase58String() {
+    this.base58String = this.toBase58();
+  }
+
+  /**
    * Used by the decoder to convert a raw xpub Buffer into
    * an ExtendedPublicKey class
-   * @param {bufio.BufferReader} br - A Buffer Reader
+   * @param {BufferReader} br - A bufio.BufferReader
    * @returns {ExtendedPublicKey} new instance of Extended Public Key
    */
   read(br) {
@@ -223,7 +270,7 @@ export function validateExtendedPublicKeyForNetwork(
   }
   const notXpubError = `Extended public key must begin with ${requiredPrefix}.`;
   const prefix = extendedPublicKey.slice(0, 4);
-  if (!(prefix === "xpub" || (network === TESTNET && prefix === "tpub"))) {
+  if (!((network === MAINNET && prefix === "xpub") || (network === TESTNET && prefix === "tpub"))) {
     return notXpubError;
   }
   return "";
@@ -409,9 +456,7 @@ export function deriveChildExtendedPublicKey(
 export function isKeyCompressed(_pubkey) {
   let pubkey = _pubkey;
   if (!Buffer.isBuffer(_pubkey)) pubkey = Buffer.from(_pubkey, "hex");
-
-  if (pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3)) return true;
-  return false;
+  return pubkey.length === 33 && (pubkey[0] === 2 || pubkey[0] === 3);
 }
 
 /**
@@ -430,7 +475,6 @@ export function isKeyCompressed(_pubkey) {
  */
 export function getFingerprintFromPublicKey(_pubkey) {
   let pubkey = _pubkey;
-  // compress the key if it is not compressed
   if (!isKeyCompressed(_pubkey)) {
     pubkey = compressPublicKey(_pubkey);
   }
@@ -459,6 +503,28 @@ export function fingerprintToFixedLengthHex(xfp) {
 }
 
 /**
+ * Returns the root fingerprint of the extendedPublicKey
+ * (It should be zero-padded, hex-formatted string that is exactly eight
+ * characters long.)
+ *
+ * @param {Struct} extendedPublicKey the extendedPublicKey Struct
+ * @returns {string|null} zero-padded, fixed-length hex xfp
+ *
+ * @example
+ * import {extendedPublicKeyRootFingerprint} from "unchained-bitcoin"
+ * console.log(extendedPublicKeyRootFingerprint({})) // null
+ * import { ExtendedPublicKey } from "unchained-bitcoin"
+ * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
+ * xpub.setRootFingerprint('12341234');
+ * console.log(extendedPublicKeyRootFingerprint(xpub)) // 12341234
+ */
+export function extendedPublicKeyRootFingerprint(extendedPublicKey) {
+  return extendedPublicKey.rootFingerprint
+    ? extendedPublicKey.rootFingerprint
+    : null;
+}
+
+/**
  * Derive base58 encoded xpub given known information about
  * BIP32 Wallet Node.
  * @param {string} bip32Path e.g. m/45'/0'/0
@@ -473,7 +539,7 @@ export function deriveExtendedPublicKey(
   pubkey,
   chaincode,
   parentFingerprint,
-  network = MAINNET
+  network = MAINNET,
 ) {
   const xpub = new ExtendedPublicKey({
     path: bip32Path,

@@ -4,12 +4,22 @@ import {
   validateOutputAmount,
 } from './outputs';
 import {TESTNET} from "./networks";
+import BigNumber from 'bignumber.js';
 
 describe("outputs", () => {
 
   const validAddress = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
 
   describe('validateOutputs', () => {
+
+    it("should return an error message if no outputs", () => {
+      expect(
+        validateOutputs(
+          TESTNET,
+          []
+        )
+      ).toMatch(/At least one output is required/i);
+    });
     
     it("should return an error message if one of the outputs is invalid", () => {
       expect(
@@ -41,6 +51,12 @@ describe("outputs", () => {
 
     it("should return an error message for a missing amount", () => {
       expect(validateOutput(TESTNET, {address: validAddress})).toMatch(/does not have.+amountSats/i);
+    });
+
+    it("should return an error message for an invalid amount", () => {
+      BigNumber.DEBUG = true;
+      expect(validateOutput(TESTNET, {address: validAddress, amountSats: "foo"})).toMatch(/invalid output amount/i);
+      BigNumber.DEBUG = false;
     });
 
     it("should return an error message for an invalid amount", () => {
@@ -84,6 +100,13 @@ describe("outputs", () => {
     });
 
     describe("when also passing `inputTotalSats`", () => {
+
+      it("should return an error message for an unparseable inputTotalSats amount", () => {
+        BigNumber.DEBUG = true;
+        expect(validateOutputAmount(1000, 'foo')).toMatch(/invalid total input amount/i);
+
+        BigNumber.DEBUG = false;
+      });
 
       it("should return an error message for an unparseable output amount", () => {
         expect(validateOutputAmount('foo', 100000)).toMatch(/invalid output amount/i);

@@ -83,11 +83,14 @@ describe('paths', () => {
 
     it("enforces mode=hardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
+      expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
       expect(validateBIP32Path("m/45'/0", { mode: "hardened" })).toMatch(/fully-hardened/i);
+      expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
     });
 
     it("enforces mode=unhardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
+      expect(validateBIP32Path("m/45/0", { mode: "unhardened" })).toEqual("");
       expect(validateBIP32Path("m/45'/0", { mode: "unhardened" })).toMatch(/cannot include hardened/i);
     });
 
@@ -107,7 +110,7 @@ describe('paths', () => {
       expect(validateBIP32Index("m/45/0")).toMatch(/is invalid/i);
       expect(validateBIP32Index("m/44'/0'")).toMatch(/is invalid/i);
       expect(validateBIP32Index("-45")).toMatch(/is invalid/i);
-      expect(validateBIP32Index("-0")).toMatch(/is invalid/i);      
+      expect(validateBIP32Index("-0")).toMatch(/is invalid/i);
     });
 
     it("returns an error message when the index is too high", () => {
@@ -171,6 +174,10 @@ describe('paths', () => {
   });
 
   describe('multisigBIP32Path', () => {
+
+    it("fails with invalid path", () => {
+      expect(multisigBIP32Path('foo', MAINNET, "1")).toBe(null);
+    });
 
     it("returns a BIP32 path with the correct root for each combination of address type, network, and relative path", () => {
       expect(multisigBIP32Path(P2SH, MAINNET, "1")).toEqual("m/45'/0'/0'/1");

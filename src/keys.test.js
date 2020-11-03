@@ -15,6 +15,8 @@ import {
   EXTENDED_PUBLIC_KEY_VERSIONS,
   ExtendedPublicKey,
   fingerprintToFixedLengthHex,
+  extendedPublicKeyRootFingerprint,
+  validateExtendedPublicKeyForNetwork,
 } from "./keys";
 
 import { TESTNET, MAINNET } from "./networks";
@@ -25,6 +27,34 @@ const NODES = TEST_FIXTURES.nodes;
 const extendedPubKeyNode = TEST_FIXTURES.nodes["m/45'/0'/0'"];
 
 describe("keys", () => {
+
+  describe("validateExtendedPublicKeyForNetwork", () => {
+    const validXpub =
+      "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv";
+    const validTpub =
+      "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px";
+
+    it("returns an error message when the prefix does not match the network", () => {
+      expect(validateExtendedPublicKeyForNetwork("foo", TESTNET)).toMatch(
+        /must begin with/i
+      );
+      expect(validateExtendedPublicKeyForNetwork("tpub", MAINNET)).toMatch(
+        /must begin with/i
+      );
+      expect(validateExtendedPublicKeyForNetwork(validTpub, MAINNET)).toMatch(
+        /must begin with/i
+      );
+      expect(validateExtendedPublicKeyForNetwork(validXpub, TESTNET)).toMatch(
+        /must begin with/i
+      );
+    });
+
+    it("returns an empty string when the value is valid", () => {
+      expect(validateExtendedPublicKeyForNetwork(validTpub, TESTNET)).toBe("");
+      expect(validateExtendedPublicKeyForNetwork(validXpub, MAINNET)).toBe("");
+    });
+  });
+
   describe("validateExtendedPublicKey", () => {
     const validXpub =
       "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv";
@@ -337,6 +367,14 @@ describe("keys", () => {
   });
 
   describe("Test convertExtendedPublicKey", () => {
+    it(`should fail to convert`, () => {
+      // bs58check.decode = () => { throw new Error() };
+      expect(() => convertExtendedPublicKey(
+        'tpub',
+        'xpub',
+      )).toThrow(/Unable to convert extended/);
+    });
+
     Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertTo) => {
       describe(`Test converting to ${convertTo}`, () => {
         Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertFrom) => {
@@ -367,6 +405,9 @@ describe("keys", () => {
       expect(
         isKeyCompressed(compressPublicKey(uncompressedPubkey))
       ).toBeTruthy();
+
+      const uncompressedPubkeyBuffer = Buffer.from(uncompressedPubkey, 'hex');
+      expect(isKeyCompressed(uncompressedPubkeyBuffer)).toBeFalsy();
     });
   });
 
@@ -382,6 +423,50 @@ describe("keys", () => {
       expect(node.parentFingerprint).toEqual(fingerprint);
       // we should also be able to find the fingerprint in the decoded xpub
       expect(decodedXpub).toContain(fingerprint.toString(16));
+    });
+
+    it("derives the correct fingerprint from a given uncompressed pubkey", () => {
+      const node = NODES["m/45'/0'/0'/0"];
+      const uncompressedPubkey =
+        "0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907";
+
+      const fingerprint = getFingerprintFromPublicKey(uncompressedPubkey);
+      const decodedXpub = bs58.decode(node.xpub).toString("hex");
+
+      // the child node should have its parent's fingerprint in the xpub
+      expect(node.parentFingerprint).toEqual(fingerprint);
+      // we should also be able to find the fingerprint in the decoded xpub
+      expect(decodedXpub).toContain(fingerprint.toString(16));
+    });
+  });
+
+  describe("extendedPublicKeyRootFingerprint", () => {
+    it("returns root fingerprint if set", () => {
+      const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"];
+      for (const path of paths) {
+        const { parentFingerprint, chaincode, pub, rootFingerprint } = NODES[path];
+        let pubToUse = pub;
+        // Make sure compressing works as intended
+        if (pub === '0387cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03') {
+          pubToUse = '0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907'
+        }
+        const derivedXpub = ExtendedPublicKey.fromBase58(deriveExtendedPublicKey(
+          path,
+          pubToUse,
+          chaincode,
+          parentFingerprint,
+        ));
+        derivedXpub.setRootFingerprint(rootFingerprint)
+        const derivedTpub = ExtendedPublicKey.fromBase58(deriveExtendedPublicKey(
+          path,
+          pubToUse,
+          chaincode,
+          parentFingerprint,
+          TESTNET
+        ));
+        expect(extendedPublicKeyRootFingerprint(derivedXpub)).toEqual(rootFingerprint);
+        expect(extendedPublicKeyRootFingerprint(derivedTpub)).toBe(null);
+      }
     });
   });
 
@@ -436,7 +521,7 @@ describe("keys", () => {
     it("encodes and decodes an extended public key", () => {
       const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"];
       for (const path of paths) {
-        const { parentFingerprint, chaincode, xpub, pub: pubkey, tpub } = NODES[
+        const { parentFingerprint, chaincode, xpub, pub: pubkey, tpub, rootFingerprint } = NODES[
           path
         ];
         const extendedPubkey = new ExtendedPublicKey({
@@ -444,11 +529,28 @@ describe("keys", () => {
           pubkey,
           chaincode,
           parentFingerprint,
+          rootFingerprint,
         });
+
+
+        expect(extendedPubkey.base58String).toEqual(xpub);
+        expect(extendedPubkey.rootFingerprint).toEqual(rootFingerprint);
+        extendedPubkey.setRootFingerprint('12341234');
+        expect(extendedPubkey.rootFingerprint).toEqual('12341234');
+
+        extendedPubkey.setBip32Path('0/0');
+        expect(extendedPubkey.path).toEqual('0/0');
+
 
         expect(extendedPubkey.toBase58()).toEqual(xpub);
         extendedPubkey.setNetwork(TESTNET);
+        extendedPubkey.addBase58String();
         expect(extendedPubkey.toBase58()).toEqual(tpub);
+        expect(extendedPubkey.base58String).toEqual(tpub);
+        extendedPubkey.setNetwork(MAINNET);
+        extendedPubkey.addBase58String();
+        expect(extendedPubkey.toBase58()).toEqual(xpub);
+        expect(extendedPubkey.base58String).toEqual(xpub);
 
         // test fromBase58
         expect(ExtendedPublicKey.fromBase58(xpub).toBase58()).toEqual(xpub);

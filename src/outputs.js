@@ -1,6 +1,6 @@
 /** 
- * This module provides functions for and validating transaction
- * outputs.
+ * This module provides functions for validating transaction
+ * output and amounts.
  * 
  * @module outputs
  */
@@ -19,6 +19,7 @@ import {
  * @type {Object}
  * @property {string} address - the output address
  * @property {string|number|BigNumber} amountSats - output amount in Satoshis
+ * @property {Multisig} [multisig] - output multisig for a change address
  * 
  */
 
@@ -29,7 +30,7 @@ import {
  *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:outputs.TransactionOutput[]} outputs - outputs to validate
- * @param {string|number|BigNumber} inputsTotalSats - (optional) the total input amount in Satoshis
+ * @param {string|number|BigNumber} [inputsTotalSats] - (optional) the total input amount in Satoshis
  * @returns {string} empty if valid or corresponding validation message if not
  * 
  */
