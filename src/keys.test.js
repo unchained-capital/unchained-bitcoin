@@ -194,18 +194,6 @@ describe("keys", () => {
       expect(
         deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "0/0", MAINNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/0/0", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "0/0", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/6/2", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "6/2", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].pub);
     });
 
     it("derives child public keys for unhardened paths on testnet", () => {
@@ -215,26 +203,14 @@ describe("keys", () => {
       expect(
         deriveChildPublicKey(NODES["m/45'/0'/0'"].tpub, "0/0", TESTNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].tpub, "m/0/0", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].tpub, "0/0", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].tpub, "m/6/2", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].pub);
-      expect(
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].tpub, "6/2", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].pub);
     });
 
     it("throws an error when asked to derive down a hardened path", () => {
       expect(() => {
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'", MAINNET);
+        deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "m/99'", MAINNET);
       }).toThrow(/missing private key/i);
       expect(() => {
-        deriveChildPublicKey(NODES["m/45'/0'/4'"].xpub, "m/99'/0/0", MAINNET);
+        deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "m/99'/0/0", MAINNET);
       }).toThrow(/missing private key/i);
     });
 
@@ -260,27 +236,6 @@ describe("keys", () => {
       expect(
         deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].xpub, "0/0", MAINNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].xpub);
-
-      expect(
-        deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].xpub,
-          "m/0/0",
-          MAINNET
-        )
-      ).toBe(NODES["m/45'/0'/4'/0/0"].xpub);
-      expect(
-        deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "0/0", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].xpub);
-      expect(
-        deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].xpub,
-          "m/6/2",
-          MAINNET
-        )
-      ).toBe(NODES["m/45'/0'/4'/6/2"].xpub);
-      expect(
-        deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].xpub, "6/2", MAINNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].xpub);
     });
 
     it("derives child extended public keys for unhardened paths on testnet", () => {
@@ -294,40 +249,19 @@ describe("keys", () => {
       expect(
         deriveChildExtendedPublicKey(NODES["m/45'/0'/0'"].tpub, "0/0", TESTNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].tpub);
-
-      expect(
-        deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].tpub,
-          "m/0/0",
-          TESTNET
-        )
-      ).toBe(NODES["m/45'/0'/4'/0/0"].tpub);
-      expect(
-        deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].tpub, "0/0", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/0/0"].tpub);
-      expect(
-        deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].tpub,
-          "m/6/2",
-          TESTNET
-        )
-      ).toBe(NODES["m/45'/0'/4'/6/2"].tpub);
-      expect(
-        deriveChildExtendedPublicKey(NODES["m/45'/0'/4'"].tpub, "6/2", TESTNET)
-      ).toBe(NODES["m/45'/0'/4'/6/2"].tpub);
     });
 
     it("throws an error when asked to derive down a hardened path", () => {
       expect(() => {
         deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].xpub,
+          NODES["m/45'/0'/0'"].xpub,
           "m/99'",
           MAINNET
         );
       }).toThrow(/missing private key/i);
       expect(() => {
         deriveChildExtendedPublicKey(
-          NODES["m/45'/0'/4'"].xpub,
+          NODES["m/45'/0'/0'"].xpub,
           "m/99'/0/0",
           MAINNET
         );
