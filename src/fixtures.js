@@ -81,7 +81,7 @@ const BIP39_PHRASE = [
   "plunge",
 ];
 
-const OSW_ROOT_FINGERPRINT = 'f57ec65d';
+export const OSW_ROOT_FINGERPRINT = 'f57ec65d';
 
 const NODES = {
   "m/45'/0'/0'": {
@@ -143,7 +143,7 @@ const NODES = {
       parentFingerprint: 384854823,
       path: "m/45'/1/0/0",
       pubkey: "0226a8fce14d91bd85b2b61bdc994e75975c9b443d02a0428a7c9755228f35cba9",
-      rootFingerprint: "f57ec65d",
+      rootFingerprint: OSW_ROOT_FINGERPRINT,
       version: "043587cf",
     },
   },
@@ -157,17 +157,29 @@ const NODES = {
       parentFingerprint: 2525848640,
       path: "m/45'/1/1/0",
       pubkey: "02ca80ff7fdc10be77b65da0b82cada1646f0c113e6cc10a5feb0dfb5d0487793e",
-      rootFingerprint: "f57ec65d",
+      rootFingerprint: OSW_ROOT_FINGERPRINT,
       version: "043587cf",
     },
   },
-  "m/45'/0/0": {
-    xpub: "xpub6CsGPeBifUqr2szHmpFuNZ7Yd2ZnJtr95kPKu13LT96ZvTUthRsZbunhdyRp4HkQ93Gqr78mC9KEMVmGxcG6bFR4xT3GKpkdtgpr8T85JXP",
+  "m/45'": {
+    pub: '03c060f4c111a276807fc3a88966cc1d3a683eef9226a034ee2cd6982b478fa8e2',
+    xpub: "xpub69h9wvon4GzP2S3cLmiBsNdznt29YXBk2TSyQueZsacKZyzMqMR1Fj5JwSiKu8agDRiLWPfw9gSChLW2Yfgpe4tzuhLUD2vFfGsfbtTA3r7",
+    tpub: "tpubDA4nUAdTmYwqJEETnxhH5HyN817oXugoa63GmThiDVNDKGf4uaG6QAk9BUo7RdXv1LFF7yBognGFPWzdwXY4XWMHyJ5mtZaVFEU5MtMfj7H",
     rootFingerprint: "f57ec65d",
   },
+  "m/45'/0": {
+    pub: "02b04ac39b566b7353b5bf8e164be83bf90b090e7516170e88a8cb6c88a860f0a3",
+    tpub: "tpubDBAj15fFkLimiBmDqapikSS4qkmvAS8LijMey9S9fAyjq65ERgjuzaa6GonVQXugcrBzfpEoH6SPBzevfowZgYJ3apWcHbMPaNJnBRkbsRY",
+    rootFingerprint: OSW_ROOT_FINGERPRINT,
+  },
+  "m/45'/0/0": {
+    xpub: "xpub6CsGPeBifUqr2szHmpFuNZ7Yd2ZnJtr95kPKu13LT96ZvTUthRsZbunhdyRp4HkQ93Gqr78mC9KEMVmGxcG6bFR4xT3GKpkdtgpr8T85JXP",
+    rootFingerprint: OSW_ROOT_FINGERPRINT,
+  },
   "m/45'/1/0": {
+    pub: "036b5cfe4b7f29cb36e5261ad74f8a4f8602f77628e8d9d120f5580d3ccafaef74",
     tpub: "tpubDDhFRuipvJKBgPBDFooShZNtnkLwMkGDZXA1KBUd8xruQ8AA4QdZaiQYWj1hDpDW8r7va9D7GHeEp5ZzMsj5uDRX4s3hk4eQgJm8jMAqkLC",
-    rootFingerprint: "f57ec65d",
+    rootFingerprint: OSW_ROOT_FINGERPRINT,
   },
   "m/45'/0'/4'/99'/2147483647/3/1": {
     pub: "0211aa5c03e290dc0110103c3d3f817500e76061d35ea89072286cb6f7962eda81",
@@ -191,6 +203,8 @@ const NODES = {
   "m/48'/1'/0'/1'/0/0": {
     pub: "03ff8a79f5016243a3959e2216e51cf90034cf510b379a34e6fdf565b19852baa2",
     rootFingerprint: OSW_ROOT_FINGERPRINT,
+    Upub: 'Upub5T4XUooQzDXL58NCHk8ZCw9BsRSLCtnyHeZEExAq1XdnBFXiXVrHFuvvmh3TnCR7XmKHxkwqdACv68z7QKT1vwru9L1SZSsw8B2fuBvtSa6',
+    tpub: 'tpubDKSvECbEtm6ZgXE7kmn2Sbr81JzJhDGVzz2Arnn86R5a3i42w2mxNoPHcA9MRPtS36zy5d4m7FWWiCrVY1fXJ9YvSjNMB4DJ2tRDifqJQmp',
   },
 
   "m/48'/0'/0'/2'/0/0": {

@@ -7,6 +7,7 @@ import {
   multisigBIP32Root,
   multisigBIP32Path,
   getParentPath,
+  getRelativePath,
 } from './paths';
 import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
@@ -205,5 +206,26 @@ describe('paths', () => {
         expect(actual).toMatch(expected)
       }
     })
+  })
+
+  describe('getRelativePath', () => {
+    it("validates and returns the correct BIP32 parent path for each given path/chroot combo", () => {
+      expect(getRelativePath("", "m/45'")).toMatch(/cannot be blank/i);
+      expect(getRelativePath("foo", "m/45'")).toMatch(/is invalid/i);
+      expect(getRelativePath("/45", "m/45'")).toMatch(/is invalid/i);
+      expect(getRelativePath("m/45'", "")).toMatch(/cannot be blank/i);
+      expect(getRelativePath("m/45'", "foo")).toMatch(/is invalid/i);
+      expect(getRelativePath("m/45'", "/45")).toMatch(/is invalid/i);
+      expect(getRelativePath("m/44'", "m/45'")).toMatch(/bip32Path does not start with the chroot/i);
+      const validPaths = ["m/45'", "m/45'/0'", "m/45'/0'/0'", "m/45'/0'/0'/0", "m/45'/0'/0'/0/0"]
+      const expectedRelativePaths = ["", "0'", "0'/0'", "0'/0'/0", "0'/0'/0/0"];
+      const chroot = "m/45'";
+      for (let i =0; i < validPaths.length; i++) {
+        const expected = expectedRelativePaths[i]
+        const actual = getRelativePath(chroot, validPaths[i])
+        expect(actual).toMatch(expected)
+      }
+    });
+
   })
 });

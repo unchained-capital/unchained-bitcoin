@@ -305,3 +305,27 @@ export function getParentPath(bip32Path) {
   // then slice off then last item in the path
   return bip32Path.split("/").slice(0, -1).join("/");
 }
+
+/**
+ * Get the path of under the chroot of the given path
+ * @param {string} chroot e.g. "m/45'/0'/0'"
+ * @param {string} bip32Path e.g. "m/45'/0'/0'/0"
+ * @returns {string} relative path below path
+ * @example
+ * import {getRelativePath} from "unchained-bitcoin";
+ * console.log(getRelativePath("m/45'/0'/0'", "m/45'/0'/0'/0"); // 0
+ */
+export function getRelativePath(chroot, bip32Path) {
+  if (chroot === bip32Path) return '';
+  // first validate the chroot
+  let validatedChroot = validateBIP32Path(chroot);
+  if (validatedChroot.length) return validatedChroot;
+  // next validate the input
+  let validatedPath = validateBIP32Path(bip32Path);
+  if (validatedPath.length) return validatedPath;
+  // check that bip32Path starts with chroot
+  if (!bip32Path.startsWith(chroot)) return `The provided bip32Path does not start with the chroot.`
+  // then return the relative path beyond the chroot.
+
+  return bip32Path.slice(chroot.length + 1);
+}
