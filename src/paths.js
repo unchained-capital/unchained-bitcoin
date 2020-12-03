@@ -295,10 +295,10 @@ export function multisigBIP32Path(addressType, network, relativePath) {
  * @param {string} bip32Path e.g. "m/45'/0'/0'/0"
  * @returns {string} parent path
  * @example
- * import {getParentPath} from "unchained-bitcoin";
- * console.log(getParentPath("m/45'/0'/0'/0"); // m/45'/0'/0'
+ * import {getParentBIP32Path} from "unchained-bitcoin";
+ * console.log(getParentBIP32Path("m/45'/0'/0'/0"); // m/45'/0'/0'
  */
-export function getParentPath(bip32Path) {
+export function getParentBIP32Path(bip32Path) {
   // first validate the input
   let validated = validateBIP32Path(bip32Path);
   if (validated.length) return validated;
@@ -307,25 +307,25 @@ export function getParentPath(bip32Path) {
 }
 
 /**
- * Get the path of under the chroot of the given path
- * @param {string} chroot e.g. "m/45'/0'/0'"
- * @param {string} bip32Path e.g. "m/45'/0'/0'/0"
+ * Get the path of under the parentBIP32Path of the given path
+ * @param {string} parentBIP32Path e.g. "m/45'/0'/0'"
+ * @param {string} childBIP32Path e.g. "m/45'/0'/0'/0/1/2"
  * @returns {string} relative path below path
  * @example
- * import {getRelativePath} from "unchained-bitcoin";
- * console.log(getRelativePath("m/45'/0'/0'", "m/45'/0'/0'/0"); // 0
+ * import {getRelativeBIP32Path} from "unchained-bitcoin";
+ * console.log(getRelativeBIP32Path("m/45'/0'/0'", "m/45'/0'/0'/0/1/2"); // 0/1/2
  */
-export function getRelativePath(chroot, bip32Path) {
-  if (chroot === bip32Path) return '';
-  // first validate the chroot
-  let validatedChroot = validateBIP32Path(chroot);
-  if (validatedChroot.length) return validatedChroot;
+export function getRelativeBIP32Path(parentBIP32Path, childBIP32Path) {
+  if (parentBIP32Path === childBIP32Path) return '';
+  // first validate the parentBIP32Path
+  let validatedParent = validateBIP32Path(parentBIP32Path);
+  if (validatedParent.length) return validatedParent;
   // next validate the input
-  let validatedPath = validateBIP32Path(bip32Path);
-  if (validatedPath.length) return validatedPath;
-  // check that bip32Path starts with chroot
-  if (!bip32Path.startsWith(chroot)) return `The provided bip32Path does not start with the chroot.`
-  // then return the relative path beyond the chroot.
+  let validatedChild = validateBIP32Path(childBIP32Path);
+  if (validatedChild.length) return validatedChild;
+  // check that childBIP32Path starts with parentBIP32Path
+  if (!childBIP32Path.startsWith(parentBIP32Path)) return `The provided bip32Path does not start with the chroot.`
+  // then return the relative path beyond the parentBIP32Path.
 
-  return bip32Path.slice(chroot.length + 1);
+  return childBIP32Path.slice(parentBIP32Path.length + 1);
 }

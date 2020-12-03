@@ -34,25 +34,30 @@ import {P2WSH} from "./p2wsh";
 import {TESTNET, MAINNET} from "./networks";
 import {braidConfig} from './braid';
 
-const RECEIVING_ADDRESSES = {};
+const RECEIVING_ADDRESSES = {
+  [TESTNET]: {
+    [P2SH]: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
+    [P2SH_P2WSH]: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
+    [P2WSH]: "tb1q9hj5j7mh9f7t6cwdvz34nj6pyzva5ftj2ecarcdqph5wc3n49hyqchh3cg",
+  },
+  [MAINNET]: {
+    [P2SH]: "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs",
+    [P2SH_P2WSH]: "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs",
+    [P2WSH]: "bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh",
+  },
+}
 const CHANGE_ADDRESSES = {
-  TESTNET: {},
-  MAINNET: {},
+  [TESTNET]: {
+    [P2SH]: "2NB3tTnpcUanDenNhWbXxymTJhheWtj5Mu1",
+    [P2SH_P2WSH]: "2MyCBSwFWSXpagqKtrnckNtNQBnKdUZRhKc",
+    [P2WSH]: "tb1qhjtyry0qwm5l6v5v7y27hc6m60vm0d8exlr3cswdrxsgaygqvd2q5zsl0n",
+  },
+  [MAINNET]: {
+    [P2SH]: "36NMegVbRPbMv9RC4Ge2aKLUQHYXKbyooZ",
+    [P2SH_P2WSH]: "32M6VKsKw1X2EXFawpcHosMEhSxswLHRwX",
+    [P2WSH]: "bc1qnzky4hcwcutvktfstp0u3kmtgxkjvscl25snvg45xu3ausv2lapqrvmkeh",
+  },
 };
-RECEIVING_ADDRESSES[MAINNET] = "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs";
-RECEIVING_ADDRESSES[TESTNET] = "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR";
-RECEIVING_ADDRESSES.mainnet_p2wsh =
-  "bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh";
-RECEIVING_ADDRESSES.testnet_p2wsh =
-  "tb1q9hj5j7mh9f7t6cwdvz34nj6pyzva5ftj2ecarcdqph5wc3n49hyqchh3cg";
-CHANGE_ADDRESSES.TESTNET[P2SH] = "2NB3tTnpcUanDenNhWbXxymTJhheWtj5Mu1";
-CHANGE_ADDRESSES.TESTNET[P2SH_P2WSH] = "2MyCBSwFWSXpagqKtrnckNtNQBnKdUZRhKc";
-CHANGE_ADDRESSES.TESTNET[P2WSH] =
-  "tb1qhjtyry0qwm5l6v5v7y27hc6m60vm0d8exlr3cswdrxsgaygqvd2q5zsl0n";
-CHANGE_ADDRESSES.MAINNET[P2SH] = "36NMegVbRPbMv9RC4Ge2aKLUQHYXKbyooZ";
-CHANGE_ADDRESSES.MAINNET[P2SH_P2WSH] = "32M6VKsKw1X2EXFawpcHosMEhSxswLHRwX";
-CHANGE_ADDRESSES.MAINNET[P2WSH] =
-  "bc1qnzky4hcwcutvktfstp0u3kmtgxkjvscl25snvg45xu3ausv2lapqrvmkeh";
 
 const BIP39_PHRASE = [
   "merge",
@@ -81,7 +86,7 @@ const BIP39_PHRASE = [
   "plunge",
 ];
 
-export const OSW_ROOT_FINGERPRINT = 'f57ec65d';
+export const ROOT_FINGERPRINT = 'f57ec65d';
 
 const NODES = {
   "m/45'/0'/0'": {
@@ -109,7 +114,7 @@ const NODES = {
     chaincode:
       "470bb034dbc8e7b5f5c0b19f747e3e768f0cc9ff298361b2741e1b7fd70d376d",
     parentFingerprint: 1240308660,
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/0'/0'/0": {
     pub: "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee",
@@ -120,7 +125,7 @@ const NODES = {
     chaincode:
       "4522d0dc37c97548c43adc8fbbe285eea27921e8437562574d13c013e85c0fd3",
     parentFingerprint: 2213579839,
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/0'/0'/0/0": {
     pub: "03102f0df5e34ffa1178a5310952221b8e26b3e761a9e328832c750a2de252f21a",
@@ -131,7 +136,7 @@ const NODES = {
     chaincode:
       "4522d0dc37c97548c43adc8fbbe285eea27921e8437562574d13c013e85c0fd3",
     parentFingerprint: 724365675,
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/1/0/0": {
     xpub: "tpubDE5K7wy1Mf254iUPx3CgMfzhx6EcaFCvYDiJb5DZxeod2tTgKsgNX89YVQ6uD9TkMgP6KbAHueWqgcCYUTdZXqTXuF9Vnha45Y26gCfno2G",
@@ -143,7 +148,7 @@ const NODES = {
       parentFingerprint: 384854823,
       path: "m/45'/1/0/0",
       pubkey: "0226a8fce14d91bd85b2b61bdc994e75975c9b443d02a0428a7c9755228f35cba9",
-      rootFingerprint: OSW_ROOT_FINGERPRINT,
+      rootFingerprint: ROOT_FINGERPRINT,
       version: "043587cf",
     },
   },
@@ -157,7 +162,7 @@ const NODES = {
       parentFingerprint: 2525848640,
       path: "m/45'/1/1/0",
       pubkey: "02ca80ff7fdc10be77b65da0b82cada1646f0c113e6cc10a5feb0dfb5d0487793e",
-      rootFingerprint: OSW_ROOT_FINGERPRINT,
+      rootFingerprint: ROOT_FINGERPRINT,
       version: "043587cf",
     },
   },
@@ -170,16 +175,16 @@ const NODES = {
   "m/45'/0": {
     pub: "02b04ac39b566b7353b5bf8e164be83bf90b090e7516170e88a8cb6c88a860f0a3",
     tpub: "tpubDBAj15fFkLimiBmDqapikSS4qkmvAS8LijMey9S9fAyjq65ERgjuzaa6GonVQXugcrBzfpEoH6SPBzevfowZgYJ3apWcHbMPaNJnBRkbsRY",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/0/0": {
     xpub: "xpub6CsGPeBifUqr2szHmpFuNZ7Yd2ZnJtr95kPKu13LT96ZvTUthRsZbunhdyRp4HkQ93Gqr78mC9KEMVmGxcG6bFR4xT3GKpkdtgpr8T85JXP",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/1/0": {
     pub: "036b5cfe4b7f29cb36e5261ad74f8a4f8602f77628e8d9d120f5580d3ccafaef74",
     tpub: "tpubDDhFRuipvJKBgPBDFooShZNtnkLwMkGDZXA1KBUd8xruQ8AA4QdZaiQYWj1hDpDW8r7va9D7GHeEp5ZzMsj5uDRX4s3hk4eQgJm8jMAqkLC",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
   "m/45'/0'/4'/99'/2147483647/3/1": {
     pub: "0211aa5c03e290dc0110103c3d3f817500e76061d35ea89072286cb6f7962eda81",
@@ -187,39 +192,39 @@ const NODES = {
       "xpub6LCRwXBN9moqsJKhToW6K5qfBfTguMXuZw67q1BUuaWRyYD56P1zhqbyXsHqoo4WPsjUfeiJPu4JXnhtUz6cHbYgX6AFfDhUnPfCvbZD3JZ",
     tpub:
       "tpubDLa4Tm13s3mJ96WYuzVBX1B2WnZLtk2y7ZgRBZEdFVGKipsnAbs5rHGomuNdLJ1kBnGPHEEAvztMDyCVsqwrB2zyaguZLkMiNMFcgX4e2rG",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
 
   "m/45'/1'/0'/0/0": {
     pub: "037226e92491b2cf9691152fc2e9a0a7cff8f9ab7ad1b24b6f6506d7c8bf18911b",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
 
   "m/48'/0'/0'/1'/0/0": {
     pub: "02c63c7ae511c9902e885da3e2fbb4a8f227eefc7f53eda3cad4d8f9389331b5be",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
 
   "m/48'/1'/0'/1'/0/0": {
     pub: "03ff8a79f5016243a3959e2216e51cf90034cf510b379a34e6fdf565b19852baa2",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
     Upub: 'Upub5T4XUooQzDXL58NCHk8ZCw9BsRSLCtnyHeZEExAq1XdnBFXiXVrHFuvvmh3TnCR7XmKHxkwqdACv68z7QKT1vwru9L1SZSsw8B2fuBvtSa6',
     tpub: 'tpubDKSvECbEtm6ZgXE7kmn2Sbr81JzJhDGVzz2Arnn86R5a3i42w2mxNoPHcA9MRPtS36zy5d4m7FWWiCrVY1fXJ9YvSjNMB4DJ2tRDifqJQmp',
   },
 
   "m/48'/0'/0'/2'/0/0": {
     pub: "032817ba5e2b76f6e2fab1d985224516f2b77a9c181e210def81ec2be8e17007c9",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
 
   "m/48'/1'/0'/2'/0/0": {
     pub: "03ecf349ecf63fcd0ece9de7eb1abfb8f8b243fecc443bd62ef47744f0f6b7eef6",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
   },
 
   "m/45'/1'/0'": {
     xpub: "tpubDDQubdBx9cbs16zUhpiM135EpvjSbVz7SGJyGg4rvRVEYdncZy3Kzjg6NjuFWcShiCyNqviWTBiZPb25p4WcaLppVmAuiPMrkR1kahNoioL",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
+    rootFingerprint: ROOT_FINGERPRINT,
     extendedPublicKey: {},
     secondExtendedPublicKey: {x: "tpubDDinbKDXyddP7hAi2CgWVUZso7shdXjwmeF1ALPX2CmNDvLGdtjyBpAXQd4Po4rxzkijM41zDNjSFrcpKgMKURGBq2kekWPYdgdJTqyZ9jU"},
   },
@@ -227,8 +232,8 @@ const NODES = {
   // P2SH-TESTNET
   "m/45'/1'/100'": {
     xpub: "tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQbWU8k7CuKo2A21pAWaFtPGDHP9WuhtAx4smcCxqn1",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQbWU8k7CuKo2A21pAWaFtPGDHP9WuhtAx4smcCxqn1",
       chaincode: "eabe09a77940dd3e125be81bc25fcf04c611544f431967531bea80b12f2e72d2",
       depth: 3,
@@ -236,10 +241,10 @@ const NODES = {
       parentFingerprint: 3168392141,
       path: "m/45'/1'/100'",
       pubkey: "02d419c2e37078468af97e07e240343a7e8691ef5dcca9fe59a7c774db9e6c4e62",
-      rootFingerprint: OSW_ROOT_FINGERPRINT,
+      rootFingerprint: ROOT_FINGERPRINT,
       version: "043587cf",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "tpubDDinbKDXyddTUKcX6mv936Ux5utCJteq5S6EEKhfpM8CqN2rMAcccv6GecsB3cPt8eGL4e4K2eaZ9Jis9TGf7mbwBsRTN7ngnFR7yJZxBKC",
       chaincode: "1ade7f9d6099898d9851af05b488b94ad3ad4fcabab3970b8ee975fb0e33c517",
       depth: 3,
@@ -255,8 +260,8 @@ const NODES = {
   // P2SH_P2WSH-TESTNET
   "m/48'/1'/100'/1'": {
     xpub: "tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSWpadzb5M5VVZ7PDAUjDjymvUmQ7pBbRecz2FM952Am",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSWpadzb5M5VVZ7PDAUjDjymvUmQ7pBbRecz2FM952Am",
       chaincode: "8f60b5470713d119000eb9f20716eaa21e4c7c96b1d8a605790e2a9621874b7b",
       depth: 4,
@@ -267,7 +272,7 @@ const NODES = {
       rootFingerprint: "f57ec65d",
       version: "043587cf",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "tpubDErWN5qfdLwY9ZJo9HWpxjcuEFuEBVHSbQbPqF35LQr3etWNGirKcgAa93DZ4DmtHm36p2gTf4aj6KybLqHaS3UePM5LtPqtb3d3dYVDs2F",
       chaincode: "0683fed20bd4e656ef5d6cb91dac510a80f1e425976dcc8b92060cca5a8fe0a9",
       depth: 4,
@@ -283,8 +288,8 @@ const NODES = {
   // P2WSH-TESTNET
   "m/48'/1'/100'/2'": {
     xpub: "tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3BhLQc4vWKTLewboA1Pt8Fu6fbHKu81MZ6VGdc32eM",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3BhLQc4vWKTLewboA1Pt8Fu6fbHKu81MZ6VGdc32eM",
       chaincode: "b0d7d9283b766e79259dc38263ce06b474eeaefb3fab5f53946aaec6cd525f13",
       depth: 4,
@@ -295,7 +300,7 @@ const NODES = {
       rootFingerprint: "f57ec65d",
       version: "043587cf",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "tpubDErWN5qfdLwYE94mh12oWr4uURDDNKCjKVhCEcAgZ7jKnnAwq5tcTF2iEk3VuznkJuk2G8SCHft9gS6aKbBd18ptYWPqKLRSTRQY7e2rrDj",
       chaincode: "d2be31d3de92e6183d5a4bb918048fdf960ba9438d391afb5f7ac69a1c24caf1",
       depth: 4,
@@ -311,8 +316,8 @@ const NODES = {
   // P2SH-MAINNET
   "m/45'/0'/100'": {
     xpub: "xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATMLUowDDA1BMGfQGauY3fDYU3HyMzX4NDkoLYCSkLpbH",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATMLUowDDA1BMGfQGauY3fDYU3HyMzX4NDkoLYCSkLpbH",
       chaincode: "8f8521ebe6ac7fd6d6c468aa25cad78e34e9a4c02211a00bf2c6069ffdb11722",
       depth: 3,
@@ -323,7 +328,7 @@ const NODES = {
       rootFingerprint: "f57ec65d",
       version: "0488b21e",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "xpub6Ca5CwTgRASgkXbXE5TeddTP9mPCbYHreCpmGt9dhz9y6femstHGCoFESHHKKRcm414xMKnuLjP9LDS7TwaJC9n5gxua6XB1rwPcC6hqDub",
       chaincode: "17f7729ba7f11cc95c201d023c0a7f8315101ef1ee5bd6fc8193f440eef4483f",
       depth: 3,
@@ -340,8 +345,8 @@ const NODES = {
   // P2SH_P2WSH-MAINNET
   "m/48'/0'/100'/1'": {
     xpub: "xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwawDGX6fHKPvhhZxKc5b8dPAPb8uANDhsjAPMJqTFDjH",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwawDGX6fHKPvhhZxKc5b8dPAPb8uANDhsjAPMJqTFDjH",
       chaincode: "cd1a105c93ed7c2bc01e99445f81e8674bcea6042405cb4244af2c598ab995b4",
       depth: 4,
@@ -352,7 +357,7 @@ const NODES = {
       rootFingerprint: "f57ec65d",
       version: "0488b21e",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "xpub6EwJjKaiocGvo9f7XSGXGwzo1GLB1URxSZ5Ccp1wqdxNkhrSoqNQkC2CeMsU675urdmFJLHSX62xz56HGcnn6u21wRy6uipovmzaE65PfBp",
       chaincode: "a4b98329bb145e79fa7485653f2b9dc4d8ca9519ee0f00093809dc1d3d8b3cd2",
       depth: 4,
@@ -368,8 +373,8 @@ const NODES = {
   // P2WSH-MAINNET
   "m/48'/0'/100'/2'": {
     xpub: "xpub6DcqYQxnbefzFkaRBK63FSE2GzNuNnNhFGw1xV9RioVG7av6r3JDf1aELqBSq5gt5487CtNxvVtaiJjQU2HQWzgG5NzLyTPbYav6otW8qEc",
-    rootFingerprint: OSW_ROOT_FINGERPRINT,
-    extendedPublicKey: {
+    rootFingerprint: ROOT_FINGERPRINT,
+    open_source: {
       base58String: "xpub6DcqYQxnbefzFkaRBK63FSE2GzNuNnNhFGw1xV9RioVG7av6r3JDf1aELqBSq5gt5487CtNxvVtaiJjQU2HQWzgG5NzLyTPbYav6otW8qEc",
       chaincode: "6b2c97052334fd0333464fd7d7b6ed9b7bae25f9bcabfa54f15e041ac22971fc",
       depth: 4,
@@ -380,7 +385,7 @@ const NODES = {
       rootFingerprint: "f57ec65d",
       version: "0488b21e",
     },
-    secondExtendedPublicKey: {
+    unchained: {
       base58String: "xpub6EwJjKaiocGvqSuM2jRZSuQ9HEddiFUFu9RdjE47zG7kXVNDQpJ3GyvskwYiLmvU4SBTNZyv8UH53QcmFEE23YwozE61V3dwzZJEFQr6H2b",
       chaincode: "8b7900c703cdd0f752b13b7a95ee9cb0d5a0df7fb9bfe4678b074edd3dc59a11",
       depth: 4,
@@ -400,15 +405,15 @@ const BRAIDS = [
     network: TESTNET,
     addressType: P2SH,
     extendedPublicKeys: [
-      NODES["m/45'/1'/100'"].extendedPublicKey,
-      NODES["m/45'/1'/100'"].secondExtendedPublicKey,
+      NODES["m/45'/1'/100'"].open_source,
+      NODES["m/45'/1'/100'"].unchained,
     ],
     stringExtendedPublicKeys: [
-      NODES["m/45'/1'/100'"].extendedPublicKey.base58String,
-      NODES["m/45'/1'/100'"].secondExtendedPublicKey.base58String,
+      NODES["m/45'/1'/100'"].open_source.base58String,
+      NODES["m/45'/1'/100'"].unchained.base58String,
     ],
     requiredSigners: 2,
-    chroot: '0',
+    index: '0',
     pubKeySets: {
       'index': {
         0: [
@@ -548,7 +553,7 @@ const MULTISIGS_BASE = [
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES[TESTNET],
+    //       address: RECEIVING_ADDRESSES[TESTNET][P2SH],
     //       amountSats: "291590",
     //     },
     //   ],
@@ -563,11 +568,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET][P2SH],
           amountSats: "291590",
         },
         {
-          address: CHANGE_ADDRESSES.TESTNET[P2SH],
+          address: CHANGE_ADDRESSES[TESTNET][P2SH],
           amountSats: "7535",
           value: 7535,
           bip32Derivation: [
@@ -628,37 +633,25 @@ const MULTISIGS_BASE = [
       network: TESTNET,
       addressType: P2SH,
       extendedPublicKeys: [
-        NODES["m/45'/1'/100'"].extendedPublicKey,
-        NODES["m/45'/1'/100'"].secondExtendedPublicKey,
+        NODES["m/45'/1'/100'"].open_source,
+        NODES["m/45'/1'/100'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     changeBraidDetails: {
       network: TESTNET,
       addressType: P2SH,
       extendedPublicKeys: [
-        NODES["m/45'/1'/100'"].extendedPublicKey,
-        NODES["m/45'/1'/100'"].secondExtendedPublicKey,
+        NODES["m/45'/1'/100'"].open_source,
+        NODES["m/45'/1'/100'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '1',
+      index: '1',
     },
     psbtNoChange: "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",
     psbt: "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",
     psbtPartiallySigned: "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",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2sh-T
-Policy: 2 of 2
-Format: P2SH
-Derivation: m/45'/1'/100'
-
-f57ec65d: tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQbWU8k7CuKo2A21pAWaFtPGDHP9WuhtAx4smcCxqn1
-00000001: tpubDDinbKDXyddTUKcX6mv936Ux5utCJteq5S6EEKhfpM8CqN2rMAcccv6GecsB3cPt8eGL4e4K2eaZ9Jis9TGf7mbwBsRTN7ngnFR7yJZxBKC
-`,
   },
 
   {
@@ -712,7 +705,7 @@ f57ec65d: tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQ
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES[TESTNET],
+    //       address: RECEIVING_ADDRESSES[TESTNET][P2SH_P2WSH],
     //       amountSats: "291590",
     //     },
     //   ],
@@ -727,11 +720,11 @@ f57ec65d: tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQ
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET],
+          address: RECEIVING_ADDRESSES[TESTNET][P2SH_P2WSH],
           amountSats: "291590",
         },
         {
-          address: CHANGE_ADDRESSES.TESTNET[P2SH_P2WSH],
+          address: CHANGE_ADDRESSES[TESTNET][P2SH_P2WSH],
           amountSats: "7922",
           value: 7922,
           bip32Derivation: [
@@ -764,28 +757,15 @@ f57ec65d: tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQ
       network: TESTNET,
       addressType: P2SH_P2WSH,
       extendedPublicKeys: [
-        NODES["m/48'/1'/100'/1'"].extendedPublicKey,
-        NODES["m/48'/1'/100'/1'"].secondExtendedPublicKey,
+        NODES["m/48'/1'/100'/1'"].open_source,
+        NODES["m/48'/1'/100'/1'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     psbtNoChange: "cHNidP8BAKUBAAAAAyNqw5Og7p4Flzy6rRWr+kdtHgMVG+kGwNdp2wUdpJ1CAAAAAAD/////Eui6GoxEWdv/OR4ckEu1X3MtREjwR6FUJTop9D7N7dgAAAAAAP/////RKahSBaOjGdHRnWbLqOi03qQV15H77+kcNHOEzPRD/wAAAAAA/////wEGcwQAAAAAABepFOO6EVG3Xv+/etxGc8g8j+7D3cNnhwAAAAAAAQEgoIYBAAAAAAAXqRTawCcMv4emXAz0/SKV60THVrKI7IcBBCIAIN7riIwKChhxo9pMLnX/q16xfp0n/M1BvD1oOiZ0+TqhAQVHUiECVWZYWzqAZrfQu6TSskw8WaX1J9YsEAu7cHOnyyVlQYwhAmqqfEaX/0Ob/Wx6cKv2YlO04yllS0HuKtIdaLhU5KQiUq4iBgJVZlhbOoBmt9C7pNKyTDxZpfUn1iwQC7twc6fLJWVBjBzvpdkWMAAAgAEAAIBkAACAAQAAgAAAAAAAAAAAIgYCaqp8Rpf/Q5v9bHpwq/ZiU7TjKWVLQe4q0h1ouFTkpCIc9X7GXTAAAIABAACAZAAAgAEAAIAAAAAAAAAAAAABASCghgEAAAAAABepFNrAJwy/h6ZcDPT9IpXrRMdWsojshwEEIgAg3uuIjAoKGHGj2kwudf+rXrF+nSf8zUG8PWg6JnT5OqEBBUdSIQJVZlhbOoBmt9C7pNKyTDxZpfUn1iwQC7twc6fLJWVBjCECaqp8Rpf/Q5v9bHpwq/ZiU7TjKWVLQe4q0h1ouFTkpCJSriIGAlVmWFs6gGa30Luk0rJMPFml9SfWLBALu3Bzp8slZUGMHO+l2RYwAACAAQAAgGQAAIABAACAAAAAAAAAAAAiBgJqqnxGl/9Dm/1senCr9mJTtOMpZUtB7irSHWi4VOSkIhz1fsZdMAAAgAEAAIBkAACAAQAAgAAAAAAAAAAAAAEBIKCGAQAAAAAAF6kU2sAnDL+HplwM9P0iletEx1ayiOyHAQQiACDe64iMCgoYcaPaTC51/6tesX6dJ/zNQbw9aDomdPk6oQEFR1IhAlVmWFs6gGa30Luk0rJMPFml9SfWLBALu3Bzp8slZUGMIQJqqnxGl/9Dm/1senCr9mJTtOMpZUtB7irSHWi4VOSkIlKuIgYCVWZYWzqAZrfQu6TSskw8WaX1J9YsEAu7cHOnyyVlQYwc76XZFjAAAIABAACAZAAAgAEAAIAAAAAAAAAAACIGAmqqfEaX/0Ob/Wx6cKv2YlO04yllS0HuKtIdaLhU5KQiHPV+xl0wAACAAQAAgGQAAIABAACAAAAAAAAAAAAAAA==",
     psbt: "cHNidP8BAMUBAAAAAyNqw5Og7p4Flzy6rRWr+kdtHgMVG+kGwNdp2wUdpJ1CAAAAAAD/////Eui6GoxEWdv/OR4ckEu1X3MtREjwR6FUJTop9D7N7dgAAAAAAP/////RKahSBaOjGdHRnWbLqOi03qQV15H77+kcNHOEzPRD/wAAAAAA/////wIGcwQAAAAAABepFOO6EVG3Xv+/etxGc8g8j+7D3cNnh/IeAAAAAAAAF6kUQT1i2Y4ru/P4818dAM/1juJe6heHAAAAAAABASCghgEAAAAAABepFNrAJwy/h6ZcDPT9IpXrRMdWsojshwEEIgAg3uuIjAoKGHGj2kwudf+rXrF+nSf8zUG8PWg6JnT5OqEBBUdSIQJVZlhbOoBmt9C7pNKyTDxZpfUn1iwQC7twc6fLJWVBjCECaqp8Rpf/Q5v9bHpwq/ZiU7TjKWVLQe4q0h1ouFTkpCJSriIGAlVmWFs6gGa30Luk0rJMPFml9SfWLBALu3Bzp8slZUGMHAAAAAIwAACAAQAAgGQAAIABAACAAAAAAAAAAAAiBgJqqnxGl/9Dm/1senCr9mJTtOMpZUtB7irSHWi4VOSkIhz1fsZdMAAAgAEAAIBkAACAAQAAgAAAAAAAAAAAAAEBIKCGAQAAAAAAF6kU2sAnDL+HplwM9P0iletEx1ayiOyHAQQiACDe64iMCgoYcaPaTC51/6tesX6dJ/zNQbw9aDomdPk6oQEFR1IhAlVmWFs6gGa30Luk0rJMPFml9SfWLBALu3Bzp8slZUGMIQJqqnxGl/9Dm/1senCr9mJTtOMpZUtB7irSHWi4VOSkIlKuIgYCVWZYWzqAZrfQu6TSskw8WaX1J9YsEAu7cHOnyyVlQYwcAAAAAjAAAIABAACAZAAAgAEAAIAAAAAAAAAAACIGAmqqfEaX/0Ob/Wx6cKv2YlO04yllS0HuKtIdaLhU5KQiHPV+xl0wAACAAQAAgGQAAIABAACAAAAAAAAAAAAAAQEgoIYBAAAAAAAXqRTawCcMv4emXAz0/SKV60THVrKI7IcBBCIAIN7riIwKChhxo9pMLnX/q16xfp0n/M1BvD1oOiZ0+TqhAQVHUiECVWZYWzqAZrfQu6TSskw8WaX1J9YsEAu7cHOnyyVlQYwhAmqqfEaX/0Ob/Wx6cKv2YlO04yllS0HuKtIdaLhU5KQiUq4iBgJVZlhbOoBmt9C7pNKyTDxZpfUn1iwQC7twc6fLJWVBjBwAAAACMAAAgAEAAIBkAACAAQAAgAAAAAAAAAAAIgYCaqp8Rpf/Q5v9bHpwq/ZiU7TjKWVLQe4q0h1ouFTkpCIc9X7GXTAAAIABAACAZAAAgAEAAIAAAAAAAAAAAAAAAQAiACDWoPQExigjtRygRow9WOiiENivs3c3IGCljgrRRxRm4AEBR1IhAkib+qPcM+XSMlKV2dE2fzWkX84JyW22RW/HEpONwsDHIQKt5E/GVopKM0sXlxQFNHB6XdYMJHpZUjxXetnrWdeYulKuIgICSJv6o9wz5dIyUpXZ0TZ/NaRfzgnJbbZFb8cSk43CwMccAAAAAjAAAIABAACAZAAAgAEAAIABAAAAAAAAACICAq3kT8ZWikozSxeXFAU0cHpd1gwkellSPFd62etZ15i6HPV+xl0wAACAAQAAgGQAAIABAACAAQAAAAAAAAAA",
     psbtPartiallySigned: "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",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2sh-p2wsh-T
-Policy: 2 of 2
-# A bug in Coldcard means this has to be P2WSH-P2SH instead of P2SH-P2WSH
-Format: P2WSH-P2SH
-Derivation: m/48'/1'/100'/1'
-
-f57ec65d: tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSWpadzb5M5VVZ7PDAUjDjymvUmQ7pBbRecz2FM952Am
-00000002: tpubDErWN5qfdLwY9ZJo9HWpxjcuEFuEBVHSbQbPqF35LQr3etWNGirKcgAa93DZ4DmtHm36p2gTf4aj6KybLqHaS3UePM5LtPqtb3d3dYVDs2F
-`,
   },
 
   {
@@ -837,7 +817,7 @@ f57ec65d: tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSW
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES.testnet_p2wsh,
+    //       address: RECEIVING_ADDRESSES[TESTNET][P2WSH],
     //       amountSats: "291590",
     //     },
     //   ],
@@ -852,11 +832,11 @@ f57ec65d: tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSW
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES.testnet_p2wsh,
+          address: RECEIVING_ADDRESSES[TESTNET][P2WSH],
           amountSats: "291590",
         },
         {
-          address: CHANGE_ADDRESSES.TESTNET[P2WSH],
+          address: CHANGE_ADDRESSES[TESTNET][P2WSH],
           amountSats: "8023",
           value: 8023,
           bip32Derivation: [
@@ -888,27 +868,15 @@ f57ec65d: tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSW
       network: TESTNET,
       addressType: P2WSH,
       extendedPublicKeys: [
-        NODES["m/48'/1'/100'/2'"].extendedPublicKey,
-        NODES["m/48'/1'/100'/2'"].secondExtendedPublicKey,
+        NODES["m/48'/1'/100'/2'"].open_source,
+        NODES["m/48'/1'/100'/2'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     psbtNoChange: "cHNidP8BALABAAAAAwH1oUOS85xVyaWX32QLD3Xsd/WpC845u8fohpvMjd+EAAAAAAD/////cj1vZI+zW2IwvHmjiYgZX23NU/dKoytsY1UzA46ZEPAAAAAAAP////+DQoc6pIumsuWnlvNLdDG7VvnFaaa9j35TnLMUeoaz+AEAAAAA/////wEGcwQAAAAAACIAIC3lSXt3Kny9Yc1go1nLQSCZ2iVyVnHR4aAN6OxGdS3IAAAAAAABASughgEAAAAAACIAILolFM3To8IC60OU5VCg/BFsuDTzRmKgGb6KUsYjUdBoAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4iBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRzvpdkWMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAIgYDvDTFDPdo+AIpAmnC3avQhsc1FMiAzstts/Z2dqS3JGkc9X7GXTAAAIABAACAZAAAgAIAAIAAAAAAAAAAAAABASughgEAAAAAACIAILolFM3To8IC60OU5VCg/BFsuDTzRmKgGb6KUsYjUdBoAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4iBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRzvpdkWMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAIgYDvDTFDPdo+AIpAmnC3avQhsc1FMiAzstts/Z2dqS3JGkc9X7GXTAAAIABAACAZAAAgAIAAIAAAAAAAAAAAAABASughgEAAAAAACIAILolFM3To8IC60OU5VCg/BFsuDTzRmKgGb6KUsYjUdBoAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4iBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRzvpdkWMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAIgYDvDTFDPdo+AIpAmnC3avQhsc1FMiAzstts/Z2dqS3JGkc9X7GXTAAAIABAACAZAAAgAIAAIAAAAAAAAAAAAAA",
     psbt: "cHNidP8BANsBAAAAAwH1oUOS85xVyaWX32QLD3Xsd/WpC845u8fohpvMjd+EAAAAAAD/////cj1vZI+zW2IwvHmjiYgZX23NU/dKoytsY1UzA46ZEPAAAAAAAP////+DQoc6pIumsuWnlvNLdDG7VvnFaaa9j35TnLMUeoaz+AEAAAAA/////wIGcwQAAAAAACIAIC3lSXt3Kny9Yc1go1nLQSCZ2iVyVnHR4aAN6OxGdS3IVx8AAAAAAAAiACC8lkGR4Hbp/TKM8RXr41vT2be0+TfHHEHNGaCOkQBjVAAAAAAAAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaAEFR1IhA1p2PgSA+FjvYmtkn6Dv6etkerv3fbVPOvkE0t5QxDQtIQO8NMUM92j4AikCacLdq9CGxzUUyIDOy22z9nZ2pLckaVKuIgYDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0cAAAAAzAAAIABAACAZAAAgAIAAIAAAAAAAAAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAAAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaAEFR1IhA1p2PgSA+FjvYmtkn6Dv6etkerv3fbVPOvkE0t5QxDQtIQO8NMUM92j4AikCacLdq9CGxzUUyIDOy22z9nZ2pLckaVKuIgYDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0cAAAAAzAAAIABAACAZAAAgAIAAIAAAAAAAAAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAAAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaAEFR1IhA1p2PgSA+FjvYmtkn6Dv6etkerv3fbVPOvkE0t5QxDQtIQO8NMUM92j4AikCacLdq9CGxzUUyIDOy22z9nZ2pLckaVKuIgYDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0cAAAAAzAAAIABAACAZAAAgAIAAIAAAAAAAAAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAAAAEBR1IhAvRfqG4axOacDxg8dp25FXdAWGx4skxJW+BATB5q4CnlIQNhC+wD5FnH+ijJo2xMnbbixLwq5OJ2SqPQNVmccFLjP1KuIgIC9F+obhrE5pwPGDx2nbkVd0BYbHiyTElb4EBMHmrgKeUc9X7GXTAAAIABAACAZAAAgAIAAIABAAAAAAAAACICA2EL7APkWcf6KMmjbEydtuLEvCrk4nZKo9A1WZxwUuM/HAAAAAMwAACAAQAAgGQAAIACAACAAQAAAAAAAAAA",
     psbtPartiallySigned: "cHNidP8BANsBAAAAAwH1oUOS85xVyaWX32QLD3Xsd/WpC845u8fohpvMjd+EAAAAAAD/////cj1vZI+zW2IwvHmjiYgZX23NU/dKoytsY1UzA46ZEPAAAAAAAP////+DQoc6pIumsuWnlvNLdDG7VvnFaaa9j35TnLMUeoaz+AEAAAAA/////wIGcwQAAAAAACIAIC3lSXt3Kny9Yc1go1nLQSCZ2iVyVnHR4aAN6OxGdS3IVx8AAAAAAAAiACC8lkGR4Hbp/TKM8RXr41vT2be0+TfHHEHNGaCOkQBjVAAAAAAAAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaCICA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpRzBEAiAiaajAvTuqNXywutbcjBgIvfG59N7WrTIfJd+zufj+EAIgbK1KcMIVMQMsWG9uIBbGV9vYxpoByAbjOCRlJph2tdsBAQMEAQAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAiBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRwAAAADMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4AAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaCICA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpRzBEAiBaQU+MHFXujT0FzG47WszEEyl7qj0GHFcMRK88y9AbeQIgXZmq0ocgvkxPgK/GSHDD7bufKOjd9axqDRqxSWmcYbUBAQMEAQAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAiBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRwAAAADMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4AAQEroIYBAAAAAAAiACC6JRTN06PCAutDlOVQoPwRbLg080ZioBm+ilLGI1HQaCICA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpRzBEAiABmot6h1r5QpMFqJtj2Rmurjv4c1TkBDlYtR+h9VJd+QIgByP0KDiACmmKXJe9/8U6gOaQE0bMjmAA5SqSGA9BRi8BAQMEAQAAACIGA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpHPV+xl0wAACAAQAAgGQAAIACAACAAAAAAAAAAAAiBgNadj4EgPhY72JrZJ+g7+nrZHq79321Tzr5BNLeUMQ0LRwAAAADMAAAgAEAAIBkAACAAgAAgAAAAAAAAAAAAQVHUiEDWnY+BID4WO9ia2SfoO/p62R6u/d9tU86+QTS3lDENC0hA7w0xQz3aPgCKQJpwt2r0IbHNRTIgM7LbbP2dnaktyRpUq4AACICA2EL7APkWcf6KMmjbEydtuLEvCrk4nZKo9A1WZxwUuM/HAAAAAMwAACAAQAAgGQAAIACAACAAQAAAAAAAAAiAgL0X6huGsTmnA8YPHaduRV3QFhseLJMSVvgQEweauAp5Rz1fsZdMAAAgAEAAIBkAACAAgAAgAEAAAAAAAAAAQFHUiEC9F+obhrE5pwPGDx2nbkVd0BYbHiyTElb4EBMHmrgKeUhA2EL7APkWcf6KMmjbEydtuLEvCrk4nZKo9A1WZxwUuM/Uq4A",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2wsh-T
-Policy: 2 of 2
-Format: P2WSH
-Derivation: m/48'/1'/100'/2'
-
-f57ec65d: tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3BhLQc4vWKTLewboA1Pt8Fu6fbHKu81MZ6VGdc32eM
-00000003: tpubDErWN5qfdLwYE94mh12oWr4uURDDNKCjKVhCEcAgZ7jKnnAwq5tcTF2iEk3VuznkJuk2G8SCHft9gS6aKbBd18ptYWPqKLRSTRQY7e2rrDj
-`,
   },
 
   {
@@ -958,7 +926,7 @@ f57ec65d: tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES[MAINNET],
+    //       address: RECEIVING_ADDRESSES[MAINNET][P2SH],
     //       amountSats: "21590",
     //     },
     //   ],
@@ -973,11 +941,11 @@ f57ec65d: tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET][P2SH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES.MAINNET[P2SH],
+          address: CHANGE_ADDRESSES[MAINNET][P2SH],
           amountSats: "7535",
           value: 7535,
           bip32Derivation: [
@@ -1009,27 +977,15 @@ f57ec65d: tpubDFc9Mm4tw6EkgR4YTC1GrU6CGEd9yw7KSBnSssL4LXAXh89D4uMZigRyv3csdXbeU3
       network: MAINNET,
       addressType: P2SH,
       extendedPublicKeys: [
-        NODES["m/45'/0'/100'"].extendedPublicKey,
-        NODES["m/45'/0'/100'"].secondExtendedPublicKey,
+        NODES["m/45'/0'/100'"].open_source,
+        NODES["m/45'/0'/100'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     psbtNoChange: "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",
     psbt: "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",
     psbtPartiallySigned: "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",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2sh-M
-Policy: 2 of 2
-Format: P2SH
-Derivation: m/45'/0'/100'
-
-f57ec65d: xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATMLUowDDA1BMGfQGauY3fDYU3HyMzX4NDkoLYCSkLpbH
-00000004: xpub6Ca5CwTgRASgkXbXE5TeddTP9mPCbYHreCpmGt9dhz9y6femstHGCoFESHHKKRcm414xMKnuLjP9LDS7TwaJC9n5gxua6XB1rwPcC6hqDub
-`,
   },
 
   {
@@ -1083,7 +1039,7 @@ f57ec65d: xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATML
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES[MAINNET],
+    //       address: RECEIVING_ADDRESSES[MAINNET][P2SH_P2WSH],
     //       amountSats: "21590",
     //     },
     //   ],
@@ -1098,11 +1054,11 @@ f57ec65d: xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATML
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET],
+          address: RECEIVING_ADDRESSES[MAINNET][P2SH_P2WSH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES.MAINNET[P2SH_P2WSH],
+          address: CHANGE_ADDRESSES[MAINNET][P2SH_P2WSH],
           amountSats: "7922",
           value: 7922,
           bip32Derivation: [
@@ -1135,28 +1091,15 @@ f57ec65d: xpub6CCHViYn5VzPfSR7baop9FtGcbm3UnqHwa54Z2eNvJnRFCJCdo9HtCYoLJKZCoATML
       network: MAINNET,
       addressType: P2SH_P2WSH,
       extendedPublicKeys: [
-        NODES["m/48'/0'/100'/1'"].extendedPublicKey,
-        NODES["m/48'/0'/100'/1'"].secondExtendedPublicKey,
+        NODES["m/48'/0'/100'/1'"].open_source,
+        NODES["m/48'/0'/100'/1'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     psbtNoChange: "cHNidP8BAKUBAAAAA0DrIG2iCbrfS4o+dY3aD2oc0kqnhVxKDXREZowqKGIgAQAAAAD/////5/mekO9p979XfMNMaVRp0e8uAhMg9PXTEqQ5+lEZIUwAAAAAAP////8xe7+xiBSn2x/RXllvvciyILdvKr3lfAVQJDPiSOXQxQEAAAAA/////wFWVAAAAAAAABepFICyR3QRp4sqk519oIv6GTmocaS5hwAAAAAAAQEgECcAAAAAAAAXqRQavPjOoyHKh03kvrT5dQd/6GSlSocBBCIAIASdbpRQdFJbA+BId1k2j/Zj8Qu4iXYBe92dPM6EkIXlAQVHUiEDKLV8L2XJjtfN5LylTMOhOvpNRxF/2drgZmOkFp4F74YhA0KZf2/Nf6Sjx+KQyIZxSJkuYZR0ISCYXGZNniFEYa98Uq4iBgMotXwvZcmO183kvKVMw6E6+k1HEX/Z2uBmY6QWngXvhhzvpdkWMAAAgAAAAIBkAACAAQAAgAAAAAAAAAAAIgYDQpl/b81/pKPH4pDIhnFImS5hlHQhIJhcZk2eIURhr3wc9X7GXTAAAIAAAACAZAAAgAEAAIAAAAAAAAAAAAABASAQJwAAAAAAABepFBq8+M6jIcqHTeS+tPl1B3/oZKVKhwEEIgAgBJ1ulFB0UlsD4Eh3WTaP9mPxC7iJdgF73Z08zoSQheUBBUdSIQMotXwvZcmO183kvKVMw6E6+k1HEX/Z2uBmY6QWngXvhiEDQpl/b81/pKPH4pDIhnFImS5hlHQhIJhcZk2eIURhr3xSriIGAyi1fC9lyY7XzeS8pUzDoTr6TUcRf9na4GZjpBaeBe+GHO+l2RYwAACAAAAAgGQAAIABAACAAAAAAAAAAAAiBgNCmX9vzX+ko8fikMiGcUiZLmGUdCEgmFxmTZ4hRGGvfBz1fsZdMAAAgAAAAIBkAACAAQAAgAAAAAAAAAAAAAEBIBAnAAAAAAAAF6kUGrz4zqMhyodN5L60+XUHf+hkpUqHAQQiACAEnW6UUHRSWwPgSHdZNo/2Y/ELuIl2AXvdnTzOhJCF5QEFR1IhAyi1fC9lyY7XzeS8pUzDoTr6TUcRf9na4GZjpBaeBe+GIQNCmX9vzX+ko8fikMiGcUiZLmGUdCEgmFxmTZ4hRGGvfFKuIgYDKLV8L2XJjtfN5LylTMOhOvpNRxF/2drgZmOkFp4F74Yc76XZFjAAAIAAAACAZAAAgAEAAIAAAAAAAAAAACIGA0KZf2/Nf6Sjx+KQyIZxSJkuYZR0ISCYXGZNniFEYa98HPV+xl0wAACAAAAAgGQAAIABAACAAAAAAAAAAAAAAA==",
     psbt: "cHNidP8BAMUBAAAAA0DrIG2iCbrfS4o+dY3aD2oc0kqnhVxKDXREZowqKGIgAQAAAAD/////5/mekO9p979XfMNMaVRp0e8uAhMg9PXTEqQ5+lEZIUwAAAAAAP////8xe7+xiBSn2x/RXllvvciyILdvKr3lfAVQJDPiSOXQxQEAAAAA/////wJWVAAAAAAAABepFICyR3QRp4sqk519oIv6GTmocaS5h/IeAAAAAAAAF6kUBzOeDaubkS+ZcvlufWxtCeOLfIKHAAAAAAABASAQJwAAAAAAABepFBq8+M6jIcqHTeS+tPl1B3/oZKVKhwEEIgAgBJ1ulFB0UlsD4Eh3WTaP9mPxC7iJdgF73Z08zoSQheUBBUdSIQMotXwvZcmO183kvKVMw6E6+k1HEX/Z2uBmY6QWngXvhiEDQpl/b81/pKPH4pDIhnFImS5hlHQhIJhcZk2eIURhr3xSriIGAyi1fC9lyY7XzeS8pUzDoTr6TUcRf9na4GZjpBaeBe+GHAAAAAUwAACAAAAAgGQAAIABAACAAAAAAAAAAAAiBgNCmX9vzX+ko8fikMiGcUiZLmGUdCEgmFxmTZ4hRGGvfBz1fsZdMAAAgAAAAIBkAACAAQAAgAAAAAAAAAAAAAEBIBAnAAAAAAAAF6kUGrz4zqMhyodN5L60+XUHf+hkpUqHAQQiACAEnW6UUHRSWwPgSHdZNo/2Y/ELuIl2AXvdnTzOhJCF5QEFR1IhAyi1fC9lyY7XzeS8pUzDoTr6TUcRf9na4GZjpBaeBe+GIQNCmX9vzX+ko8fikMiGcUiZLmGUdCEgmFxmTZ4hRGGvfFKuIgYDKLV8L2XJjtfN5LylTMOhOvpNRxF/2drgZmOkFp4F74YcAAAABTAAAIAAAACAZAAAgAEAAIAAAAAAAAAAACIGA0KZf2/Nf6Sjx+KQyIZxSJkuYZR0ISCYXGZNniFEYa98HPV+xl0wAACAAAAAgGQAAIABAACAAAAAAAAAAAAAAQEgECcAAAAAAAAXqRQavPjOoyHKh03kvrT5dQd/6GSlSocBBCIAIASdbpRQdFJbA+BId1k2j/Zj8Qu4iXYBe92dPM6EkIXlAQVHUiEDKLV8L2XJjtfN5LylTMOhOvpNRxF/2drgZmOkFp4F74YhA0KZf2/Nf6Sjx+KQyIZxSJkuYZR0ISCYXGZNniFEYa98Uq4iBgMotXwvZcmO183kvKVMw6E6+k1HEX/Z2uBmY6QWngXvhhwAAAAFMAAAgAAAAIBkAACAAQAAgAAAAAAAAAAAIgYDQpl/b81/pKPH4pDIhnFImS5hlHQhIJhcZk2eIURhr3wc9X7GXTAAAIAAAACAZAAAgAEAAIAAAAAAAAAAAAAAAQAiACBYHpgGYQrByCSdw0RuAfg2Xs/FBkYjedaUi6oNEoxRmgEBR1IhAnKDT2UkRJEOHMFXuZ9S/WBSgmoR+QmYeaVUkPa4GQvnIQKZl/nHCUiB0kGxOxTYVnze3KzNQRhExV/gmwuMobJUsVKuIgICcoNPZSREkQ4cwVe5n1L9YFKCahH5CZh5pVSQ9rgZC+ccAAAABTAAAIAAAACAZAAAgAEAAIABAAAAAAAAACICApmX+ccJSIHSQbE7FNhWfN7crM1BGETFX+CbC4yhslSxHPV+xl0wAACAAAAAgGQAAIABAACAAQAAAAAAAAAA",
     psbtPartiallySigned: "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",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2sh-p2wsh-M
-Policy: 2 of 2
-# A bug in Coldcard means this has to be P2WSH-P2SH instead of P2SH-P2WSH
-Format: P2WSH-P2SH
-Derivation: m/48'/0'/100'/1'
-
-f57ec65d: xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwawDGX6fHKPvhhZxKc5b8dPAPb8uANDhsjAPMJqTFDjH
-00000005: xpub6EwJjKaiocGvo9f7XSGXGwzo1GLB1URxSZ5Ccp1wqdxNkhrSoqNQkC2CeMsU675urdmFJLHSX62xz56HGcnn6u21wRy6uipovmzaE65PfBp
-`,
   },
 
   {
@@ -1208,7 +1151,7 @@ f57ec65d: xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwaw
     // transaction: {
     //   outputs: [
     //     {
-    //       address: RECEIVING_ADDRESSES.mainnet_p2wsh,
+    //       address: RECEIVING_ADDRESSES[MAINNET][P2WSH],
     //       amountSats: "21590",
     //     },
     //   ],
@@ -1223,11 +1166,11 @@ f57ec65d: xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwaw
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES.mainnet_p2wsh,
+          address: RECEIVING_ADDRESSES[MAINNET][P2WSH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES.MAINNET[P2WSH],
+          address: CHANGE_ADDRESSES[MAINNET][P2WSH],
           amountSats: "8023",
           value: 8023,
           bip32Derivation: [
@@ -1258,34 +1201,16 @@ f57ec65d: xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwaw
     braidDetails: {
       network: MAINNET,
       addressType: P2WSH,
-      // extendedPublicKeys: [
-      //   "xpub6D3H5PNGSLeV96SkyGjn7KnaA5qdgu9t9qXeLZ4MeHxCH7V83nztGCfyKhEj2b51zW4brZEEfoVkKyXQRJfLNSvy9gdqqP3eazUU1WYmxpj",
-      //   "xpub6D3H5PNGSLeZXZe3uFqv4yoq8BRhUcCkqSdvcy2NZvZpsCbV4XSKbPFuzCcmmaeiiKqjJTMBBDuQkc8TKnxuZmc8xGoWAnevjqRivhXDB7S",
-      // ],
-      // Could leave it as plain text to exercise some additional routes, but need to include XFP
       extendedPublicKeys: [
-        NODES["m/48'/0'/100'/2'"].extendedPublicKey,
-        NODES["m/48'/0'/100'/2'"].secondExtendedPublicKey,
+        NODES["m/48'/0'/100'/2'"].open_source,
+        NODES["m/48'/0'/100'/2'"].unchained,
       ],
       requiredSigners: 2,
-      chroot: '0',
+      index: '0',
     },
     psbtNoChange: "cHNidP8BAKUBAAAAA1g/HAmf4YziHrug782OS4zxlI5OkrSWO1oguPj+VrNKAAAAAAD/////kJ2FNHdhe4GXlEcem1hxIWXSWs3OOZNV8p4rx004G6IBAAAAAP////8ao1dpKE4oIrZamKxGRyu1xFWDGSfamT2+mtGVnClurwAAAAAA/////wFWVAAAAAAAABepFICyR3QRp4sqk519oIv6GTmocaS5hwAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFsc76XZFjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFsc76XZFjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFsc76XZFjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAA==",
     psbt: "cHNidP8BANsBAAAAA1g/HAmf4YziHrug782OS4zxlI5OkrSWO1oguPj+VrNKAAAAAAD/////kJ2FNHdhe4GXlEcem1hxIWXSWs3OOZNV8p4rx004G6IBAAAAAP////8ao1dpKE4oIrZamKxGRyu1xFWDGSfamT2+mtGVnClurwAAAAAA/////wJWVAAAAAAAACIAIDW+dOOdhFLNbt4q7ea+cOIeV5QYQwMuSV2CPrn1Ia6nVx8AAAAAAAAiACCYrErfDscWyy0wWF/I22tBrSZDH1UhNiK0NyPeQYr/QgAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFscAAAABjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFscAAAABjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAQErECcAAAAAAAAiACBJewJsPTVHow5tgAbjheA2avXsorW0Vdh4OHWUHlx/qQEFR1IhAuIbcxjPvUgr27ZkQUILkBjltEC/mwze3UJ2JtgfMmBbIQNp50/JVDVbb3rPm77FuGHBhoUrdZqF+SVY5CCgICBH9FKuIgYC4htzGM+9SCvbtmRBQguQGOW0QL+bDN7dQnYm2B8yYFscAAAABjAAAIAAAACAZAAAgAIAAIAAAAAAAAAAACIGA2nnT8lUNVtves+bvsW4YcGGhSt1moX5JVjkIKAgIEf0HPV+xl0wAACAAAAAgGQAAIACAACAAAAAAAAAAAAAAAEBR1IhAximCvyap+MZH55JBRxwdk92iNmlZ7MnwJXlo/dfiEfnIQOLXilfFPaoSPVbfWLv3e9Gedw2Hs2l9s0HTMJK4hdFEFKuIgIDGKYK/Jqn4xkfnkkFHHB2T3aI2aVnsyfAleWj91+IR+ccAAAABjAAAIAAAACAZAAAgAIAAIABAAAAAAAAACICA4teKV8U9qhI9Vt9Yu/d70Z53DYezaX2zQdMwkriF0UQHPV+xl0wAACAAAAAgGQAAIACAACAAQAAAAAAAAAA",
     psbtPartiallySigned: "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",
-    multisigWalletConfig: `# Coldcard Multisig setup file (exported from unchained-wallets)
-# https://github.com/unchained-capital/unchained-wallets
-# v0.0.2
-# 
-Name: p2wsh-M
-Policy: 2 of 2
-Format: P2WSH
-Derivation: m/48'/0'/100'/2'
-
-f57ec65d: xpub6DcqYQxnbefzFkaRBK63FSE2GzNuNnNhFGw1xV9RioVG7av6r3JDf1aELqBSq5gt5487CtNxvVtaiJjQU2HQWzgG5NzLyTPbYav6otW8qEc
-00000006: xpub6EwJjKaiocGvqSuM2jRZSuQ9HEddiFUFu9RdjE47zG7kXVNDQpJ3GyvskwYiLmvU4SBTNZyv8UH53QcmFEE23YwozE61V3dwzZJEFQr6H2b
-`,
-
   },
 ];
 
@@ -1367,7 +1292,6 @@ function singleMultisigTransaction(test) {
       publicKeys: test.utxos.map(() => test.publicKey),
       segwit: test.type !== P2SH,
       psbt: test.psbt,
-      multisigWalletConfig: test.multisigWalletConfig,
     },
     ...test.transaction,
   };
@@ -1412,32 +1336,56 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test),
 ]);
 
 /**
- * A set of test fixtures all built from the same [BIP39 seed phrase]{@link https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki}.
+ * A set of test fixtures mostly built from the same [BIP39 seed phrase]{@link https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki}.
  *
- * Initializing your keystore with this seed phrase will allow you to
- * replicate many of the unit tests in this library on your
- * hardware/software.  This is useful for functional testing.
+ * Initializing your keystore with this seed phrase will allow you to replicate many of the unit (and integration)
+ * tests in this library on your hardware/software.  This is also useful for functional testing.
  *
  * Includes the following properties:
- *
- * - `bip39Phrase` -- the BIP39 seed phrase used for all other fixtures
- * - `nodes` -- an object mapping BIP32 paths to the corresponding [HD node]{@link module:fixtures.HDNode} derived from the BIP39 seed phrase above.
+ * - `keys` - the nature of unchained capital products involve keys from multiple sources (multisig)
+ * -   `open_source` - open source fixtures
+ * -     `bip39Phrase` -- the BIP39 seed phrase used for all other fixtures
+ * -     `nodes` -- an object mapping BIP32 paths to the corresponding [HD node]{@link module:fixtures.HDNode} derived from the BIP39 seed phrase above.
+ * -   `unchained` - unchained fixtures
+ * -     `nodes` -- an object mapping BIP32 paths to the corresponding [HD node]{@link module:fixtures.HDNode} derived from unchained seed phrase (not shared).
  * - `multisigs` -- an array of [multisig addresses]{@link module:fixtures.MultisigAddress} derived from the HD nodes above.
+ * - `braids` -- an array of [braids]{@link module:fixtures.Braid} derived from the open_source + unchained HD nodes above.
  * - `transactions` -- an array of [transactions]{@link module:fixtures.MultisigTransaction} from the multisig address above.
  *
  * @example
  * import {TEST_FIXTURES} from "unchained-bitcoin";
- * console.log(TEST_FIXTURES.bip39Phrase);
+ * console.log(TEST_FIXTURES.keys.open_source.bip39Phrase);
  * // merge alley lucky axis penalty manage latin gasp virus captain wheel deal chase fragile chapter boss zero dirt stadium tooth physical valve kid plunge
  *
  */
 export const TEST_FIXTURES = {
-  bip39Phrase: BIP39_PHRASE,
-  nodes: NODES,
+  keys: {
+    open_source: {
+      bip39Phrase: BIP39_PHRASE,
+      nodes: Object.keys(NODES).reduce((openSourceNodes, node) => {
+        const { unchained, ...rest } = NODES[node];
+        if (!unchained) {
+          openSourceNodes[node] = NODES[node];
+        } else {
+          // keep the node but drop the unchained part
+          openSourceNodes[node] = rest;
+        }
+        return openSourceNodes;
+      }, {}),
+    },
+    unchained: {
+      nodes: Object.keys(NODES).reduce((unchainedNodes, node) => {
+        const { unchained } = NODES[node];
+        if (unchained) unchainedNodes[node] = unchained;
+        return unchainedNodes;
+      }, {}),
+    }
+  },
   braids: BRAIDS,
   multisigs: MULTISIGS,
   transactions: TRANSACTIONS,
 };
+
 
 /**
  * An HD node fixture derived from the BIP39 seed phrase fixture.
@@ -1449,6 +1397,20 @@ export const TEST_FIXTURES = {
  * @property {string} pub - the (compressed) public key in hex
  * @property {string} xpub - the extended public key formatted for mainnet
  * @property {string} tpub - the extended public key formatted for testnet
+ */
+
+/**
+ * A braid fixture including details to build the P2SH transaction
+ *
+ * The particular braid included has some additional fixtures for unit tests
+ *
+ * @typedef module:fixtures.Braid
+ * @type {Object}
+ * @property {string} options.network = mainnet - mainnet or testnet
+ * @property {string} options.addressType P2SH, P2SH-P2WSH, P2WSH
+ * @property {ExtendedPublicKey[]} options.extendedPublicKeys ExtendedPublicKeys that make up this braid
+ * @property {number} requiredSigners - how many required signers in this braid
+ * @property {string} options.index - One value, relative, to add on to all xpub absolute bip32paths (0=deposit, 1=change)
  */
 
 /**
@@ -1475,6 +1437,10 @@ export const TEST_FIXTURES = {
  * @property {string} scriptOps - script in opcodes
  * @property {module:multisig.Multisig} multisig - `Multisig` object for address
  * @property {module:transactions.UTXO[]} utxos - UTXOs at this address
+ * @property {module:fixtures.Braid} braidDetails - details to construct the braid where this Multisig address resides
+ * @property {module:fixtures.Braid} changeBraidDetails - details to construct the change braid where the Change Multisig address resides (if needed)
+ * @property {string} psbt - unsigned psbt of the Transaction
+ * @property {string} psbtPartiallySigned - psbt that has a single set of signatures inside for the open source words
  *
  */
 

@@ -151,7 +151,7 @@ describe("inputs", () => {
       ).toMatch(/duplicate input/i);
     });
 
-    it("should return an error message if multisig object has no braidDetails", () => {
+    it("should return an error message if multisig object has no multisigBraidDetails", () => {
       expect(
         validateMultisigInputs(
           [

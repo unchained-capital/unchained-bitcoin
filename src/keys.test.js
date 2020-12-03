@@ -23,8 +23,8 @@ import { TESTNET, MAINNET } from "./networks";
 
 import { TEST_FIXTURES } from "./fixtures";
 
-const NODES = TEST_FIXTURES.nodes;
-const extendedPubKeyNode = TEST_FIXTURES.nodes["m/45'/0'/0'"];
+const NODES = TEST_FIXTURES.keys.open_source.nodes;
+const extendedPubKeyNode = NODES["m/45'/0'/0'"];
 
 describe("keys", () => {
 

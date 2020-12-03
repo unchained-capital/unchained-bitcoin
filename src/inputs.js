@@ -6,7 +6,7 @@
  */
 
 import {validateHex} from './utils';
-import {braidDetails} from './multisig';
+import {multisigBraidDetails} from './multisig';
 
  /**
  * Represents a transaction input.
@@ -60,7 +60,7 @@ export function validateMultisigInputs(inputs, braidRequired) {
   let utxoIDs = [];
   for (let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
     const input = inputs[inputIndex];
-    if (braidRequired && input.multisig && !braidDetails(input.multisig)) {
+    if (braidRequired && input.multisig && !multisigBraidDetails(input.multisig)) {
         return `At least one input cannot be traced back to its set of extended public keys.`;
     }
     const error = validateMultisigInput(input);

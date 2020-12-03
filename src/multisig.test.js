@@ -12,8 +12,7 @@ import {
   multisigWitnessScript,
   multisigPublicKeys,
   multisigAddress,
-  braidDetails,
-  getBip32Derivation,
+  multisigBraidDetails,
 } from './multisig';
 import {TEST_FIXTURES} from './fixtures';
 import {braidConfig} from './braid';
@@ -152,39 +151,16 @@ describe("multisig", () => {
 
   });
 
-  describe("braidDetails", () => {
+  describe("multisigBraidDetails", () => {
 
     it(`fails to return the braidDetails for a braid-unaware multisig`, () => {
       const badone = JSON.parse(JSON.stringify(MULTISIGS[0])).multisig;
       badone.braidDetails = null;
-      expect(braidDetails(badone)).toBe(null);
+      expect(multisigBraidDetails(badone)).toBe(null);
     });
     MULTISIGS.forEach((test) => {
       it(`returns the braidDetails for a ${test.network} 2-of-2 ${test.type} address`, () => {
-        expect(braidDetails(test.multisig)).toBe(braidConfig(test.braidDetails));
-      });
-    });
-
-  });
-
-  describe("bip32Derivation", () => {
-
-    it(`fails to return the bip32Derivation for a braid-unaware multisig`, () => {
-      const badone = JSON.parse(JSON.stringify(MULTISIGS[0])).multisig;
-      badone.braidDetails = null;
-      badone.bip32Derivation = null;
-      expect(getBip32Derivation(badone, 0)).toBe(null);
-    });
-
-    it(`returns the generated bip32Derivation for a braid-aware multisig without sending in an index`, () => {
-      const missingDerivation = JSON.parse(JSON.stringify(MULTISIGS[0])).multisig;
-      missingDerivation.bip32Derivation = null;
-      expect(getBip32Derivation(missingDerivation)).toEqual(MULTISIGS[0].bip32Derivation);
-    });
-
-    MULTISIGS.forEach((test) => {
-      it(`returns the bip32Derivation for a ${test.network} 2-of-2 ${test.type} address`, () => {
-        expect(getBip32Derivation(test.multisig, 0)).not.toBe(null);
+        expect(multisigBraidDetails(test.multisig)).toBe(braidConfig(test.braidDetails));
       });
     });
 

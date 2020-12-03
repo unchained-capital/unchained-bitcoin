@@ -1,8 +1,8 @@
 import {Psbt} from "bitcoinjs-lib";
 import {toHexString} from './utils';
 import {
-  getBip32Derivation,
   multisigAddressType,
+  multisigBraidDetails,
   multisigRedeemScript,
   multisigWitnessScript,
 } from './multisig';
@@ -11,6 +11,7 @@ import BigNumber from 'bignumber.js';
 import {P2SH} from './p2sh';
 import {P2WSH} from './p2wsh';
 import {P2SH_P2WSH} from './p2sh_p2wsh';
+import {generateBip32DerivationByIndex, generateBraid} from './braid';
 
 const bitcoin = require('bitcoinjs-lib');
 
@@ -49,6 +50,48 @@ const bitcoin = require('bitcoinjs-lib');
  * @property {Object} [bip32Derivation] For change addresses - the set of (rootFingerprints && pubkeys && bip32paths) for this Multisig
  *
  */
+
+
+/**
+ * Return the getBip32Derivation (if known) for a given `Multisig` object.
+ *
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
+ * @param {number} [index] the index to generate at
+ * @returns {Object[]} the getBip32Derivation includes all paths/root fingerprints to all pubkeys in the multisig object
+ * @example
+ * import {
+ *   getBip32Derivation,
+ *   generateBraidFromExtendedPublicKeys,
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   braidConfig,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * console.log(getBip32Derivation(multisig, 0)); // null, Multisig object isn't aware of its braid.
+ *
+ * const braid = generateBraidFromExtendedPublicKeys(MAINNET, P2SH, {{'xpub...', bip32path: "m/45'/0'/0'"}, {'xpub...', bip32path: "m/45'/0/0"}, {'xpub...', bip32path: "m/45'/0/0"}}, 2);
+ * const multisig = braid.deriveMultisigByIndex("0");
+ * console.log(getBip32Derivation(multisig, 0)); // {
+ *   {masterFingerprint: Buffer('1234..', 'hex'), path: "m/45'/0'/0'/0/0", pubkey: Buffer.from("02...", 'hex')}
+ *   {masterFingerprint: Buffer('3453..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("03...", 'hex')}
+ *   {masterFingerprint: Buffer('1533..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("02...", 'hex')}
+ * }
+ */
+function getBip32Derivation(multisig, index= 0) {
+  // Already have one, return it
+  if (multisig.bip32Derivation) {
+    return multisig.bip32Derivation;
+  }
+  // Otherwise generate it
+  const config = JSON.parse(multisigBraidDetails(multisig));
+  const braid = generateBraid(
+    config.network,
+    config.addressType,
+    config.extendedPublicKeys,
+    config.requiredSigners,
+    config.index,
+  );
+  return generateBip32DerivationByIndex(braid, index);
+}
 
 /**
  * Grabs appropriate bip32Derivation based on the input's last index

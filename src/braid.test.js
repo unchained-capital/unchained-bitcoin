@@ -2,7 +2,7 @@ import {TEST_FIXTURES} from "./fixtures";
 import {
   Braid,
   braidAddressType,
-  braidChroot,
+  braidIndex,
   braidConfig,
   braidExtendedPublicKeys,
   braidNetwork,
@@ -24,13 +24,13 @@ describe("braids", () => {
     let defaultBraid;
     beforeEach(() => {
       // runs before each test in this block
-      const {network, addressType, extendedPublicKeys, requiredSigners, chroot} = BRAIDS[0];
+      const {network, addressType, extendedPublicKeys, requiredSigners, index} = BRAIDS[0];
       defaultBraid = new Braid({
         network,
         addressType,
         extendedPublicKeys,
         requiredSigners,
-        chroot,
+        index,
       });
     });
 
@@ -40,27 +40,27 @@ describe("braids", () => {
     });
 
     it("encodes and decodes a braid", () => {
-      const {network, addressType, extendedPublicKeys, requiredSigners, chroot} = BRAIDS[0];
+      const {network, addressType, extendedPublicKeys, requiredSigners, index} = BRAIDS[0];
       expect(braidConfig(defaultBraid)).toBe(JSON.stringify({
         network,
         addressType,
         extendedPublicKeys,
         requiredSigners,
-        chroot,
+        index,
       }));
 
       expect(braidNetwork(defaultBraid)).toBe(defaultBraid.network);
       expect(braidAddressType(defaultBraid)).toBe(defaultBraid.addressType);
       expect(braidExtendedPublicKeys(defaultBraid)).toBe(defaultBraid.extendedPublicKeys);
       expect(braidRequiredSigners(defaultBraid)).toBe(defaultBraid.requiredSigners);
-      expect(braidChroot(defaultBraid)).toBe(defaultBraid.chroot);
+      expect(braidIndex(defaultBraid)).toBe(defaultBraid.index);
 
       expect(Braid.fromData({
         network,
         addressType,
         extendedPublicKeys,
         requiredSigners,
-        chroot,
+        index,
       })).toStrictEqual(defaultBraid);
     });
 
@@ -72,13 +72,13 @@ describe("braids", () => {
     });
 
     it('should exercise base58string xpub paths', () => {
-      const {network, addressType, stringExtendedPublicKeys, requiredSigners, chroot} = BRAIDS[0];
+      const {network, addressType, stringExtendedPublicKeys, requiredSigners, index} = BRAIDS[0];
       const stringBraid = new Braid({
         network,
         addressType,
         extendedPublicKeys: stringExtendedPublicKeys,
         requiredSigners,
-        chroot,
+        index,
       });
 
       expect(generatePublicKeysAtIndex(stringBraid, 0)).toEqual(pubKeySets.index[0]);
@@ -98,8 +98,8 @@ describe("braids", () => {
     });
 
     it('should fail to generate pubkeys at path', () => {
-      expect(() => generatePublicKeysAtPath(defaultBraid, '1/0')).toThrow(/Cannot derive paths outside of the chroot/i);
-      expect(() => generatePublicKeysAtPath(defaultBraid, '48349/0/0/0')).toThrow(/Cannot derive paths outside of the chroot/i);
+      expect(() => generatePublicKeysAtPath(defaultBraid, '1/0')).toThrow(/Cannot derive paths outside of the braid's index/i);
+      expect(() => generatePublicKeysAtPath(defaultBraid, '48349/0/0/0')).toThrow(/Cannot derive paths outside of the braid's index/i);
     });
 
     it('should generate getBip32Derivation at index', () => {
@@ -113,8 +113,8 @@ describe("braids", () => {
     });
 
     it('should fail to generate getBip32Derivation at path', () => {
-      expect(() => generateBip32DerivationByPath(defaultBraid, '1/0')).toThrow(/Cannot derive paths outside of the chroot/i);
-      expect(() => generateBip32DerivationByPath(defaultBraid, '48349/0/0/0')).toThrow(/Cannot derive paths outside of the chroot/i);
+      expect(() => generateBip32DerivationByPath(defaultBraid, '1/0')).toThrow(/Cannot derive paths outside of the braid's index/i);
+      expect(() => generateBip32DerivationByPath(defaultBraid, '48349/0/0/0')).toThrow(/Cannot derive paths outside of the braid's index/i);
     });
 
     it('should generate braid-aware multisig at index 0', () => {
@@ -130,13 +130,13 @@ describe("braids", () => {
     });
 
     it("generate a braid", () => {
-      const { network, addressType, extendedPublicKeys, requiredSigners, chroot } = BRAIDS[0];
+      const { network, addressType, extendedPublicKeys, requiredSigners, index } = BRAIDS[0];
       expect(generateBraid(
         network,
         addressType,
         extendedPublicKeys,
         requiredSigners,
-        chroot,
+        index,
       )).toStrictEqual(defaultBraid);
     });
   });

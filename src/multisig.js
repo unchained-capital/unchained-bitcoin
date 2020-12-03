@@ -54,10 +54,6 @@ import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import {toHexString} from "./utils";
-import {
-  generateBip32DerivationByIndex,
-  generateBraid,
-} from './braid';
 
 const bitcoin = require('bitcoinjs-lib');
 
@@ -77,7 +73,7 @@ const bitcoin = require('bitcoinjs-lib');
  * @type {Object}
  * @property {string} address - The multisig address
  * @property {Object} redeem - the redeem object from p2ms
- * @property {Object} braidDetails - details about the braid (addressType, network, requiredSigners, xpubs, bip32path)
+ * @property {Object} multisigBraidDetails - details about the braid (addressType, network, requiredSigners, xpubs, bip32path)
  * @property {Object[]} getBip32Derivation - Array of objects for every key in this multisig address
  *
  */
@@ -399,57 +395,12 @@ export function multisigAddress(multisig) {
  *   braidConfig,
  * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
- * console.log(braidConfig(multisig)); // null, unknown
+ * console.log(multisigBraidDetails(multisig)); // null, unknown
  *
  * const braid = generateBraidFromExtenedPublicKeys(MAINNET, P2SH, {{'xpub...', bip32path: "m/45'/0'/0'"}, {'xpub...', bip32path: "m/45'/0/0"}, {'xpub...', bip32path: "m/45'/0/0"}}, 2);
  * const multisig = braid.deriveMultisigByPath("0/0");
- * console.log(braidConfig(multisig)); // {network: mainnet, addressType: p2sh, extendedPublicKeys: {...}, requiredSigners: 2}}
+ * console.log(multisigBraidDetails(multisig)); // {network: mainnet, addressType: p2sh, extendedPublicKeys: {...}, requiredSigners: 2}}
  */
-export function braidDetails(multisig) {
+export function multisigBraidDetails(multisig) {
   return multisig.braidDetails ? multisig.braidDetails : null;
-}
-
-/**
- * Return the getBip32Derivation (if known) for a given `Multisig` object.
- *
- * @param {module:multisig.Multisig} multisig the `Multisig` object
- * @param {number} [index] the index to generate at
- * @returns {Object[]} the getBip32Derivation includes all paths/root fingerprints to all pubkeys in the multisig object
- * @example
- * import {
- *   getBip32Derivation,
- *   generateBraidFromExtendedPublicKeys,
- *   generateMultisigFromPublicKeys, MAINNET, P2SH,
- *   braidConfig,
- * } from "unchained-bitcoin";
- * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
- * console.log(getBip32Derivation(multisig, 0)); // null, Multisig object isn't aware of its braid.
- *
- * const braid = generateBraidFromExtendedPublicKeys(MAINNET, P2SH, {{'xpub...', bip32path: "m/45'/0'/0'"}, {'xpub...', bip32path: "m/45'/0/0"}, {'xpub...', bip32path: "m/45'/0/0"}}, 2);
- * const multisig = braid.deriveMultisigByIndex("0");
- * console.log(getBip32Derivation(multisig, 0)); // {
- *   {masterFingerprint: Buffer('1234..', 'hex'), path: "m/45'/0'/0'/0/0", pubkey: Buffer.from("02...", 'hex')}
- *   {masterFingerprint: Buffer('3453..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("03...", 'hex')}
- *   {masterFingerprint: Buffer('1533..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("02...", 'hex')}
- * }
- */
-export function getBip32Derivation(multisig, index= 0) {
-  // Already have one, return it
-  if (multisig.bip32Derivation) {
-    return multisig.bip32Derivation;
-  }
-  // Otherwise try to generate it
-  const config = JSON.parse(braidDetails(multisig));
-  if (config) {
-    const braid = generateBraid(
-      config.network,
-      config.addressType,
-      config.extendedPublicKeys,
-      config.requiredSigners,
-      config.chroot,
-    );
-    return generateBip32DerivationByIndex(braid, index);
-  } else {
-    return null;
-  }
 }

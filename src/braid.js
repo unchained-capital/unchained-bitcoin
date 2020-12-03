@@ -24,10 +24,9 @@ import {
   extendedPublicKeyRootFingerprint,
 } from './keys';
 
-// In building the information objects that devices like Coldcard want, one must include information
-// about the root fingerprint for the device. If that information is unknown, just fill it in with zeros.
-// NOTE: if you want to sign a PSBT with a Coldcard, at least one of your xpubs must have the actual root
-// fingerprint of the device you're signing with.
+// In building the information objects that PSBTs want, one must include information
+// about the root fingerprint for the device. If that information is unknown, just fill
+// it in with zeros.
 const FAKE_ROOT_FINGERPRINT = '00000000';
 
 /**
@@ -36,8 +35,8 @@ const FAKE_ROOT_FINGERPRINT = '00000000';
  * @param {string} options.network = mainnet - mainnet or testnet
  * @param {string} options.addressType P2SH, P2SH-P2WSH, P2WSH
  * @param {ExtendedPublicKey[]} options.extendedPublicKeys ExtendedPublicKeys that make up this braid
- * @param {number} requiredSigners - how many required signers in this braid
- * @param {string} options.chroot - One value, relative, to add on to all xpub absolute chroot bip32paths (0=deposit, 1=change)
+ * @param {number} options.requiredSigners - how many required signers in this braid
+ * @param {string} options.index - One value, relative, to add on to all xpub absolute bip32paths (usually 0=deposit, 1=change)
  */
 export class Braid extends Struct {
   constructor(options) {
@@ -72,14 +71,14 @@ export class Braid extends Struct {
       `Can't have more requiredSigners than there are keys.`)
     this.requiredSigners = options.requiredSigners;
 
-    // chroot is a technically a bip32path, but it's also just an
+    // index is a technically a bip32path, but it's also just an
     // unhardened index (single number) - if we think of the bip32path as a
     // filepath, then this is a directory that historically tells you
     // deposit (0) or change (1) braid
-    const pathError = validateBIP32Index(options.chroot, {mode: "unhardened"});
+    const pathError = validateBIP32Index(options.index, {mode: "unhardened"});
     assert(!pathError.length, pathError);
-    this.chroot = options.chroot;
-    this.sequence = bip32PathToSequence(this.chroot);
+    this.index = options.index;
+    this.sequence = bip32PathToSequence(this.index);
   }
 
   static fromData(data) {
@@ -97,7 +96,7 @@ export function braidConfig(braid) {
     addressType: braid.addressType,
     extendedPublicKeys: braid.extendedPublicKeys,
     requiredSigners: braid.requiredSigners,
-    chroot: braid.chroot,
+    index: braid.index,
   });
 }
 
@@ -138,17 +137,17 @@ export function braidRequiredSigners(braid) {
 }
 
 /**
- * Returns the braid's chroot
+ * Returns the braid's index
  * @param {Braid} braid the braid to interrogate
- * @returns {string} chroot (singular) for the braid: 0 = deposit, 1 = change
+ * @returns {string} index (singular) for the braid: 0 = deposit, 1 = change
  */
-export function braidChroot(braid) {
-  return braid.chroot;
+export function braidIndex(braid) {
+  return braid.index;
 }
 
 /**
  * Validate that a requested path is derivable from a particular braid
- * e.g. it's both a valid bip32path *and* its first index is the same as the chroot
+ * e.g. it's both a valid bip32path *and* its first index is the same as the index
  *
  * @param {Braid} braid the braid to interrogate
  * @param {string} path the path to validate
@@ -165,12 +164,12 @@ export function validateBip32PathForBraid(braid, path) {
     ? path
     : "/" + path;
   const pathSequence = bip32PathToSequence(pathToCheck);
-  assert(pathSequence[0].toString() === braid.chroot, `Cannot derive paths outside of the chroot: ${braid.chroot}`);
+  assert(pathSequence[0].toString() === braid.index, `Cannot derive paths outside of the braid's index: ${braid.index}`);
 }
 
 /**
  * Returns an object with a braid's pubkeys + bip32derivation info
- * at a particular path (respects the chroot)
+ * at a particular path (respects the index)
  *
  * @param {Braid} braid the braid to interrogate
  * @param {string} path what suffix to generate pubkeys at
@@ -206,7 +205,7 @@ function derivePublicKeyObjectsAtPath(braid, path) {
 }
 
 /**
- * Returns the braid's pubkeys at particular path (respects the chroot)
+ * Returns the braid's pubkeys at particular path (respects the index)
  *
  * @param {Braid} braid the braid to interrogate
  * @param {string} path the suffix to generate pubkeys at
@@ -217,14 +216,14 @@ export function generatePublicKeysAtPath(braid, path) {
 }
 
 /**
- * Returns the braid's pubkeys at particular index under the chroot
+ * Returns the braid's pubkeys at particular index under the index
  *
  * @param {Braid} braid the braid to interrogate
  * @param {number} index the suffix to generate pubkeys at
  * @returns {string[]} array of public keys at a particular index from the braid
  */
 export function generatePublicKeysAtIndex(braid, index) {
-  let pathToDerive = braidChroot(braid);
+  let pathToDerive = braidIndex(braid);
   pathToDerive += "/" + index.toString();
   return generatePublicKeysAtPath(braid, pathToDerive);
 }
@@ -246,13 +245,13 @@ export function generateBip32DerivationByPath(braid, path) {
  * @returns {Object[]} array of getBip32Derivation objects
  */
 export function generateBip32DerivationByIndex(braid, index) {
-  let pathToDerive = braidChroot(braid); // deposit or change
+  let pathToDerive = braidIndex(braid); // deposit or change
   pathToDerive += "/" + index.toString();
   return generateBip32DerivationByPath(braid, pathToDerive);
 }
 
 /**
- * Returns a braid-aware Multisig object at particular path (respects chroot)
+ * Returns a braid-aware Multisig object at particular path (respects index)
  * @param {Braid} braid the braid to interrogate
  * @param {string} path what suffix to generate the multisig at
  * @returns {module:multisig.Multisig} braid-aware MULTISIG object at path
@@ -270,7 +269,7 @@ export function deriveMultisigByPath(braid, path) {
  * @returns {module:multisig.Multisig} braid-aware MULTISIG object at index
  */
 export function deriveMultisigByIndex(braid, index) {
-  let pathToDerive = braidChroot(braid);
+  let pathToDerive = braidIndex(braid);
   pathToDerive += "/" + index.toString();
   return deriveMultisigByPath(braid, pathToDerive);
 }
@@ -304,7 +303,7 @@ function generateBraidAwareMultisigFromPublicKeys(
  * @param {string} addressType - P2SH/P2SH-P2WSH/P2WSH
  * @param {module:keys.ExtendedPublicKey[]} extendedPublicKeys - array of xpubs that make up the braid
  * @param {number} requiredSigners - number signers needed to sign
- * @param {string} chroot (usually deposit/change) - e.g. '0' or '1'
+ * @param {string} index (usually deposit/change) - e.g. '0' or '1'
  * @returns {Braid} Braid struct is returned
  */
 export function generateBraid(
@@ -312,13 +311,13 @@ export function generateBraid(
   addressType,
   extendedPublicKeys,
   requiredSigners,
-  chroot,
+  index,
 ) {
   return new Braid({
     network,
     addressType,
     extendedPublicKeys,
     requiredSigners,
-    chroot,
+    index,
   });
 }
