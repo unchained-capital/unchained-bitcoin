@@ -73,8 +73,8 @@ export class Braid extends Struct {
 
     // index is a technically a bip32path, but it's also just an
     // unhardened index (single number) - if we think of the bip32path as a
-    // filepath, then this is a directory that historically tells you
-    // deposit (0) or change (1) braid
+    // filepath, then this is a directory that historically/typically tells you
+    // deposit (0) or change (1) braid, but could be any unhardened index.
     const pathError = validateBIP32Index(options.index, {mode: "unhardened"});
     assert(!pathError.length, pathError);
     this.index = options.index;

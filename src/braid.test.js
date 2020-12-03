@@ -93,8 +93,6 @@ describe("braids", () => {
     it('should generate pubkeys at path', () => {
       expect(generatePublicKeysAtPath(defaultBraid, '0/0')).toEqual(pubKeySets.path["0/0"]);
       expect(generatePublicKeysAtPath(defaultBraid, 'm/0/0')).toEqual(pubKeySets.path["0/0"]);
-      // expect(generatePublicKeysAtPath(defaultBraid, '0/1/0')).toEqual(pubKeySets.path["0/1/0"]);
-      // expect(generatePublicKeysAtPath(defaultBraid, '0/48349/0/0/0')).toEqual(pubKeySets.path["0/48349/0/0/0"]);
     });
 
     it('should fail to generate pubkeys at path', () => {

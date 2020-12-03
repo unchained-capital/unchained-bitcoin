@@ -73,7 +73,7 @@ const bitcoin = require('bitcoinjs-lib');
  * @type {Object}
  * @property {string} address - The multisig address
  * @property {Object} redeem - the redeem object from p2ms
- * @property {Object} multisigBraidDetails - details about the braid (addressType, network, requiredSigners, xpubs, bip32path)
+ * @property {Object} multisigBraidDetails - details about the braid (addressType, network, requiredSigners, xpubs, index)
  * @property {Object[]} getBip32Derivation - Array of objects for every key in this multisig address
  *
  */

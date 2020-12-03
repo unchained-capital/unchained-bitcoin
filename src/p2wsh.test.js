@@ -26,19 +26,19 @@ describe("p2wsh", () => {
     expect(vsize).toBeLessThanOrEqual(307);
   });
 
-  xdescribe('calculateBase', () => {
+  describe('calculateBase', () => {
     it('should correctly calculate tx base size without witness', () => {
       expect(calculateBase(2, 2)).toBe(178)
     })
   });
 
-  xdescribe('getRedeemScriptSize', () => {
+  describe('getRedeemScriptSize', () => {
     it('should return the correct estimated size of a multisig script', () =>{
       expect(getRedeemScriptSize(3)).toBe(105)
     })
   });
 
-  xdescribe('getScriptSigSize', () => {
+  describe('getScriptSigSize', () => {
     it('should return the correct estimated size of a 2-of-3 multisig scriptSig', () => {
       const witnessSize = getWitnessSize(2, 3)
       // assumes largest possible signature size of 73

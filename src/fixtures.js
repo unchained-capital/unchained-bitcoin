@@ -225,8 +225,6 @@ const NODES = {
   "m/45'/1'/0'": {
     xpub: "tpubDDQubdBx9cbs16zUhpiM135EpvjSbVz7SGJyGg4rvRVEYdncZy3Kzjg6NjuFWcShiCyNqviWTBiZPb25p4WcaLppVmAuiPMrkR1kahNoioL",
     rootFingerprint: ROOT_FINGERPRINT,
-    extendedPublicKey: {},
-    secondExtendedPublicKey: {x: "tpubDDinbKDXyddP7hAi2CgWVUZso7shdXjwmeF1ALPX2CmNDvLGdtjyBpAXQd4Po4rxzkijM41zDNjSFrcpKgMKURGBq2kekWPYdgdJTqyZ9jU"},
   },
 
   // P2SH-TESTNET

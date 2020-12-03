@@ -80,7 +80,7 @@ export function validateMultisigSignature(network, inputs, outputs, inputIndex, 
   for (let publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
     const publicKey = publicKeys[publicKeyIndex];
     const publicKeyBuffer = Buffer.from(publicKey, 'hex');
-    const  keyPair = bitcoin.ECPair.fromPublicKey(publicKeyBuffer);
+    const keyPair = bitcoin.ECPair.fromPublicKey(publicKeyBuffer);
     if (keyPair.verify(hash, signatureBuffer)) {
       return publicKey;
     }
