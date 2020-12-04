@@ -1194,6 +1194,9 @@ function singleMultisigTransaction(test) {
       publicKeys: test.utxos.map(() => test.publicKey),
       segwit: test.type !== P2SH,
       psbt: test.psbt,
+      format: test.type,
+      derivation: test.bip32Path.slice(0,-4),
+      extendedPublicKeys: test.braidDetails.extendedPublicKeys,
     },
     ...test.transaction,
   };
