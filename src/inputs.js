@@ -47,7 +47,7 @@ export function sortInputs(inputs) {
  *
  * Returns an error message if there are no inputs.  Passes each output to [`validateMultisigInput`]{@link module:transactions.validateOutput}.
  *
- * If the function is called with requireBraids, an additional check is performed
+ * If the function is called with braidRequired, an additional check is performed
  * on each input's multisig to make sure that it is braid-aware. In other words,
  * does the input know the set of ExtendedPublicKeys it came from?
  *

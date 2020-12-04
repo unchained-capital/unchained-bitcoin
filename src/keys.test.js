@@ -302,7 +302,6 @@ describe("keys", () => {
 
   describe("Test convertExtendedPublicKey", () => {
     it(`should fail to convert`, () => {
-      // bs58check.decode = () => { throw new Error() };
       expect(() => convertExtendedPublicKey(
         'tpub',
         'xpub',

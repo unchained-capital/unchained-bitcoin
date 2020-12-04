@@ -234,6 +234,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
   return signedTransaction;
 }
 
+// TODO: implement this parallel function
 // /**
 //  * Create a fully signed multisig transaction based on the unsigned
 //  * transaction, braid-aware inputs, and their signatures.

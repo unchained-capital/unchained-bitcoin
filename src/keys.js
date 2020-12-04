@@ -268,10 +268,9 @@ export function validateExtendedPublicKeyForNetwork(
   if (network === TESTNET) {
     requiredPrefix += " or 'tpub'";
   }
-  const notXpubError = `Extended public key must begin with ${requiredPrefix}.`;
   const prefix = extendedPublicKey.slice(0, 4);
   if (!((network === MAINNET && prefix === "xpub") || (network === TESTNET && prefix === "tpub"))) {
-    return notXpubError;
+    return `Extended public key must begin with ${requiredPrefix}.`;
   }
   return "";
 }
@@ -504,8 +503,6 @@ export function fingerprintToFixedLengthHex(xfp) {
 
 /**
  * Returns the root fingerprint of the extendedPublicKey
- * (It should be zero-padded, hex-formatted string that is exactly eight
- * characters long.)
  *
  * @param {Struct} extendedPublicKey the extendedPublicKey Struct
  * @returns {string|null} zero-padded, fixed-length hex xfp

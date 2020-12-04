@@ -49,11 +49,11 @@ describe("braids", () => {
         index,
       }));
 
-      expect(braidNetwork(defaultBraid)).toBe(defaultBraid.network);
-      expect(braidAddressType(defaultBraid)).toBe(defaultBraid.addressType);
-      expect(braidExtendedPublicKeys(defaultBraid)).toBe(defaultBraid.extendedPublicKeys);
-      expect(braidRequiredSigners(defaultBraid)).toBe(defaultBraid.requiredSigners);
-      expect(braidIndex(defaultBraid)).toBe(defaultBraid.index);
+      expect(braidNetwork(defaultBraid)).toBe(BRAIDS[0].network);
+      expect(braidAddressType(defaultBraid)).toBe(BRAIDS[0].addressType);
+      expect(braidExtendedPublicKeys(defaultBraid)).toBe(BRAIDS[0].extendedPublicKeys);
+      expect(braidRequiredSigners(defaultBraid)).toBe(BRAIDS[0].requiredSigners);
+      expect(braidIndex(defaultBraid)).toBe(BRAIDS[0].index);
 
       expect(Braid.fromData({
         network,

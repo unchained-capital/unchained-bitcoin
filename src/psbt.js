@@ -244,7 +244,7 @@ export function psbtOutputFormatter(output) {
  *                     address: [pubkey : [signature(s)]]
  *
  * that way if your braid only advanced one chain's (member's) index so that a pubkey
- * was could be used in more than one address, everything would still function properly.
+ * could be used in more than one address, everything would still function properly.
  *
  * @param {String} psbtFromFile -  base64 or hex
  * @returns {Object} returns an object with signatureSet(s) - an object with format
