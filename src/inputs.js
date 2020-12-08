@@ -6,6 +6,7 @@
  */
 
 import {validateHex} from './utils';
+import {multisigBraidDetails} from './multisig';
 
  /**
  * Represents a transaction input.
@@ -44,17 +45,24 @@ export function sortInputs(inputs) {
 /**
  * Validates the given transaction inputs.
  *
- * Returns an error message if there are no inputs.  Passes each output to [`validateMultisigInput`]{@link module:transactions.validatOutput}.
+ * Returns an error message if there are no inputs.  Passes each output to [`validateMultisigInput`]{@link module:transactions.validateOutput}.
+ *
+ * If the function is called with braidRequired, an additional check is performed
+ * on each input's multisig to make sure that it is braid-aware. In other words,
+ * does the input know the set of ExtendedPublicKeys it came from?
  *
  * @param {module:inputs.MultisigTransactionInput[]} inputs - inputs to validate
+ * @param {boolean} [braidRequired] - inputs need to have braid details attached to them
  * @returns {string} empty if valid or corresponding validation message if not
- * 
  */
-export function validateMultisigInputs(inputs) {
+export function validateMultisigInputs(inputs, braidRequired) {
   if (!inputs || inputs.length === 0) { return "At least one input is required."; }
   let utxoIDs = [];
   for (let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
     const input = inputs[inputIndex];
+    if (braidRequired && input.multisig && !multisigBraidDetails(input.multisig)) {
+        return `At least one input cannot be traced back to its set of extended public keys.`;
+    }
     const error = validateMultisigInput(input);
     if (error) { return error; }
     const utxoID = `${input.txid}:${input.index}`;

@@ -6,7 +6,7 @@
 
 import bitcoinAddressValidation from "bitcoin-address-validation";
 
-import { TESTNET, MAINNET } from "./networks";
+import { TESTNET } from "./networks";
 
 const MAINNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(bc1|[13])";
 const TESTNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(tb1|bcrt1|[mn2])";
@@ -20,7 +20,7 @@ const BECH32_ADDRESS_BODY_PATTERN = "[ac-hj-np-z02-9]+$";
  * Address must be a valid address on the given bitcoin network.
  * 
  * @param {string} address - the address to validate
- * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:networks.NETWORKS|string} network - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
  * import {MAINNET, TESTNET, validateAddress} from "unchained-bitcoin";
@@ -38,6 +38,7 @@ export function validateAddress(address, network) {
   const isBech32 = address.match(BECH32_ADDRESS_MAGIC_BYTE_REGEX);
   const address_body_regex = (isBech32 ? BECH32_ADDRESS_BODY_PATTERN : ADDRESS_BODY_PATTERN);
   const address_regex = magic_byte_regex + address_body_regex;
+  // This tests whether you've got the network lined up with address type or not
   if (! address.match(address_regex)) {
     if (network === TESTNET) {
       return "Address must start with one of 'tb1', 'm', 'n', or '2' followed by letters or digits.";
@@ -46,17 +47,5 @@ export function validateAddress(address, network) {
     }
   }
 
-  const result = bitcoinAddressValidation(address);
-  if (result) {
-    if (network === TESTNET && (!result.testnet)) {
-      return `This is a ${MAINNET} address.`;
-    }
-    if (network === MAINNET && result.testnet) {
-      return `This is a ${TESTNET} address.`;
-    }
-  } else {
-    return "Address is invalid.";
-  }
-
-  return '';
+  return bitcoinAddressValidation(address) ? '' : "Address is invalid.";
 }

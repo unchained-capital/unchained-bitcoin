@@ -6,7 +6,7 @@
  */
 
 import BigNumber from 'bignumber.js';
-
+import assert from "assert"
 import {networkData} from  "./networks";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
@@ -22,9 +22,12 @@ import {
   validateMultisigSignature,
   signatureNoSighashType,
 } from "./signatures";
-import {validateMultisigInputs} from "./inputs";
+import {
+  validateMultisigInputs,
+} from "./inputs";
 import {validateOutputs} from "./outputs";
 import {scriptToHex} from './script';
+import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
 const bitcoin = require('bitcoinjs-lib');
 
 
@@ -63,10 +66,11 @@ const bitcoin = require('bitcoinjs-lib');
  * 
  */
 export function unsignedMultisigTransaction(network, inputs, outputs) {
-  let error = validateMultisigInputs(inputs);
-  if (error) { throw new Error(error); }
-  error = validateOutputs(network, outputs);
-  if (error) { throw new Error(error); }
+  const multisigInputError = validateMultisigInputs(inputs);
+  assert(!multisigInputError.length, multisigInputError);
+  const multisigOutputError = validateOutputs(network, outputs);
+  assert(!multisigOutputError.length, multisigOutputError);
+
   const transactionBuilder = new bitcoin.TransactionBuilder();
   transactionBuilder.setVersion(1); // FIXME this depends on type...
   transactionBuilder.network = networkData(network);
@@ -79,6 +83,48 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
     transactionBuilder.addOutput(output.address, BigNumber(output.amountSats).toNumber());
   }
   return transactionBuilder.buildIncomplete();
+}
+
+/**
+ * Create an unsigned bitcoin transaction based on the network, inputs
+ * and outputs stored as a PSBT object
+ *
+ * Returns a [`PSBT`]{@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/psbt.d.ts|PSBT} object from bitcoinjs-lib.
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs : NOTE - must be braid-aware
+ * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
+ * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
+ */
+export function unsignedMultisigPSBT(network, inputs, outputs) {
+  const multisigInputError = validateMultisigInputs(inputs, true);
+  assert(!multisigInputError.length, multisigInputError);
+  const multisigOutputError = validateOutputs(network, outputs);
+  assert(!multisigOutputError.length, multisigOutputError);
+
+  const psbt = new bitcoin.Psbt({ network: networkData(network) });
+  // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
+  psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
+  const psbtInputs = inputs.map((input) => psbtInputFormatter({...input}));
+  psbt.addInputs(psbtInputs);
+  const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
+  psbt.addOutputs(psbtOutputs);
+  psbt.txn = psbt.data.globalMap.unsignedTx.tx.toHex();
+  return psbt;
+}
+
+/**
+ * Returns an unsigned Transaction object from bitcoinjs-lib that is not
+ * generated via the TransactionBuilder (deprecating soon)
+ *
+ * FIXME: try squat out old implementation with the new PSBT one and see if
+ *   everything works (the tx is the same)
+ *
+ * @param {Object} psbt - the PSBT object which has your transaction inside
+ * @returns {Transaction} an unsigned {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object (unsigned)
+ */
+export function unsignedTransactionObjectFromPSBT(psbt) {
+  return bitcoin.Transaction.fromHex(psbt.txn);
 }
 
 /**
@@ -158,9 +204,6 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
       } catch(e) {
         throw new Error(`Invalid signature for input ${inputIndex + 1}: ${inputSignature} (${e})`);
       }
-      if (!publicKey) {
-        throw new Error(`Invalid signature for input ${inputIndex + 1}: ${inputSignature}`);
-      }
       if (inputSignaturesByPublicKey[publicKey]) {
         throw new Error(`Duplicate signature for input ${inputIndex + 1}: ${inputSignature}`);
       }
@@ -177,7 +220,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
     if (multisigAddressType(input.multisig) === P2WSH) {
       const witness = multisigWitnessField(input.multisig, sortedSignatures);
       signedTransaction.setWitness(inputIndex, witness);
-    } else     if (multisigAddressType(input.multisig) === P2SH_P2WSH) {
+    } else if (multisigAddressType(input.multisig) === P2SH_P2WSH) {
       const witness = multisigWitnessField(input.multisig, sortedSignatures);
       signedTransaction.setWitness(inputIndex, witness);
       const scriptSig = multisigRedeemScript(input.multisig);
@@ -190,6 +233,36 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
 
   return signedTransaction;
 }
+
+// TODO: implement this parallel function
+// /**
+//  * Create a fully signed multisig transaction based on the unsigned
+//  * transaction, braid-aware inputs, and their signatures.
+//  *
+//  * @param {module:networks.NETWORKS} network - bitcoin network
+//  * @param {module:inputs.MultisigTransactionInput[]} inputs - braid-aware multisig transaction inputs
+//  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
+//  * @param {Object[]} transactionSignatures - array of transaction signatures, each an array of input signatures (1 per input)
+//  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts} Transaction object
+//  */
+ // export function signedMultisigPSBT(network, inputs, outputs, transactionSignatures) {
+ //   const psbt = unsignedMultisigPSBT(network, inputs, outputs);
+ //  const unsignedTransaction = unsignedTransactionObjectFromPSBT(psbt); // validates inputs & outputs
+ //  if (!transactionSignatures || transactionSignatures.length === 0) { throw new Error("At least one transaction signature is required."); }
+ //
+ //  transactionSignatures.forEach((transactionSignature, transactionSignatureIndex) => {
+ //    if (transactionSignature.length < inputs.length) {
+ //      throw new Error(`Insufficient input signatures for transaction signature ${transactionSignatureIndex + 1}: require ${inputs.length}, received ${transactionSignature.length}.`);
+ //    }d
+ //  });
+ //  console.log(unsignedTransaction);
+
+  // FIXME - add each signature to the PSBT
+  //   then finalizeAllInputs()
+  //   then extractTransaction()
+  //
+  // return signedTransaction;
+// }
 
 function multisigWitnessField(multisig, sortedSignatures) {
   const witness = [""].concat(sortedSignatures.map(s => signatureNoSighashType(s) +'01'));

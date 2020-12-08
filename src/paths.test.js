@@ -6,7 +6,8 @@ import {
   validateBIP32Index,
   multisigBIP32Root,
   multisigBIP32Path,
-  getParentPath,
+  getParentBIP32Path,
+  getRelativeBIP32Path,
 } from './paths';
 import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
@@ -83,11 +84,14 @@ describe('paths', () => {
 
     it("enforces mode=hardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
+      expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
       expect(validateBIP32Path("m/45'/0", { mode: "hardened" })).toMatch(/fully-hardened/i);
+      expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
     });
 
     it("enforces mode=unhardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
+      expect(validateBIP32Path("m/45/0", { mode: "unhardened" })).toEqual("");
       expect(validateBIP32Path("m/45'/0", { mode: "unhardened" })).toMatch(/cannot include hardened/i);
     });
 
@@ -107,7 +111,7 @@ describe('paths', () => {
       expect(validateBIP32Index("m/45/0")).toMatch(/is invalid/i);
       expect(validateBIP32Index("m/44'/0'")).toMatch(/is invalid/i);
       expect(validateBIP32Index("-45")).toMatch(/is invalid/i);
-      expect(validateBIP32Index("-0")).toMatch(/is invalid/i);      
+      expect(validateBIP32Index("-0")).toMatch(/is invalid/i);
     });
 
     it("returns an error message when the index is too high", () => {
@@ -172,6 +176,10 @@ describe('paths', () => {
 
   describe('multisigBIP32Path', () => {
 
+    it("fails with invalid path", () => {
+      expect(multisigBIP32Path('foo', MAINNET, "1")).toBe(null);
+    });
+
     it("returns a BIP32 path with the correct root for each combination of address type, network, and relative path", () => {
       expect(multisigBIP32Path(P2SH, MAINNET, "1")).toEqual("m/45'/0'/0'/1");
       expect(multisigBIP32Path(P2SH, TESTNET, "1'/2'")).toEqual("m/45'/1'/0'/1'/2'");
@@ -186,17 +194,38 @@ describe('paths', () => {
 
   });
 
-  describe('getParentPath', () => {
+  describe('getParentBIP32Path', () => {
     it("validates and returns the correct BIP32 parent path for each given path", () => {
-      expect(getParentPath("")).toMatch(/cannot be blank/i);
-      expect(getParentPath("foo")).toMatch(/is invalid/i);
-      expect(getParentPath("/45")).toMatch(/is invalid/i);
+      expect(getParentBIP32Path("")).toMatch(/cannot be blank/i);
+      expect(getParentBIP32Path("foo")).toMatch(/is invalid/i);
+      expect(getParentBIP32Path("/45")).toMatch(/is invalid/i);
       const validPaths = ["m/45'", "m/45'/0'", "m/45'/0'/0'", "m/45'/0'/0'/0", "m/45'/0'/0'/0/0"]
       for (let i = validPaths.length - 1; i > 0; i--) {
         const expected = validPaths[i - 1]
-        const actual = getParentPath(validPaths[i])
+        const actual = getParentBIP32Path(validPaths[i])
         expect(actual).toMatch(expected)
       }
     })
+  })
+
+  describe('getRelativeBIP32Path', () => {
+    it("validates and returns the correct BIP32 parent path for each given path/index combo", () => {
+      expect(getRelativeBIP32Path("", "m/45'")).toMatch(/cannot be blank/i);
+      expect(getRelativeBIP32Path("foo", "m/45'")).toMatch(/is invalid/i);
+      expect(getRelativeBIP32Path("/45", "m/45'")).toMatch(/is invalid/i);
+      expect(getRelativeBIP32Path("m/45'", "")).toMatch(/cannot be blank/i);
+      expect(getRelativeBIP32Path("m/45'", "foo")).toMatch(/is invalid/i);
+      expect(getRelativeBIP32Path("m/45'", "/45")).toMatch(/is invalid/i);
+      expect(getRelativeBIP32Path("m/44'", "m/45'")).toMatch(/bip32Path does not start with the chroot/i);
+      const validPaths = ["m/45'", "m/45'/0'", "m/45'/0'/0'", "m/45'/0'/0'/0", "m/45'/0'/0'/0/0"]
+      const expectedRelativePaths = ["", "0'", "0'/0'", "0'/0'/0", "0'/0'/0/0"];
+      const chroot = "m/45'";
+      for (let i =0; i < validPaths.length; i++) {
+        const expected = expectedRelativePaths[i]
+        const actual = getRelativeBIP32Path(chroot, validPaths[i])
+        expect(actual).toMatch(expected)
+      }
+    });
+
   })
 });

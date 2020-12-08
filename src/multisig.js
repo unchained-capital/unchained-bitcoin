@@ -21,7 +21,7 @@
  *
  * - `generateMultisigFromPublicKeys` which takes public keys as input
  * - `generateMultisigFromHex` which takes a redeem/witness script as input
- * 
+ *
  * Once you have a `Multisig` object you can pass it around in your
  * code and then ask questions about it using the other functions
  * defined in this module.
@@ -41,7 +41,7 @@
  * const pubkey2 = "03b...";
  * // A mainnet 1-of-2 P2SH multisig
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 1, pubkey1, pubkey2);
- * 
+ *
  * console.log(multisigRequiredSigners(multisig)); // 1
  * console.log(multisigTotalSigners(multisig)); // 2
  * console.log(multisigAddressType(multisig)); // "P2SH"
@@ -49,7 +49,7 @@
  *
  */
 
-import {networkData} from  "./networks";
+import {networkData} from "./networks";
 import {P2SH} from "./p2sh";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
@@ -57,7 +57,7 @@ import {toHexString} from "./utils";
 
 const bitcoin = require('bitcoinjs-lib');
 
- /**
+/**
  * Describes the return type of several functions in the
  * `bitcoin.payments` module of bitcoinjs-lib.
  *
@@ -71,7 +71,11 @@ const bitcoin = require('bitcoinjs-lib');
  *
  * @typedef module:multisig.Multisig
  * @type {Object}
- * 
+ * @property {string} address - The multisig address
+ * @property {Object} redeem - the redeem object from p2ms
+ * @property {Object} multisigBraidDetails - details about the braid (addressType, network, requiredSigners, xpubs, index)
+ * @property {Object[]} getBip32Derivation - Array of objects for every key in this multisig address
+ *
  */
 
 /**
@@ -87,23 +91,18 @@ export const MULTISIG_ADDRESS_TYPES = {
   P2WSH,
 };
 
-//
-// * Generating Multisig objects * 
-//
-// ================================================================================
-
 /**
  * Return an M-of-N [`Multisig`]{@link module:multisig.MULTISIG}
  * object by specifying the total number of signers (M) and the public
  * keys (N total).
- * 
+ *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {number} requiredSigners - number of signers required needed to spend funds (M)
  * @param  {...string} publicKeys - list of public keys, 1 per possible signer (N)
  * @returns {Multisig} the corresponding `Multisig` object
  * @example
- * // A 2-of-3 P2SH mainnte multisig built from 3 public keys.
+ * // A 2-of-3 P2SH mainnet multisig built from 3 public keys.
  * import {
  *   generateMultisigFromPublicKeys, MAINNET, P2SH, P2WSH,
  * } from "unchained-bitcoin";
@@ -112,7 +111,7 @@ export const MULTISIG_ADDRESS_TYPES = {
  */
 export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
   const multisig = bitcoin.payments.p2ms({
-    m: requiredSigners, 
+    m: requiredSigners,
     pubkeys: publicKeys.map((hex) => Buffer.from(hex, 'hex')),
     network: networkData(network),
   });
@@ -130,7 +129,7 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  *
  * In practice, the same script hex can be thought of as any of
  * several address types, depending on context.
- * 
+ *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {string} multisigScriptHex - hex representation of the redeem/witness script
@@ -145,7 +144,7 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  */
 export function generateMultisigFromHex(network, addressType, multisigScriptHex) {
   const multisig = bitcoin.payments.p2ms({
-    output: Buffer.from(multisigScriptHex,'hex'),
+    output: Buffer.from(multisigScriptHex, 'hex'),
     network: networkData(network),
   });
   return generateMultisigFromRaw(addressType, multisig);
@@ -156,39 +155,33 @@ export function generateMultisigFromHex(network, addressType, multisigScriptHex)
  * object by passing in a raw P2MS multisig object (from bitcoinjs-lib).
  *
  * This function is only used internally, do not call it directly.
- * 
+ *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {object} multisig - P2MS multisig object
  * @returns {Multisig} object for further parsing
  * @ignore
- * 
+ *
  */
 export function generateMultisigFromRaw(addressType, multisig) {
   switch (addressType) {
-  case P2SH:
-    return bitcoin.payments.p2sh({redeem: multisig});
-  case P2SH_P2WSH:
-    return bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wsh({redeem: multisig}),
-    });
-  case P2WSH:
-    return bitcoin.payments.p2wsh({redeem: multisig});
-  default:
-    return null;
+    case P2SH:
+      return bitcoin.payments.p2sh({redeem: multisig});
+    case P2SH_P2WSH:
+      return bitcoin.payments.p2sh({
+        redeem: bitcoin.payments.p2wsh({redeem: multisig}),
+      });
+    case P2WSH:
+      return bitcoin.payments.p2wsh({redeem: multisig});
+    default:
+      return null;
   }
 }
 
-//
-// * Interrogating Multisig objects * 
-//
-// ================================================================================
-
-
 /**
  * Return the [address type]{@link module:multisig.MULTISIG_ADDRESS_TYPES} of the given `Multisig` object.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
- * @returns {module:multisig.MULTISIG_ADDRESS_TYPES} the address type
+ * @returns {module:multisig.MULTISIG_ADDRESS_TYPES|String} the address type
  * @example
  * import {
  *   multisigAddressType, P2SH, P2SH_P2WSH, P2WSH,
@@ -222,7 +215,7 @@ export function multisigAddressType(multisig) {
 /**
  * Return the number of required signers of the given `Multisig`
  * object.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {number} number of required signers
  * @example
@@ -240,7 +233,7 @@ export function multisigRequiredSigners(multisig) {
 /**
  * Return the number of total signers (public keys) of the given
  * `Multisig` object.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {number} number of total signers
  * @example
@@ -261,7 +254,7 @@ export function multisigTotalSigners(multisig) {
  * If the address type of the given multisig object is P2SH, the
  * redeem script will be returned.  Otherwise, the witness script will
  * be returned.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {Multisig|null} the corresponding script
  * @example
@@ -274,14 +267,16 @@ export function multisigTotalSigners(multisig) {
  */
 export function multisigScript(multisig) {
   switch (multisigAddressType(multisig)) {
-  case P2SH:
-    return multisigRedeemScript(multisig);
-  case P2SH_P2WSH:
-    return multisigWitnessScript(multisig);
-  case P2WSH:
-    return multisigWitnessScript(multisig);
-  default:
-    return null;
+    case P2SH:
+      return multisigRedeemScript(multisig);
+    case P2SH_P2WSH:
+      return multisigWitnessScript(multisig);
+    case P2WSH:
+      return multisigWitnessScript(multisig);
+    default:
+      /* istanbul ignore next */
+      // multisigAddressType only returns one of the 3 above choices
+      return null;
   }
 }
 
@@ -291,7 +286,7 @@ export function multisigScript(multisig) {
  *
  * If the address type of the given multisig object is P2WSH, this
  * will return null.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {Multisig|null} the redeem script
  * @example
@@ -304,14 +299,16 @@ export function multisigScript(multisig) {
  */
 export function multisigRedeemScript(multisig) {
   switch (multisigAddressType(multisig)) {
-  case P2SH:
-    return multisig.redeem;
-  case P2SH_P2WSH:
-    return multisig.redeem;
-  case P2WSH:
-    return null;
-  default:
-    return null;
+    case P2SH:
+      return multisig.redeem;
+    case P2SH_P2WSH:
+      return multisig.redeem;
+    case P2WSH:
+      return null;
+    default:
+      /* istanbul ignore next */
+      // multisigAddressType only returns one of the 3 above choices
+      return null;
   }
 }
 
@@ -320,7 +317,7 @@ export function multisigRedeemScript(multisig) {
  *
  * If the address type of the given multisig object is P2SH, this will
  * return null.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {Multisig|null} the witness script
  * @example
@@ -333,14 +330,16 @@ export function multisigRedeemScript(multisig) {
  */
 export function multisigWitnessScript(multisig) {
   switch (multisigAddressType(multisig)) {
-  case P2SH:
-    return null;
-  case P2SH_P2WSH:
-    return multisig.redeem.redeem;
-  case P2WSH:
-    return multisig.redeem;
-  default:
-    return null;
+    case P2SH:
+      return null;
+    case P2SH_P2WSH:
+      return multisig.redeem.redeem;
+    case P2WSH:
+      return multisig.redeem;
+    default:
+      /* istanbul ignore next */
+      // multisigAddressType only returns one of the 3 above choices
+      return null;
   }
 }
 
@@ -350,7 +349,7 @@ export function multisigWitnessScript(multisig) {
  *
  * The public keys are in the order used in the corresponding
  * redeem/witness script.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {string[]} (compressed) public keys in hex
  * @example
@@ -360,7 +359,7 @@ export function multisigWitnessScript(multisig) {
  * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
  * console.log(multisigPublicKeys(multisig)); // ["03a...", "03b...", "03c..."]
- * 
+ *
  */
 export function multisigPublicKeys(multisig) {
   return ((multisigAddressType(multisig) === P2SH) ? multisigRedeemScript(multisig) : multisigWitnessScript(multisig)).pubkeys.map(toHexString);
@@ -368,7 +367,7 @@ export function multisigPublicKeys(multisig) {
 
 /**
  * Return the address for a given `Multisig` object.
- * 
+ *
  * @param {module:multisig.Multisig} multisig the `Multisig` object
  * @returns {string} the address
  * @example
@@ -378,8 +377,30 @@ export function multisigPublicKeys(multisig) {
  * } from "unchained-bitcoin";
  * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
  * console.log(multisigAddress(multisig)); // "3j..."
- * 
+ *
  */
 export function multisigAddress(multisig) {
   return multisig.address;
+}
+
+/**
+ * Return the braid details (if known) for a given `Multisig` object.
+ *
+ * @param {module:multisig.Multisig} multisig the `Multisig` object
+ * @returns {string} the braid details
+ * @example
+ * import {
+ *   generateBraidFromExtendedPublicKeys,
+ *   generateMultisigFromPublicKeys, MAINNET, P2SH,
+ *   braidConfig,
+ * } from "unchained-bitcoin";
+ * const multisig = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
+ * console.log(multisigBraidDetails(multisig)); // null, unknown
+ *
+ * const braid = generateBraidFromExtenedPublicKeys(MAINNET, P2SH, {{'xpub...', bip32path: "m/45'/0'/0'"}, {'xpub...', bip32path: "m/45'/0/0"}, {'xpub...', bip32path: "m/45'/0/0"}}, 2);
+ * const multisig = braid.deriveMultisigByPath("0/0");
+ * console.log(multisigBraidDetails(multisig)); // {network: mainnet, addressType: p2sh, extendedPublicKeys: {...}, requiredSigners: 2}}
+ */
+export function multisigBraidDetails(multisig) {
+  return multisig.braidDetails ? multisig.braidDetails : null;
 }

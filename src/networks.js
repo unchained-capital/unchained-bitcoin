@@ -78,3 +78,25 @@ export function networkLabel(network) {
       return "Testnet";
   }
 }
+
+/**
+ * @description given a prefix determine the network it indicates
+ * @param {string} prefix - extended public key prefix (e.g. xpub, tpub)
+ * @returns {string} - string indicating network
+ */
+export function getNetworkFromPrefix(prefix) {
+  switch (prefix.toLowerCase()) {
+    case 'xpub':
+    case 'ypub':
+    case 'zpub':
+      return MAINNET;
+
+    case 'tpub':
+    case 'upub':
+    case 'vpub':
+      return TESTNET;
+
+    default:
+      throw new Error(`Unrecognized extended public key prefix ${prefix}`)
+  }
+}

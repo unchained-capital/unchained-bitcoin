@@ -35,6 +35,9 @@ describe('addresses', ()  => {
         expect(validateAddress("f", network)).toMatch(invalidAddress);
         expect(validateAddress("--", network)).toMatch(invalidAddress);
       });
+
+      expect(validateAddress("1asdf", NETWORKS.MAINNET)).toMatch(/address is invalid/i);
+      expect(validateAddress("masdf", NETWORKS.TESTNET)).toMatch(/address is invalid/i);
     });
 
     it("returns an error message when an address doesn't match the network",  () => {

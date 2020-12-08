@@ -70,7 +70,7 @@ console.log(multisigAddress(m1))
 // 2N5KgAnFFpmk5TRMiCicRZDQS8FFNCKqKf1
 
 const redeemScript = "522102a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d42103938dd09bf3dd29ddf41f264858accfa40b330c98e0ed27caf77734fac00139ba52ae";
-// Same as m2 but using redeem script
+// Same as m1 but using redeem script
 const m2 = generateMultisigFromHex(TESTNET, P2SH, redeemScript);
 console.log(multisigAddress(m2))
 // 2N5KgAnFFpmk5TRMiCicRZDQS8FFNCKqKf1

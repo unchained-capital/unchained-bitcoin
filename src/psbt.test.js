@@ -1,8 +1,43 @@
 import {
-  parseSignaturesFromPSBT
+  parseSignaturesFromPSBT,
+  psbtInputFormatter,
+  psbtOutputFormatter,
 } from './psbt';
+import {TEST_FIXTURES} from './fixtures';
+import {generateMultisigFromPublicKeys} from './multisig';
+import {braidConfig} from './braid';
+
+const MULTISIGS = TEST_FIXTURES.multisigs;
 
 describe("psbt", () => {
+  
+  describe("psbtInputFormatter", () => {
+    it('should return bip32derivation properly', () => {
+      const input = MULTISIGS[0].utxos[0];
+      input.bip32Path = null;
+      expect(psbtInputFormatter(input).bip32Derivation).toEqual(MULTISIGS[0].bip32Derivation);
+    });
+  })
+
+  describe("psbtOutputFormatter", () => {
+    it(`returns the generated bip32Derivation for an output`, () => {
+      const output = MULTISIGS[0].transaction.outputs[1];
+
+      const changeMultisig = generateMultisigFromPublicKeys(
+        MULTISIGS[0].network,
+        MULTISIGS[0].type,
+        2,
+        ...MULTISIGS[0].changePublicKeys,
+      );
+      changeMultisig.braidDetails = braidConfig(MULTISIGS[0].changeBraidDetails);
+      changeMultisig.bip32Derivation = MULTISIGS[0].changeBip32Derivation;
+
+      output.multisig = changeMultisig;
+      expect(MULTISIGS[0].transaction.outputs[1]).toEqual(
+        expect.objectContaining(psbtOutputFormatter(output)));
+    });
+
+  });
 
   describe("parseSignaturesFromPSBT", () => {
 
@@ -24,6 +59,10 @@ describe("psbt", () => {
 
     it("PSBT from file is neither hex nor base64", () => {
       expect(parseSignaturesFromPSBT('zzasdf')).toBeNull();
+    });
+
+    it('should return null if you send in a blank PSBT', () => {
+      expect(parseSignaturesFromPSBT('cHNidP8BAAoCAAAAAAAAAAAAAAAA')).toBeNull();
     });
 
     it("No signatures in the PSBT", () => {

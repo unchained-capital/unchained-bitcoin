@@ -1,18 +1,32 @@
 import {P2SH} from "./p2sh";
 import {P2WSH} from "./p2wsh";
-import { scriptToHex } from './script';
+import {scriptToHex} from './script';
 import {
-  generateMultisigFromHex, generateMultisigFromPublicKeys,
-  multisigAddressType, multisigRequiredSigners, multisigTotalSigners,
-  multisigScript, multisigRedeemScript, multisigWitnessScript,
-  multisigPublicKeys, multisigAddress,
+  generateMultisigFromHex,
+  generateMultisigFromPublicKeys,
+  multisigAddressType,
+  multisigRequiredSigners,
+  multisigTotalSigners,
+  multisigScript,
+  multisigRedeemScript,
+  multisigWitnessScript,
+  multisigPublicKeys,
+  multisigAddress,
+  multisigBraidDetails,
 } from './multisig';
-import { TEST_FIXTURES } from './fixtures';
+import {TEST_FIXTURES} from './fixtures';
+import {braidConfig} from './braid';
+
 const MULTISIGS = TEST_FIXTURES.multisigs;
 
 describe("multisig", () => {
 
-  describe("generateMultisigFromPublicKeys", () =>  {
+  describe("generateMultisigFromPublicKeys", () => {
+
+    const badone = {...MULTISIGS[0]};
+    badone.type = 'foo';
+    const badMultisig = generateMultisigFromPublicKeys(badone.network, badone.type, 2, ...badone.publicKeys);
+    expect(badMultisig).toBe(null);
 
     MULTISIGS.forEach((test) => {
       it(`can generate an ${test.network} 2-of-2 ${test.type} address from public keys`, () => {
@@ -21,25 +35,25 @@ describe("multisig", () => {
         expect(multisigRequiredSigners(multisig)).toEqual(2);
         expect(multisigTotalSigners(multisig)).toEqual(2);
         expect(multisigPublicKeys(multisig)).toEqual(test.publicKeys);
-        expect(scriptToHex(multisigScript(multisig))).toEqual(test.type ===  P2SH ? test.redeemScriptHex : test.witnessScriptHex);
+        expect(scriptToHex(multisigScript(multisig))).toEqual(test.type === P2SH ? test.redeemScriptHex : test.witnessScriptHex);
       });
-    });    
+    });
 
   });
 
 
-  describe("generateMultisigFromHex", () =>  {
+  describe("generateMultisigFromHex", () => {
 
     MULTISIGS.forEach((test) => {
       it(`can generate an ${test.network} 2-of-2 ${test.type} address from public keys`, () => {
-        const multisig = generateMultisigFromHex(test.network, test.type, test.type ===  P2SH ? test.redeemScriptHex : test.witnessScriptHex);
+        const multisig = generateMultisigFromHex(test.network, test.type, test.type === P2SH ? test.redeemScriptHex : test.witnessScriptHex);
         expect(multisigAddressType(multisig)).toEqual(test.type);
         expect(multisigRequiredSigners(multisig)).toEqual(2);
         expect(multisigTotalSigners(multisig)).toEqual(2);
         expect(multisigPublicKeys(multisig)).toEqual(test.publicKeys);
         expect(scriptToHex(multisigScript(multisig))).toEqual(test.multisigScriptHex);
       });
-    });    
+    });
 
   });
 
@@ -132,6 +146,21 @@ describe("multisig", () => {
     MULTISIGS.forEach((test) => {
       it(`returns the address for a ${test.network} 2-of-2 ${test.type} address`, () => {
         expect(multisigAddress(test.multisig)).toEqual(test.address);
+      });
+    });
+
+  });
+
+  describe("multisigBraidDetails", () => {
+
+    it(`fails to return the braidDetails for a braid-unaware multisig`, () => {
+      const badone = JSON.parse(JSON.stringify(MULTISIGS[0])).multisig;
+      badone.braidDetails = null;
+      expect(multisigBraidDetails(badone)).toBe(null);
+    });
+    MULTISIGS.forEach((test) => {
+      it(`returns the braidDetails for a ${test.network} 2-of-2 ${test.type} address`, () => {
+        expect(multisigBraidDetails(test.multisig)).toBe(braidConfig(test.braidDetails));
       });
     });
 

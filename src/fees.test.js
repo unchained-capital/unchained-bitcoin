@@ -15,6 +15,12 @@ describe("fees", () => {
   describe("validateFeeRate", () => {
 
     it("should return an error message for an unparseable fee rate", () => {
+      BigNumber.DEBUG = true;
+      expect(validateFeeRate(null)).toMatch(/invalid fee rate/i);
+      BigNumber.DEBUG = false;
+    });
+
+    it("should return an error message for an unparseable fee rate", () => {
       expect(validateFeeRate('foo')).toMatch(/invalid fee rate/i);
     });
 
@@ -36,6 +42,20 @@ describe("fees", () => {
   });
 
   describe("validateFee", () => {
+
+    it("should return an error message for an unparseable fee", () => {
+      // If BigNumber.DEBUG is set true then an error will be thrown if this BigNumber constructor receives an invalid value
+      // see https://mikemcl.github.io/bignumber.js/#debug
+      BigNumber.DEBUG = true;
+      expect(validateFee(null, 1000000)).toMatch(/invalid fee/i);
+      BigNumber.DEBUG = false;
+    });
+
+    it("should return an error message for an unparseable inputTotalSats", () => {
+      BigNumber.DEBUG = true;
+      expect(validateFee(10000, null)).toMatch(/invalid total input amount/i);
+      BigNumber.DEBUG = false;
+    });
 
     it("should return an error message for an unparseable fee", () => {
       expect(validateFee('foo', 1000000)).toMatch(/invalid fee/i);
@@ -76,6 +96,15 @@ describe("fees", () => {
   });
 
   describe("estimating multisig transaction fees and fee rates", () => {
+
+    it("should estimate null for bad addressType", () => {
+      const params = {
+        addressType: 'foo',
+        feesPerByteInSatoshis: "10",
+      };
+      const fee = estimateMultisigTransactionFee(params);
+      expect(isNaN(fee)).toBe(true);
+    });
 
     it("should estimate for P2SH transactions", () => {
       const params = {
