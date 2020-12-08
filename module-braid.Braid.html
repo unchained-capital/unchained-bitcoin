@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: p2sh</title>
+    <title>JSDoc: Class: Braid</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: p2sh</h1>
+    <h1 class="page-title">Class: Braid</h1>
 
     
 
@@ -28,8 +28,10 @@
 
 <header>
     
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="module-braid.html">braid</a>.</span>Braid<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            
+            <div class="class-description"><p>Struct object for encoding and decoding braids.</p></div>
         
     
 </header>
@@ -38,204 +40,18 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>This module provides functions and constants for the P2SH address type.</p></div>
-        
 
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
+    
+    <h2>Constructor</h2>
     
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".P2SH"><span class="type-signature">(static, constant) </span>P2SH<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    <p>Address type constant for &quot;pay-to-script-hash&quot; (P2SH) addresses.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-default">Default Value:</dt>
-    <dd class="tag-default"><ul class="dummy">
-            <li>P2SH</li>
-        </ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".estimateMultisigP2SHTransactionVSize"><span class="type-signature">(static) </span>estimateMultisigP2SHTransactionVSize<span class="signature">(config)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id="Braid"><span class="type-signature"></span>new Braid<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Estimate the transaction virtual size (vsize) when spending inputs
-from the same multisig P2SH address.</p>
-</div>
 
 
 
@@ -270,13 +86,13 @@ from the same multisig P2SH address.</p>
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>options.network</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -286,33 +102,60 @@ from the same multisig P2SH address.</p>
 
             
 
-            <td class="description last"><p>configuration for the calculation</p>
-                <h6>Properties</h6>
-                
+            <td class="description last"><p>= mainnet - mainnet or testnet</p></td>
+        </tr>
 
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>numInputs</code></td>
+                <td class="name"><code>options.addressType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>P2SH, P2SH-P2WSH, P2WSH</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.extendedPublicKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;ExtendedPublicKey></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>ExtendedPublicKeys that make up this braid</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.requiredSigners</code></td>
             
 
             <td class="type">
@@ -328,20 +171,20 @@ from the same multisig P2SH address.</p>
 
             
 
-            <td class="description last"><p>number of m-of-n multisig P2SH inputs</p></td>
+            <td class="description last"><p>how many required signers in this braid</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>numOutputs</code></td>
+                <td class="name"><code>options.index</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -351,60 +194,7 @@ from the same multisig P2SH address.</p>
 
             
 
-            <td class="description last"><p>number of outputs</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>m</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>required signers</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>total signers</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>One value, relative, to add on to all xpub absolute bip32paths (usually 0=deposit, 1=change)</p></td>
         </tr>
 
     
@@ -445,7 +235,7 @@ from the same multisig P2SH address.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="p2sh.js.html">p2sh.js</a>, <a href="p2sh.js.html#line27">line 27</a>
+        <a href="braid.js.html">braid.js</a>, <a href="braid.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -470,34 +260,28 @@ from the same multisig P2SH address.</p>
 
 
 
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>estimated transaction virtual size in bytes</p>
-</div>
 
 
 
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
 
 
-    </dd>
-</dl>
+    
+    </div>
 
     
 
+    
 
+    
 
+    
 
+    
 
-        
+    
+
+    
+
     
 
     

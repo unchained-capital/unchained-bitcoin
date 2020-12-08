@@ -253,7 +253,7 @@ keys and extended public keys.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line324">line 324</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line370">line 370</a>
     </li></ul></dd>
     
 
@@ -442,7 +442,7 @@ console.log(compressPublicKey("04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line188">line 188</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line235">line 235</a>
     </li></ul></dd>
     
 
@@ -660,7 +660,7 @@ given extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line380">line 380</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line426">line 426</a>
     </li></ul></dd>
     
 
@@ -876,7 +876,7 @@ extended public key.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line354">line 354</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line400">line 400</a>
     </li></ul></dd>
     
 
@@ -1138,7 +1138,7 @@ BIP32 Wallet Node.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line471">line 471</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line534">line 534</a>
     </li></ul></dd>
     
 
@@ -1187,6 +1187,178 @@ BIP32 Wallet Node.</p>
     
 
 
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".extendedPublicKeyRootFingerprint"><span class="type-signature">(static) </span>extendedPublicKeyRootFingerprint<span class="signature">(extendedPublicKey)</span><span class="type-signature"> &rarr; {string|null}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Returns the root fingerprint of the extendedPublicKey</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>extendedPublicKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Struct</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the extendedPublicKey Struct</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line518">line 518</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>zero-padded, fixed-length hex xfp</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>import {extendedPublicKeyRootFingerprint} from "unchained-bitcoin"
+console.log(extendedPublicKeyRootFingerprint({})) // null
+import { ExtendedPublicKey } from "unchained-bitcoin"
+const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
+xpub.setRootFingerprint('12341234');
+console.log(extendedPublicKeyRootFingerprint(xpub)) // 12341234</code></pre>
 
 
 
@@ -1298,7 +1470,7 @@ that is exactly eight characters long.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line457">line 457</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line500">line 500</a>
     </li></ul></dd>
     
 
@@ -1469,7 +1641,7 @@ then this function will attempt to compress it.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line431">line 431</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line475">line 475</a>
     </li></ul></dd>
     
 
@@ -1642,7 +1814,7 @@ and the possible prefixes</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line409">line 409</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line455">line 455</a>
     </li></ul></dd>
     
 
@@ -1837,7 +2009,7 @@ console.log(isKeyCompressed(compressed)) // true</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line250">line 250</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line296">line 296</a>
     </li></ul></dd>
     
 
@@ -2031,7 +2203,7 @@ this can be used in conjunction with convertExtendedPublicKey to attempt to auto
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line216">line 216</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line263">line 263</a>
     </li></ul></dd>
     
 
@@ -2197,7 +2369,7 @@ console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extende
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line38">line 38</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -2372,7 +2544,7 @@ console.log(validateExtendedPublicKeyForNetwork('tpub...', MAINNET)) // "Extende
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line295">line 295</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line341">line 341</a>
     </li></ul></dd>
     
 
@@ -2434,6 +2606,161 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id=".validateRootFingerprint"><span class="type-signature">(static) </span>validateRootFingerprint<span class="signature">(rootFingerprint)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>checks length, is string, and valid hex</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rootFingerprint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>fingerprint to validate</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line49">line 49</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -2449,13 +2776,13 @@ console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Sep 25 2020 12:27:37 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Dec 08 2020 15:03:27 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>

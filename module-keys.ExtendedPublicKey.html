@@ -155,7 +155,7 @@ base58 encoded serialization of the following information:
                 </td>
             
 
-            <td class="description last"><p>pubkey to derive from</p></td>
+            <td class="description last"><p>pubkey found at bip32Path</p></td>
         </tr>
 
     
@@ -268,6 +268,43 @@ base58 encoded serialization of the following information:
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>options.rootFingerprint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the root fingerprint of the device, e.g. 'ca2ab33f'</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -305,7 +342,7 @@ base58 encoded serialization of the following information:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line61">line 61</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -471,7 +508,7 @@ an xpub string</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line154">line 154</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -512,6 +549,115 @@ an xpub string</p>
     <dd>
         
 <span class="param-type">ExtendedPublicKey</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="addBase58String"><span class="type-signature"></span>addBase58String<span class="signature">()</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sometimes we hop back and forth between a &quot;Rich ExtendedPublicKey&quot;
+(a Struct with a couple extra parameters set) and the minimal
+Struct - let's keep the actual string of the Struct around
+for easy usage in other functions</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line201">line 201</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
 
 
     </dd>
@@ -580,7 +726,7 @@ an ExtendedPublicKey class</p>
             <td class="type">
             
                 
-<span class="param-type">bufio.BufferReader</span>
+<span class="param-type">BufferReader</span>
 
 
             
@@ -590,7 +736,7 @@ an ExtendedPublicKey class</p>
 
             
 
-            <td class="description last"><p>A Buffer Reader</p></td>
+            <td class="description last"><p>A bufio.BufferReader</p></td>
         </tr>
 
     
@@ -631,7 +777,7 @@ an ExtendedPublicKey class</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line164">line 164</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -672,6 +818,157 @@ an ExtendedPublicKey class</p>
     <dd>
         
 <span class="param-type">ExtendedPublicKey</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setBip32Path"><span class="type-signature"></span>setBip32Path<span class="signature">(bip32Path)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bip32Path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>set this xpub's path</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line161">line 161</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
 
 
     </dd>
@@ -791,7 +1088,158 @@ version magic bytes used for generating xpub</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line128">line 128</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line145">line 145</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setRootFingerprint"><span class="type-signature"></span>setRootFingerprint<span class="signature">(rootFingerprint)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rootFingerprint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>fingerprint of pubkey at m/</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line171">line 171</a>
     </li></ul></dd>
     
 
@@ -897,7 +1345,7 @@ version magic bytes used for generating xpub</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line144">line 144</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -1006,7 +1454,7 @@ by the <code>encode</code> and <code>toBase58</code> methods</p>
             <td class="type">
             
                 
-<span class="param-type">bufio.BufferWriter</span>
+<span class="param-type">BufferWriter</span>
 
 
             
@@ -1016,7 +1464,7 @@ by the <code>encode</code> and <code>toBase58</code> methods</p>
 
             
 
-            <td class="description last"><p>BufferWriter</p></td>
+            <td class="description last"><p>bufio.BufferWriter</p></td>
         </tr>
 
     
@@ -1057,7 +1505,7 @@ by the <code>encode</code> and <code>toBase58</code> methods</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line112">line 112</a>
+        <a href="keys.js.html">keys.js</a>, <a href="keys.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -1125,13 +1573,13 @@ by the <code>encode</code> and <code>toBase58</code> methods</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Sep 25 2020 12:27:37 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Dec 08 2020 15:03:27 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>

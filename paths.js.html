@@ -29,7 +29,7 @@
             <pre class="prettyprint source linenums"><code>/**
  * This module contains various utility functions for converting and
  * validating BIP32 derivation paths.
- * 
+ *
  * @module paths
  */
 
@@ -51,7 +51,7 @@ const MAX_BIP32_NODE_INDEX = Math.pow(2, 32) - 1;
  * Return the hardened version of the given BIP32 index.
  *
  * Hardening is equivalent to adding 2^31.
- * 
+ *
  * @param {string|number} index - BIP32 index
  * @returns {number} the hardened index
  * @example
@@ -67,7 +67,7 @@ export function hardenedBIP32Index(index) {
  * representing the corresponding derivation indices.
  *
  * Hardened path segments will have the [hardening offset]{@link module:paths.HARDENING_OFFSET} added to the index.
- * 
+ *
  * @param {string} pathString - BIP32 derivation path string
  * @returns {number[]} the derivation indices
  * @example
@@ -90,7 +90,7 @@ export function bip32PathToSequence(pathString) {
  * BIP32 derivation path.
  *
  * Indices above the [hardening offset]{@link * module:paths.HARDENING_OFFSET} will be represented wiith hardened * path segments (using a trailing single-quote).
- * 
+ *
  * @param {number[]} sequence - the derivation indices
  * @returns {string} BIP32 derivation path
  * @example
@@ -112,10 +112,10 @@ export function bip32SequenceToPath(sequence) {
  *
  * - Path segments are validated numerically as well as statically
  *   (the value of 2^33 is an invalid path segment).
- * 
+ *
  * - The `mode` option can be pass to validate fully `hardened` or
  *   `unhardened` paths.
- * 
+ *
  * @param {string} pathString - BIP32 derivation path string
  * @param {Object} [options] - additional options
  * @param {string} [options.mode] - "hardened" or "unhardened"
@@ -167,7 +167,9 @@ function validateBIP32PathSegments(segmentStrings) {
   for (let i = 0; i &lt; segmentStrings.length; i++) {
     const indexString = segmentStrings[i];
     const error = validateBIP32Index(indexString);
-    if (error !== '') { return error; }
+    if (error !== '') {
+      return error;
+    }
   }
   return '';
 }
@@ -179,14 +181,14 @@ function validateBIP32PathSegments(segmentStrings) {
  *   (the value of 2^33 is an invalid path segment).
  *
  * - By default, 0-4294967295 and 0'-2147483647' are valid.
- * 
+ *
  * - The `mode` option can be pass to validate index is hardened
  *   `unhardened` paths.
  *
  * - `hardened` paths include 0'-2147483647' and 2147483648-4294967295
  *
  * - `unharded` paths include 0-2147483647
- * 
+ *
  * @param {string} indexString - BIP32 index string
  * @param {Object} [options] - additional options
  * @param {string} [options.mode] - "hardened" or "unhardened"
@@ -218,8 +220,9 @@ export function validateBIP32Index(indexString, options) {
   if (!indexString.match(BIP32_INDEX_REGEX)) {
     return "BIP32 index is invalid.";
   }
-  
-  let numberString, hardened;
+
+  let numberString,
+    hardened;
   if (indexString.substr(indexString.length - 1) === "'") {
     numberString = indexString.substr(0, indexString.length - 1);
     hardened = true;
@@ -228,17 +231,11 @@ export function validateBIP32Index(indexString, options) {
     hardened = false;
   }
 
+  // This comes after the regex, so no need to test that parseInt fails.
   const numberError = "Invalid BIP32 index.";
-  let number;
-  try {
-    number = parseInt(numberString, 10);
-  } catch (parseError) {
-    return numberError;
-  }
+  let number = parseInt(numberString, 10);
+
   if (Number.isNaN(number) || number.toString().length !== numberString.length) {
-    return numberError;
-  }
-  if (number &lt; 0) {
     return numberError;
   }
 
@@ -260,7 +257,7 @@ export function validateBIP32Index(indexString, options) {
       return "BIP32 index cannot be hardened.";
     }
   }
-  
+
 
   return '';
 }
@@ -277,7 +274,7 @@ export function validateBIP32Index(indexString, options) {
  *   - P2SH: m/45'/1'/0'
  *   - P2SH-P2WSH: m/48'/1'/0'/1'
  *   - P2WSH: m/48'/1'/0'/2'
- * 
+ *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} derivation path
@@ -289,21 +286,21 @@ export function validateBIP32Index(indexString, options) {
 export function multisigBIP32Root(addressType, network) {
   const coinPath = (network === MAINNET ? "0'" : "1'");
   switch (addressType) {
-  case P2SH:
-    return `m/45'/${coinPath}/0'`;
-  case P2SH_P2WSH:
-    return `m/48'/${coinPath}/0'/1'`;
-  case P2WSH:
-    return `m/48'/${coinPath}/0'/2'`;
-  default:
-    return null;
+    case P2SH:
+      return `m/45'/${coinPath}/0'`;
+    case P2SH_P2WSH:
+      return `m/48'/${coinPath}/0'/1'`;
+    case P2WSH:
+      return `m/48'/${coinPath}/0'/2'`;
+    default:
+      return null;
   }
 }
 
 /**
  * Returns a BIP32 path at the given `relativePath` under the default
  * BIP32 root path for the given `addressType` and `network`.
- * 
+ *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - type from which to calculate BIP32 root path
  * @param {module:networks.NETWORKS} network - bitcoin network from which to calculate BIP32 root path
  * @param {number|string} relativePath - the relative BIP32 path (no leading `/`)
@@ -326,15 +323,39 @@ export function multisigBIP32Path(addressType, network, relativePath) {
  * @param {string} bip32Path e.g. "m/45'/0'/0'/0"
  * @returns {string} parent path
  * @example
- * import {getParentPath} from "unchained-bitcoin";
- * console.log(getParentPath("m/45'/0'/0'/0"); // m/45'/0'/0'
+ * import {getParentBIP32Path} from "unchained-bitcoin";
+ * console.log(getParentBIP32Path("m/45'/0'/0'/0"); // m/45'/0'/0'
  */
-export function getParentPath(bip32Path) {
+export function getParentBIP32Path(bip32Path) {
   // first validate the input
-  let validated = validateBIP32Path(bip32Path)
-  if (validated.length) return validated
+  let validated = validateBIP32Path(bip32Path);
+  if (validated.length) return validated;
   // then slice off then last item in the path
   return bip32Path.split("/").slice(0, -1).join("/");
+}
+
+/**
+ * Get the path of under the parentBIP32Path of the given path
+ * @param {string} parentBIP32Path e.g. "m/45'/0'/0'"
+ * @param {string} childBIP32Path e.g. "m/45'/0'/0'/0/1/2"
+ * @returns {string} relative path below path
+ * @example
+ * import {getRelativeBIP32Path} from "unchained-bitcoin";
+ * console.log(getRelativeBIP32Path("m/45'/0'/0'", "m/45'/0'/0'/0/1/2"); // 0/1/2
+ */
+export function getRelativeBIP32Path(parentBIP32Path, childBIP32Path) {
+  if (parentBIP32Path === childBIP32Path) return '';
+  // first validate the parentBIP32Path
+  let validatedParent = validateBIP32Path(parentBIP32Path);
+  if (validatedParent.length) return validatedParent;
+  // next validate the input
+  let validatedChild = validateBIP32Path(childBIP32Path);
+  if (validatedChild.length) return validatedChild;
+  // check that childBIP32Path starts with parentBIP32Path
+  if (!childBIP32Path.startsWith(parentBIP32Path)) return `The provided bip32Path does not start with the chroot.`
+  // then return the relative path beyond the parentBIP32Path.
+
+  return childBIP32Path.slice(parentBIP32Path.length + 1);
 }
 </code></pre>
         </article>
@@ -346,13 +367,13 @@ export function getParentPath(bip32Path) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-keys.html">keys</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li><li><a href="module-keys.ExtendedPublicKey.html">ExtendedPublicKey</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Sep 25 2020 12:27:37 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Dec 08 2020 15:03:27 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>
