@@ -215,7 +215,7 @@ export class ExtendedPublicKey extends Struct {
     this.index = br.readU32BE();
     this.chaincode = br.readString(32, "hex");
     this.pubkey = br.readString(33, "hex");
-
+    this.base58String = this.toBase58()
     return this;
   }
 }
