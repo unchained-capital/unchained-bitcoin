@@ -1,7 +1,7 @@
 /**
  * This module provides useful test fixtures.
  *
- * All test fixtures are derived from the same BIP39 seed phrase
+ * Most test fixtures are derived from the same BIP39 seed phrase
  * (which is also included as a fixture).
  *
  * Test transactions are multisig which allows them to have one of the
