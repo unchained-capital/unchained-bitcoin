@@ -16,18 +16,21 @@ import {
   ExtendedPublicKey,
   fingerprintToFixedLengthHex,
   extendedPublicKeyRootFingerprint,
-  validateExtendedPublicKeyForNetwork,
+  validateExtendedPublicKeyForNetwork
 } from "./keys";
 
 import { TESTNET, MAINNET } from "./networks";
 
 import { TEST_FIXTURES } from "./fixtures";
 
+import { P2SH } from "./p2sh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
+
 const NODES = TEST_FIXTURES.keys.open_source.nodes;
 const extendedPubKeyNode = NODES["m/45'/0'/0'"];
 
 describe("keys", () => {
-
   describe("validateExtendedPublicKeyForNetwork", () => {
     const validXpub =
       "xpub6CCHViYn5VzKFqrKjAzSSqP8XXSU5fEC6ZYSncX5pvSKoRLrPDcF8cEaZkrQvvnuwRUXeKVjoGmAqvbwVkNBFLaRiqcdVhWPyuShUrbcZsv";
@@ -122,6 +125,13 @@ describe("keys", () => {
     });
   });
   describe("validatePublicKey", () => {
+    const invalidHex = "zzzz";
+    const invalidPublicKey = "deadbeef";
+    const compressedPublicKey =
+      "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee";
+    const uncompressedPublicKey =
+      "04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5";
+
     it("returns an error message on an empty value", () => {
       expect(validatePublicKey(undefined)).toMatch(/cannot be blank/i);
       expect(validatePublicKey("")).toMatch(/cannot be blank/i);
@@ -129,27 +139,59 @@ describe("keys", () => {
     });
 
     it("returns an error message on a non-hex value", () => {
-      expect(validatePublicKey("zzzz")).toMatch(/invalid hex/i);
+      expect(validatePublicKey(invalidHex)).toMatch(/invalid hex/i);
     });
 
     it("returns an error message on an invalid value", () => {
-      expect(validatePublicKey("deadbeef")).toMatch(/invalid public key/i);
+      expect(validatePublicKey(invalidPublicKey)).toMatch(
+        /invalid public key/i
+      );
     });
 
     it("returns an empty string when the value is a valid compressed public key", () => {
-      expect(
-        validatePublicKey(
-          "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee"
-        )
-      ).toBe("");
+      expect(validatePublicKey(compressedPublicKey)).toBe("");
     });
 
     it("returns an empty string when the value is a valid uncompressed public key", () => {
-      expect(
-        validatePublicKey(
-          "04b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee6e43c09d025c2ad322382347ec0f69b4e78d8e23c8ff9aa0dd0cb93665ae83d5"
-        )
-      ).toBe("");
+      expect(validatePublicKey(uncompressedPublicKey)).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid compressed public key", () => {
+      expect(validatePublicKey(compressedPublicKey, P2SH)).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid compressed public key", () => {
+      expect(validatePublicKey(compressedPublicKey, P2SH_P2WSH)).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid compressed public key", () => {
+      expect(validatePublicKey(compressedPublicKey, P2WSH)).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid uncompressed public key", () => {
+      expect(validatePublicKey(uncompressedPublicKey, P2SH)).toBe("");
+    });
+
+    it("returns an empty string when the value is a valid uncompressed public key", () => {
+      expect(validatePublicKey(uncompressedPublicKey, P2SH_P2WSH)).toBe(
+        "P2SH-P2WSH does not support uncompressed public keys."
+      );
+    });
+
+    it("returns an empty string when the value is a valid uncompressed public key", () => {
+      expect(validatePublicKey(uncompressedPublicKey, P2WSH)).toBe(
+        "P2WSH does not support uncompressed public keys."
+      );
+    });
+
+    it("returns an error message on a non-hex value", () => {
+      expect(validatePublicKey(invalidHex, P2SH)).toMatch(/invalid hex/i);
+    });
+
+    it("returns an error message on an invalid value", () => {
+      expect(validatePublicKey(invalidPublicKey, P2SH)).toMatch(
+        /invalid public key/i
+      );
     });
   });
 
