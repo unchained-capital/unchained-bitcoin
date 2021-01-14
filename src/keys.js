@@ -332,7 +332,7 @@ export function validateExtendedPublicKey(xpubString, network) {
  * - Must be a valid BIP32 public key.
  *
  * @param {string} pubkeyHex - (compressed) public key in hex
- * @param {string} addressType - (optional) one of P2SH, P2SH-P2WSH, P2WSH
+ * @param {string} [addressType] - one of P2SH, P2SH-P2WSH, P2WSH
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
  * import {validatePublicKey} from "unchained-bitcoin";
