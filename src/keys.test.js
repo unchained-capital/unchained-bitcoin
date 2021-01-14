@@ -156,39 +156,39 @@ describe("keys", () => {
       expect(validatePublicKey(uncompressedPublicKey)).toBe("");
     });
 
-    it("returns an empty string when the value is a valid compressed public key", () => {
+    it("returns an empty string when the value is a valid compressed public key used for P2SH", () => {
       expect(validatePublicKey(compressedPublicKey, P2SH)).toBe("");
     });
 
-    it("returns an empty string when the value is a valid compressed public key", () => {
+    it("returns an empty string when the value is a valid compressed public key used for P2SH-P2WSH", () => {
       expect(validatePublicKey(compressedPublicKey, P2SH_P2WSH)).toBe("");
     });
 
-    it("returns an empty string when the value is a valid compressed public key", () => {
+    it("returns an empty string when the value is a valid compressed public key used for P2WSH", () => {
       expect(validatePublicKey(compressedPublicKey, P2WSH)).toBe("");
     });
 
-    it("returns an empty string when the value is a valid uncompressed public key", () => {
+    it("returns an empty string when the value is a valid uncompressed public key used for P2SH", () => {
       expect(validatePublicKey(uncompressedPublicKey, P2SH)).toBe("");
     });
 
-    it("returns an empty string when the value is a valid uncompressed public key", () => {
+    it("returns an error message on a valid uncompressed public key used for P2SH-P2WSH", () => {
       expect(validatePublicKey(uncompressedPublicKey, P2SH_P2WSH)).toBe(
         "P2SH-P2WSH does not support uncompressed public keys."
       );
     });
 
-    it("returns an empty string when the value is a valid uncompressed public key", () => {
+    it("returns an error message on a valid uncompressed public key used for P2WSH", () => {
       expect(validatePublicKey(uncompressedPublicKey, P2WSH)).toBe(
         "P2WSH does not support uncompressed public keys."
       );
     });
 
-    it("returns an error message on a non-hex value", () => {
+    it("returns an error message on a non-hex value used for P2SH", () => {
       expect(validatePublicKey(invalidHex, P2SH)).toMatch(/invalid hex/i);
     });
 
-    it("returns an error message on an invalid value", () => {
+    it("returns an error message on an invalid value used for P2SH", () => {
       expect(validatePublicKey(invalidPublicKey, P2SH)).toMatch(
         /invalid public key/i
       );
