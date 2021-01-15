@@ -14,6 +14,8 @@ import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
 import { TESTNET, networkData, MAINNET } from "./networks";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
 
 export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   xpub: "0488b21e",
@@ -330,6 +332,7 @@ export function validateExtendedPublicKey(xpubString, network) {
  * - Must be a valid BIP32 public key.
  *
  * @param {string} pubkeyHex - (compressed) public key in hex
+ * @param {string} [addressType] - one of P2SH, P2SH-P2WSH, P2WSH
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
  * import {validatePublicKey} from "unchained-bitcoin";
@@ -337,8 +340,11 @@ export function validateExtendedPublicKey(xpubString, network) {
  * console.log(validatePublicKey("zzzz")); // "Invalid hex..."
  * console.log(validatePublicKey("deadbeef")); // "Invalid public key."
  * console.log(validatePublicKey("03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee")); // ""
+ * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53")); // ""
+ * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2SH")); // ""
+ * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2WSH")); // "P2WSH does not support uncompressed public keys."
  */
-export function validatePublicKey(pubkeyHex) {
+export function validatePublicKey(pubkeyHex, addressType) {
   if (pubkeyHex === null || pubkeyHex === undefined || pubkeyHex === "") {
     return "Public key cannot be blank.";
   }
@@ -352,6 +358,13 @@ export function validatePublicKey(pubkeyHex) {
     ECPair.fromPublicKey(Buffer.from(pubkeyHex, "hex"));
   } catch (e) {
     return "Invalid public key.";
+  }
+
+  if (
+    !isKeyCompressed(pubkeyHex) &&
+    [P2SH_P2WSH, P2WSH].includes(addressType)
+  ) {
+    return `${addressType} does not support uncompressed public keys.`;
   }
 
   return "";
