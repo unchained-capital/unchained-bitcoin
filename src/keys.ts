@@ -51,7 +51,7 @@ export function validatePrefix(prefix: string): never | null {
  * @param {string} rootFingerprint - fingerprint to validate
  * @return {void}
  */
-export function validateRootFingerprint(rootFingerprint:number): void {
+export function validateRootFingerprint(rootFingerprint:string): void {
   assert(typeof rootFingerprint === "string", 'Root fingerprint must be a string.');
   assert(rootFingerprint.length === 8, `Expected hex value of length 8`);
   const rootXfpError = validateHex(rootFingerprint);
