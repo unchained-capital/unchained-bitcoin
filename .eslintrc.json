@@ -5,11 +5,15 @@
         "node": true,
         "jest/globals": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module"
@@ -304,5 +308,5 @@
             "never"
         ]
     },
-    "plugins": ["jest"]
+    "plugins": ["jest", "@typescript-eslint"]
 }
