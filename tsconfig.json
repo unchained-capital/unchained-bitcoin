@@ -14,7 +14,7 @@
 		"isolatedModules": true,
 		// Import non-ES modules as default imports.
     "esModuleInterop": true,
-    "noImplicitAny": false,   
+    "noImplicitAny": false,
 	},
 	"include": [
 		"src"

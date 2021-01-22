@@ -19,6 +19,8 @@
         "sourceType": "module"
     },
     "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
         "accessor-pairs": "error",
         "array-bracket-newline": "off",
         "array-bracket-spacing": [
@@ -100,7 +102,7 @@
         ],
         "lines-around-comment": "error",
         "lines-around-directive": "error",
-        "lines-between-class-members": "error",
+        "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
         "max-classes-per-file": "error",
         "max-depth": "error",
         "max-len": "off",

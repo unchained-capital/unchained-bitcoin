@@ -9,7 +9,7 @@
 import { ECPair } from "bitcoinjs-lib";
 import * as bip32 from "bip32";
 import bs58check from "bs58check";
-import { Struct } from "bufio";
+import { Struct, BufferWriter, BufferReader } from "bufio";
 import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
@@ -28,7 +28,10 @@ export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   vpub: "045f1cf6",
   Upub: "024289ef",
   Vpub: "02575483",
-};
+} as const;
+
+type KeyPrefixes = keyof typeof EXTENDED_PUBLIC_KEY_VERSIONS;
+type KeyVersions = typeof EXTENDED_PUBLIC_KEY_VERSIONS[KeyPrefixes];
 
 /**
  * Validate whether or not a string is a valid extended public key prefix
@@ -48,7 +51,7 @@ export function validatePrefix(prefix: string): never | null {
  * @param {string} rootFingerprint - fingerprint to validate
  * @return {void}
  */
-export function validateRootFingerprint(rootFingerprint:string): void {
+export function validateRootFingerprint(rootFingerprint:number): void {
   assert(typeof rootFingerprint === "string", 'Root fingerprint must be a string.');
   assert(rootFingerprint.length === 8, `Expected hex value of length 8`);
   const rootXfpError = validateHex(rootFingerprint);
@@ -72,24 +75,46 @@ export function validateRootFingerprint(rootFingerprint:string): void {
  * console.log(xpub.toBase58()) // returns base58 check encoded xpub
  */
 export class ExtendedPublicKey extends Struct {
-  constructor(options) {
+  path?: string;
+  sequence?: number[];
+  index?: number;
+  depth?: number;
+  chaincode?: string;
+  pubkey?: string;
+  parentFingerprint?: string;
+  network?: NETWORKS;
+  version?: KeyVersions;
+  rootFingerprint?: string;
+  base58String?: string;
+
+  constructor(options: Partial<ExtendedPublicKey>) {
     super();
     if (!options || !Object.keys(options).length) {
       return this;
     }
-
-    const pathError = validateBIP32Path(options.path);
-    assert(!pathError.length, pathError);
-    this.path = options.path;
-    this.sequence = bip32PathToSequence(this.path);
-    this.index = this.sequence[this.sequence.length - 1];
-    this.depth = this.path.split("/").length - 1;
+    if (options.path) {
+      const pathError = validateBIP32Path(options.path);
+      assert(!pathError.length, pathError);
+      this.path = options.path;
+      this.sequence = bip32PathToSequence(this.path);
+      this.index = this.sequence[this.sequence.length - 1];
+      this.depth = this.path.split("/").length - 1;
+    } else {
+      assert(
+        options.depth && options.index,
+        'Either an absolute bip32 path or index and depth are required to create ExtendedPublicKey'
+      )
+      this.depth = options.depth;
+      this.index = options.index;
+    }
+    assert(options.pubkey, 'pubkey required to create ExtendedPublicKey');
     const pubKeyError = validatePublicKey(options.pubkey);
     assert(!pubKeyError.length, pubKeyError);
     this.pubkey = isKeyCompressed(options.pubkey)
       ? options.pubkey
       : compressPublicKey(options.pubkey);
     assert(
+      options.chaincode &&
       options.chaincode.length === 64,
       "xpub derivation requires 32-byte chaincode"
     );
@@ -126,16 +151,15 @@ export class ExtendedPublicKey extends Struct {
    * A Buffer Writer used to encode an xpub. This is called
    * by the `encode` and `toBase58` methods
    * @param {BufferWriter} bw bufio.BufferWriter
-   * @returns {Buffer} returns raw ExtendedPublicKey
+   * @returns {void} doesn't have a return, only updates given buffer writer
    */
-  write(bw: BufferWriter): Buffer {
+  write(bw: BufferWriter): void {
     bw.writeString(this.version, "hex");
     bw.writeU8(this.depth);
     bw.writeU32BE(this.parentFingerprint);
     bw.writeU32BE(this.index);
     bw.writeString(this.chaincode, "hex");
     bw.writeString(this.pubkey, "hex");
-    return this;
   }
 
   /**
@@ -175,6 +199,10 @@ export class ExtendedPublicKey extends Struct {
     this.rootFingerprint = rootFingerprint;
   }
 
+  encode(extra?:any): Buffer {
+    return super.encode(extra);
+  }
+
   /**
    * Return the base58 encoded xpub, adding the
    * @returns {string} base58check encoded xpub, prefixed by network
@@ -190,7 +218,7 @@ export class ExtendedPublicKey extends Struct {
    * @returns {ExtendedPublicKey} new ExtendedPublicKey instance
    */
   static fromBase58(data: string): ExtendedPublicKey {
-    return new this().decode(bs58check.decode(data));
+    return ExtendedPublicKey.decode(bs58check.decode(data));
   }
 
   /**
@@ -219,6 +247,10 @@ export class ExtendedPublicKey extends Struct {
     this.pubkey = br.readString(33, "hex");
     this.base58String = this.toBase58()
     return this;
+  }
+
+  static decode(data: Buffer, extra?: any): ExtendedPublicKey {
+    return super.decode(data, extra);
   }
 }
 
@@ -344,7 +376,7 @@ export function validateExtendedPublicKey(xpubString: string, network: NETWORKS)
  * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2SH")); // ""
  * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2WSH")); // "P2WSH does not support uncompressed public keys."
  */
-export function validatePublicKey(pubkeyHex: string, addressType: string): string {
+export function validatePublicKey(pubkeyHex: string, addressType?: string): string {
   if (pubkeyHex === null || pubkeyHex === undefined || pubkeyHex === "") {
     return "Public key cannot be blank.";
   }
@@ -362,6 +394,7 @@ export function validatePublicKey(pubkeyHex: string, addressType: string): strin
 
   if (
     !isKeyCompressed(pubkeyHex) &&
+    addressType &&
     [P2SH_P2WSH, P2WSH].includes(addressType)
   ) {
     return `${addressType} does not support uncompressed public keys.`;

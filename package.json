@@ -34,10 +34,11 @@
   },
   "scripts": {
     "check-types": "tsc",
+    "check-types:watch": "tsc --watch",
     "compile": "babel --extensions .ts,.js -d lib/ src/",
     "compile:watch": "babel --watch -d lib/ src/",
     "prepublish": "npm run compile",
-    "pretest": "npm run compile",
+    "pretest": "npm run check-types && npm run compile",
     "prepare": "npm run compile",
     "test": "jest lib",
     "test:watch": "jest --watch src",
