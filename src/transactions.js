@@ -7,6 +7,7 @@
 
 import BigNumber from 'bignumber.js';
 import assert from "assert"
+import {TransactionBuilder, Psbt, Transaction, script, payments} from "bitcoinjs-lib";
 import {networkData} from  "./networks";
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
@@ -28,7 +29,6 @@ import {
 import {validateOutputs} from "./outputs";
 import {scriptToHex} from './script';
 import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
-const bitcoin = require('bitcoinjs-lib');
 
 
 /**
@@ -71,7 +71,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
   const multisigOutputError = validateOutputs(network, outputs);
   assert(!multisigOutputError.length, multisigOutputError);
 
-  const transactionBuilder = new bitcoin.TransactionBuilder();
+  const transactionBuilder = new TransactionBuilder();
   transactionBuilder.setVersion(1); // FIXME this depends on type...
   transactionBuilder.network = networkData(network);
   for (let inputIndex = 0; inputIndex < inputs.length; inputIndex += 1) {
@@ -102,7 +102,7 @@ export function unsignedMultisigPSBT(network, inputs, outputs) {
   const multisigOutputError = validateOutputs(network, outputs);
   assert(!multisigOutputError.length, multisigOutputError);
 
-  const psbt = new bitcoin.Psbt({ network: networkData(network) });
+  const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
   const psbtInputs = inputs.map((input) => psbtInputFormatter({...input}));
@@ -124,7 +124,7 @@ export function unsignedMultisigPSBT(network, inputs, outputs) {
  * @returns {Transaction} an unsigned {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object (unsigned)
  */
 export function unsignedTransactionObjectFromPSBT(psbt) {
-  return bitcoin.Transaction.fromHex(psbt.txn);
+  return Transaction.fromHex(psbt.txn);
 }
 
 /**
@@ -183,7 +183,7 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
     }
   });
 
-  const signedTransaction = bitcoin.Transaction.fromHex(unsignedTransaction.toHex()); // FIXME inefficient?
+  const signedTransaction = Transaction.fromHex(unsignedTransaction.toHex()); // FIXME inefficient?
   for (let inputIndex=0; inputIndex < inputs.length; inputIndex++) {
     const input = inputs[inputIndex];
 
@@ -274,8 +274,8 @@ function multisigWitnessField(multisig, sortedSignatures) {
 function multisigScriptSig(multisig, signersInputSignatures) {
   const signatureOps = signersInputSignatures.map((signature) => (`${signatureNoSighashType(signature)}01`)).join(' '); // 01 => SIGHASH_ALL
   const inputScript = `OP_0 ${signatureOps}`;
-  const inputScriptBuffer = bitcoin.script.fromASM(inputScript);
-  const rawMultisig = bitcoin.payments.p2ms({
+  const inputScriptBuffer = script.fromASM(inputScript);
+  const rawMultisig = payments.p2ms({
     network: multisig.network,
     output: Buffer.from(multisigRedeemScript(multisig).output, 'hex'),
     input: inputScriptBuffer,

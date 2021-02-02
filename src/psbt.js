@@ -1,4 +1,4 @@
-import {Psbt} from "bitcoinjs-lib";
+import {Psbt, Transaction} from "bitcoinjs-lib";
 import {toHexString} from './utils';
 import {
   multisigAddressType,
@@ -12,8 +12,6 @@ import {P2SH} from './p2sh';
 import {P2WSH} from './p2wsh';
 import {P2SH_P2WSH} from './p2sh_p2wsh';
 import {generateBip32DerivationByIndex, generateBraid} from './braid';
-
-const bitcoin = require('bitcoinjs-lib');
 
 /**
  * This module provides functions for interacting with PSBTs, see BIP174
@@ -129,7 +127,7 @@ function getWitnessOutputScriptFromInput(input) {
   //    amount: out.value,
   //  }
   // See https://github.com/bitcoinjs/bitcoinjs-lib/issues/1282
-  const tx = bitcoin.Transaction.fromHex(input.transactionHex);
+  const tx = Transaction.fromHex(input.transactionHex);
   return tx.outs[input.index];
 }
 

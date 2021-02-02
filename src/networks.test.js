@@ -6,7 +6,7 @@ import {
   getNetworkFromPrefix,
 } from "./networks";
 
-const bitcoin = require('bitcoinjs-lib');
+import {networks} from "bitcoinjs-lib";
 
 describe("networks", () => {
 
@@ -23,9 +23,9 @@ describe("networks", () => {
   describe("networkLabel", () => {
 
     it("returns a human-readable network name", () => {
-      expect(networkData(MAINNET)).toBe(bitcoin.networks.bitcoin);
-      expect(networkData(TESTNET)).toBe(bitcoin.networks.testnet);
-      expect(networkData("foobar")).toBe(bitcoin.networks.testnet);
+      expect(networkData(MAINNET)).toBe(networks.bitcoin);
+      expect(networkData(TESTNET)).toBe(networks.testnet);
+      expect(networkData("foobar")).toBe(networks.testnet);
     });
 
   });

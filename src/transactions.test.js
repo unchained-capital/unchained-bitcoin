@@ -14,7 +14,7 @@ import {
 import {P2WSH} from './p2wsh';
 import {P2SH_P2WSH} from './p2sh_p2wsh';
 
-const bitcoin = require('bitcoinjs-lib');
+import {address} from "bitcoinjs-lib";
 
 // FIXME: transactionbuilder is deprecating, but we know this. remove this after addressing.
 console.warn = jest.fn();
@@ -64,7 +64,7 @@ describe("transactions", () => {
         });
         fixture.outputs.forEach((output, outputIndex) => {
           expect(transaction.outs[outputIndex].value).toEqual(output.amountSats.toNumber());
-          expect(bitcoin.address.fromOutputScript(transaction.outs[outputIndex].script, networkData(fixture.network))).toEqual(output.address);
+          expect(address.fromOutputScript(transaction.outs[outputIndex].script, networkData(fixture.network))).toEqual(output.address);
         });
         expect(transaction.toHex()).toEqual(fixture.hex);
       });
