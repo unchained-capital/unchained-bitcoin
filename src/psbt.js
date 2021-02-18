@@ -263,6 +263,10 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
     return null;
   }
 
+  if (!psbt.validateSignaturesOfAllInputs()) {
+    return null;
+  }
+
   const partialSignatures = (
     psbt &&
     psbt.data &&
