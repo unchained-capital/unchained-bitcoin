@@ -30,8 +30,8 @@ export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   Vpub: "02575483",
 } as const;
 
-type KeyPrefixes = keyof typeof EXTENDED_PUBLIC_KEY_VERSIONS;
-type KeyVersions = typeof EXTENDED_PUBLIC_KEY_VERSIONS[KeyPrefixes];
+type KeyPrefix = keyof typeof EXTENDED_PUBLIC_KEY_VERSIONS;
+type KeyVersions = typeof EXTENDED_PUBLIC_KEY_VERSIONS[KeyPrefix];
 
 /**
  * Validate whether or not a string is a valid extended public key prefix
@@ -39,7 +39,7 @@ type KeyVersions = typeof EXTENDED_PUBLIC_KEY_VERSIONS[KeyPrefixes];
  * @returns {null} returns null if valid
  * @throws Error with message indicating the invalid prefix.
  */
-export function validatePrefix(prefix: string): never | null {
+export function validatePrefix(prefix: KeyPrefix): never | null {
   if (!EXTENDED_PUBLIC_KEY_VERSIONS[prefix]) {
     throw new Error(`Invalid prefix "${prefix}" for extended public key.`);
   }
@@ -101,7 +101,9 @@ export class ExtendedPublicKey extends Struct {
       this.depth = this.path.split("/").length - 1;
     } else {
       assert(
-        options.depth && options.index,
+        options.depth !== undefined &&
+        options.index !== undefined &&
+        options.depth >= 0 && options.index >= 0,
         'Either an absolute bip32 path or index and depth are required to create ExtendedPublicKey'
       )
       this.depth = options.depth;
@@ -266,11 +268,11 @@ export class ExtendedPublicKey extends Struct {
  * @returns {(string|object)} converted extended public key or error object
  * with the failed key and error message
  */
-export function convertExtendedPublicKey(extendedPublicKey: string, targetPrefix: string): (string | object) {
+export function convertExtendedPublicKey(extendedPublicKey: string, targetPrefix: KeyPrefix): (string | object) {
   try {
     const sourcePrefix = extendedPublicKey.slice(0, 4);
     validatePrefix(targetPrefix);
-    validatePrefix(sourcePrefix);
+    validatePrefix(sourcePrefix as KeyPrefix);
     const decodedExtendedPublicKey = bs58check.decode(extendedPublicKey.trim());
     const extendedPublicKeyNoPrefix = decodedExtendedPublicKey.slice(4);
     const extendedPublicKeyNewPrefix = Buffer.concat([

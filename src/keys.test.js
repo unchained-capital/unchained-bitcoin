@@ -342,7 +342,7 @@ describe("keys", () => {
     });
   });
 
-  describe("Test convertExtendedPublicKey", () => {
+  describe("convertExtendedPublicKey", () => {
     it(`should fail to convert`, () => {
       expect(() => convertExtendedPublicKey(
         'tpub',
@@ -494,17 +494,27 @@ describe("keys", () => {
 
   describe("ExtendedPublicKey", () => {
     it("encodes and decodes an extended public key", () => {
-      const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"];
+      const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0", null];
       for (const path of paths) {
-        const { parentFingerprint, chaincode, xpub, pub: pubkey, tpub, rootFingerprint } = NODES[
-          path
-        ];
+        const { 
+          parentFingerprint, 
+          chaincode, 
+          xpub, 
+          pub: pubkey, 
+          tpub, 
+          rootFingerprint,
+          depth,
+          index
+        } = NODES[path || paths[0]]; // test with a null path but need to pull a real node
+
         const extendedPubkey = new ExtendedPublicKey({
           path,
           pubkey,
           chaincode,
           parentFingerprint,
           rootFingerprint,
+          depth,
+          index
         });
 
 

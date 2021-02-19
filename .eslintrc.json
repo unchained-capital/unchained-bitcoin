@@ -68,7 +68,7 @@
             "property"
         ],
         "dot-notation": "error",
-        "eol-last": "off",
+        "eol-last": "error",
         "eqeqeq": "off",
         "func-call-spacing": "error",
         "func-name-matching": "error",

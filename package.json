@@ -37,6 +37,7 @@
     "check-types:watch": "tsc --watch",
     "compile": "babel --extensions .ts,.js -d lib/ src/",
     "compile:watch": "babel --watch -d lib/ src/",
+    "coverage": "jest --coverage",
     "prepublish": "npm run compile",
     "pretest": "npm run check-types && npm run compile",
     "prepare": "npm run compile",
