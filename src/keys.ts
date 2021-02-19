@@ -16,6 +16,7 @@ import { bip32PathToSequence, validateBIP32Path } from "./paths";
 import { TESTNET, networkData, MAINNET, NETWORKS } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
+import { KeyPrefix, KeyVersion } from "./types";
 
 export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   xpub: "0488b21e",
@@ -29,9 +30,6 @@ export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   Upub: "024289ef",
   Vpub: "02575483",
 } as const;
-
-type KeyPrefix = keyof typeof EXTENDED_PUBLIC_KEY_VERSIONS;
-type KeyVersions = typeof EXTENDED_PUBLIC_KEY_VERSIONS[KeyPrefix];
 
 /**
  * Validate whether or not a string is a valid extended public key prefix
@@ -83,7 +81,7 @@ export class ExtendedPublicKey extends Struct {
   pubkey?: string;
   parentFingerprint?: string;
   network?: NETWORKS;
-  version?: KeyVersions;
+  version?: KeyVersion;
   rootFingerprint?: string;
   base58String?: string;
 
