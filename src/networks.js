@@ -1,4 +1,4 @@
-const bitcoin = require('bitcoinjs-lib');
+import {networks} from "bitcoinjs-lib";
 
 /**
  * This module exports network constants and provide some utility
@@ -51,11 +51,11 @@ export const NETWORKS = {
 export function networkData(network) {
   switch (network) {
     case NETWORKS.MAINNET:
-      return bitcoin.networks.bitcoin;
+      return networks.bitcoin;
     case NETWORKS.TESTNET:
-      return bitcoin.networks.testnet;
+      return networks.testnet;
     default:
-      return bitcoin.networks.testnet;
+      return networks.testnet;
   }
 }
 

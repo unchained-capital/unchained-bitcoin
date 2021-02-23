@@ -55,11 +55,11 @@ import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
 import {toHexString} from "./utils";
 
-const bitcoin = require('bitcoinjs-lib');
+import {payments} from "bitcoinjs-lib";
 
 /**
  * Describes the return type of several functions in the
- * `bitcoin.payments` module of bitcoinjs-lib.
+ * `payments` module of bitcoinjs-lib.
  *
  * The following functions in this module will return objects of this
  * type:
@@ -110,7 +110,7 @@ export const MULTISIG_ADDRESS_TYPES = {
  * const multisigP2WSH = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
  */
 export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
-  const multisig = bitcoin.payments.p2ms({
+  const multisig = payments.p2ms({
     m: requiredSigners,
     pubkeys: publicKeys.map((hex) => Buffer.from(hex, 'hex')),
     network: networkData(network),
@@ -143,7 +143,7 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  * const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);
  */
 export function generateMultisigFromHex(network, addressType, multisigScriptHex) {
-  const multisig = bitcoin.payments.p2ms({
+  const multisig = payments.p2ms({
     output: Buffer.from(multisigScriptHex, 'hex'),
     network: networkData(network),
   });
@@ -165,13 +165,13 @@ export function generateMultisigFromHex(network, addressType, multisigScriptHex)
 export function generateMultisigFromRaw(addressType, multisig) {
   switch (addressType) {
     case P2SH:
-      return bitcoin.payments.p2sh({redeem: multisig});
+      return payments.p2sh({redeem: multisig});
     case P2SH_P2WSH:
-      return bitcoin.payments.p2sh({
-        redeem: bitcoin.payments.p2wsh({redeem: multisig}),
+      return payments.p2sh({
+        redeem: payments.p2wsh({redeem: multisig}),
       });
     case P2WSH:
-      return bitcoin.payments.p2wsh({redeem: multisig});
+      return payments.p2wsh({redeem: multisig});
     default:
       return null;
   }

@@ -7,6 +7,7 @@
 
 import BigNumber from 'bignumber.js';
 import bip66 from "bip66";
+import {ECPair, Transaction} from "bitcoinjs-lib";
 
 import {P2SH_P2WSH} from "./p2sh_p2wsh";
 import {P2WSH} from "./p2wsh";
@@ -20,8 +21,6 @@ import {
 import {
   unsignedMultisigTransaction,
 } from "./transactions";
-
-const bitcoin = require('bitcoinjs-lib');
 
 /**
  * Validate a multisig signature for given input and public key.
@@ -80,7 +79,7 @@ export function validateMultisigSignature(network, inputs, outputs, inputIndex, 
   for (let publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
     const publicKey = publicKeys[publicKeyIndex];
     const publicKeyBuffer = Buffer.from(publicKey, 'hex');
-    const keyPair = bitcoin.ECPair.fromPublicKey(publicKeyBuffer);
+    const keyPair = ECPair.fromPublicKey(publicKeyBuffer);
     if (keyPair.verify(hash, signatureBuffer)) {
       return publicKey;
     }
@@ -111,9 +110,9 @@ function multisigSignatureHash(network, inputs, outputs, inputIndex) {
   const unsignedTransaction = unsignedMultisigTransaction(network, inputs, outputs);
   const input = inputs[inputIndex];
   if (multisigAddressType(input.multisig) === P2WSH || multisigAddressType(input.multisig) === P2SH_P2WSH) {
-    return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, BigNumber(input.amountSats).toNumber(), bitcoin.Transaction.SIGHASH_ALL);
+    return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, BigNumber(input.amountSats).toNumber(), Transaction.SIGHASH_ALL);
   } else {
-    return unsignedTransaction.hashForSignature(inputIndex, multisigRedeemScript(input.multisig).output, bitcoin.Transaction.SIGHASH_ALL);
+    return unsignedTransaction.hashForSignature(inputIndex, multisigRedeemScript(input.multisig).output, Transaction.SIGHASH_ALL);
   }
 }
 

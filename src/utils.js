@@ -11,7 +11,7 @@ import { crypto } from "bitcoinjs-lib";
 /**
  * Converts a byte array to its hex representation.
  * 
- * @param {number[]} byteArray - input byte array
+ * @param {number[] | Buffer} byteArray - input byte array
  * @returns {string} hex representation of input array
  * 
  * @example

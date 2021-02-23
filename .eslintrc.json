@@ -5,16 +5,22 @@
         "node": true,
         "jest/globals": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
     "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
         "accessor-pairs": "error",
         "array-bracket-newline": "off",
         "array-bracket-spacing": [
@@ -62,7 +68,7 @@
             "property"
         ],
         "dot-notation": "error",
-        "eol-last": "off",
+        "eol-last": "error",
         "eqeqeq": "off",
         "func-call-spacing": "error",
         "func-name-matching": "error",
@@ -96,7 +102,7 @@
         ],
         "lines-around-comment": "error",
         "lines-around-directive": "error",
-        "lines-between-class-members": "error",
+        "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
         "max-classes-per-file": "error",
         "max-depth": "error",
         "max-len": "off",
@@ -304,5 +310,5 @@
             "never"
         ]
     },
-    "plugins": ["jest"]
+    "plugins": ["jest", "@typescript-eslint"]
 }

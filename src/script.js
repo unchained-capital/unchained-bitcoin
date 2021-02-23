@@ -5,13 +5,13 @@
  * @module script
  */
 
-const bitcoin = require('bitcoinjs-lib');
+import {script} from "bitcoinjs-lib";
 
 /**
  * Extracts the ASM (opcode) representation of a script from a
  * `Multisig` object.
  * 
- * @param {Multisig} script - Multisig object
+ * @param {Multisig} multisig - Multisig object
  * @returns {string} ASM representation of script
  * @example
  * import {
@@ -22,8 +22,8 @@ const bitcoin = require('bitcoinjs-lib');
  * console.log(scriptToOps(multisig)) // "OP_1 03a... 03b... OP_2 OP_CHECKMULTISIG"
  * 
  */
-export function scriptToOps(script) {
-  return bitcoin.script.toASM(script.output);
+export function scriptToOps(multisig) {
+  return script.toASM(multisig.output);
 }
 
 /**

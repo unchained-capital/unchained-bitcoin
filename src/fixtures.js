@@ -115,6 +115,8 @@ const NODES = {
       "470bb034dbc8e7b5f5c0b19f747e3e768f0cc9ff298361b2741e1b7fd70d376d",
     parentFingerprint: 1240308660,
     rootFingerprint: ROOT_FINGERPRINT,
+    index: 2147483648,
+    depth: 3,
   },
   "m/45'/0'/0'/0": {
     pub: "03b32dc780fba98db25b4b72cf2b69da228f5e10ca6aa8f46eabe7f9fe22c994ee",
