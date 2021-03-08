@@ -49,6 +49,8 @@ import {generateBip32DerivationByIndex, generateBraid} from './braid';
  *
  */
 
+export const PSBT_MAGIC_HEX = "70736274ff";
+export const PSBT_MAGIC_B64 = "cHNidP8"; 
 
 /**
  * Return the getBip32Derivation (if known) for a given `Multisig` object.
@@ -253,9 +255,9 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   let psbt = {};
 
   // Auto-detect and decode Base64 and Hex.
-  if (psbtFromFile.substring(0, 10) === '70736274ff') {
+  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
     psbt = Psbt.fromHex(psbtFromFile);
-  } else if (psbtFromFile.substring(0, 6) === 'cHNidP') {
+  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
     psbt = Psbt.fromBase64(psbtFromFile);
   } else {
     return null;
