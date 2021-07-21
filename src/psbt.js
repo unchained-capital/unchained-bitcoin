@@ -1,6 +1,8 @@
 import {Psbt, Transaction} from "bitcoinjs-lib";
+import { reverseBuffer } from 'bitcoinjs-lib/src/bufferutils';
 import {toHexString} from './utils';
 import {
+  generateMultisigFromHex,
   multisigAddressType,
   multisigBraidDetails,
   multisigRedeemScript,
@@ -12,6 +14,7 @@ import {P2SH} from './p2sh';
 import {P2WSH} from './p2wsh';
 import {P2SH_P2WSH} from './p2sh_p2wsh';
 import {generateBip32DerivationByIndex, generateBraid} from './braid';
+import {networkData} from './networks';
 
 /**
  * This module provides functions for interacting with PSBTs, see BIP174
@@ -232,6 +235,110 @@ export function psbtOutputFormatter(output) {
 }
 
 /**
+ * Translates a PSBT into inputs/outputs consumable by non-PSBT devices in the
+ * unchained-wallets libraries.
+ *
+ * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
+ * @param {String} psbt - PSBT as string
+ * @param {Object} KeyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
+ * @returns {Object} returns object with the format
+ * {
+ *    ins: [],
+ *    outs: [],
+ *    b32s: [],
+ * }
+ */
+export function translatePSBT({network, addressType, psbt, keyDetails}) {
+  let localPSBT = Psbt.fromBase64(psbt, {network: networkData(network)});
+  let b32s = [];
+  let ins = localPSBT.txInputs.map((input, index) => {
+    const dataInput = localPSBT.data.inputs[index];
+    b32s.push(dataInput.bip32Derivation.filter((b32d) => {
+          if (b32d.path.startsWith(keyDetails.root)
+            && b32d.masterFingerprint.toString('hex') === keyDetails.xfp)
+            return b32d
+        })[0]);
+    const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
+    const fundingTx = Transaction.fromHex(fundingTxHex);
+    const multisig = generateMultisigFromHex(network, addressType, dataInput.redeemScript.toString('hex'));
+
+    return {
+      amountSats: fundingTx.outs[input.index].value,
+      index: input.index,
+      transactionHex: fundingTxHex,
+      txid: reverseBuffer(input.hash).toString('hex'),
+      multisig,
+    }
+  });
+  let outs = localPSBT.txOutputs.map(output => {
+    return {
+      address: output.address,
+      amountSats: output.value,
+    }
+  });
+
+  return {
+    ins,
+    outs,
+    b32s
+  }
+}
+
+/**
+ * Given a PSBT, an input index, a pubkey, and a signature,
+ * update the input inside the PSBT with a partial signature object.
+ *
+ * Make sure it validates, and then return the PSBT with the partial
+ * signature inside.
+ *
+ * @param {Object} psbt - Psbt Object from bitcoinjs-lib (unsigned or partially signed)
+ * @param {number} inputIndex - which input is this signature for
+ * @param {Buffer} pubkey - public key associated with signature
+ * @param {Buffer} signature - signature of transaction for pubkey
+ * @return {Object} - validated PSBT Object with an added signature for given input
+ * @private
+ */
+function _addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
+  const partialSig = [
+    {
+      pubkey,
+      signature,
+    }
+  ]
+  psbt.data.updateInput(inputIndex, {partialSig})
+  if (!psbt.validateSignaturesOfInput(inputIndex, pubkey))
+    throw new Error("One or more invalid signatures.");
+  return psbt;
+}
+
+/**
+ * Given an unsigned PSBT, an array of signing public key(s) (one per input),
+ * an array of signature(s) (one per input) in the same order as the pubkey(s),
+ * adds partial signature object(s) to each input and returns the PSBT with
+ * partial signature(s) included.
+ *
+ * FIXME - maybe we add functionality of sending in a single pubkey as well,
+ *         which would assume all of the signature(s) are for that pubkey.
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {String} psbt - PSBT as base64 string
+ * @param {Buffer[]} pubkeys - public keys map 1:1 with signature(s)
+ * @param {Buffer[]} signatures - transaction signatures map 1:1 with public key(s)
+ * @return {string} - partially signed PSBT in Base64
+ */
+export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
+  let psbtWithSignatures = Psbt.fromBase64(psbt, {network: networkData(network)});
+  signatures.forEach((sig, idx) => {
+    const pubkey = pubkeys[idx];
+      psbtWithSignatures = _addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
+  }
+  )
+  return psbtWithSignatures.toBase64();
+}
+/**
  * Extracts the signature(s) from a PSBT.
  * NOTE: there should be one signature per input, per signer.
  *
@@ -262,6 +369,11 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   } else {
     return null;
   }
+
+  // this is only if you giving a "FULLY SIGNED"
+  // if (!psbt.validateSignaturesOfAllInputs()) {
+  //   return null;
+  // }
 
   const partialSignatures = (
     psbt &&
