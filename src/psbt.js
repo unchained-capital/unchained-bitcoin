@@ -236,31 +236,54 @@ export function psbtOutputFormatter(output) {
 
 /**
  * Translates a PSBT into inputs/outputs consumable by non-PSBT devices in the
- * unchained-wallets libraries.
+ * `unchained-wallets` library.
  *
  * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
  *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
- * @param {String} psbt - PSBT as string
- * @param {Object} KeyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
- * @returns {Object} returns object with the format
+ * @param {String} psbt - PSBT as a base64 or hex string
+ * @param {Object} keyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
+ * @returns {null|Object} returns object with the format
  * {
- *    ins: [],
- *    outs: [],
- *    b32s: [],
+ *    txInputs: [],
+ *    txOutputs: [],
+ *    bip32Derivations: [],
  * }
  */
-export function translatePSBT({network, addressType, psbt, keyDetails}) {
-  let localPSBT = Psbt.fromBase64(psbt, {network: networkData(network)});
-  let b32s = [];
-  let ins = localPSBT.txInputs.map((input, index) => {
+export function translatePSBT(network, addressType, psbt, keyDetails) {
+  let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (localPSBT === null) return null;
+
+  let bip32Derivations = [];
+  // To provide the non-PSBT wallet with the proper info, we actually
+  // need to grab some info from the "data inputs" and some other
+  // information from the "transaction inputs".
+  let txInputs = localPSBT.txInputs.map((input, index) => {
     const dataInput = localPSBT.data.inputs[index];
-    b32s.push(dataInput.bip32Derivation.filter((b32d) => {
-          if (b32d.path.startsWith(keyDetails.root)
-            && b32d.masterFingerprint.toString('hex') === keyDetails.xfp)
-            return b32d
-        })[0]);
+    // The bip32Derivation hanging off of the dataInput contains
+    // an array of objects like:
+    //    [
+    //      { masterFingerprint1, pubkey1, path1 },
+    //      { masterFingerprint2, pubkey2, path2 },
+    //      ...
+    //    ]
+    // We need to use the information in the keyDetails object
+    // to filter down to the fingerprint+pubkey+paths that we care about.
+    // E.g. which key is trying to sign?
+
+    const bip32Derivation = dataInput.bip32Derivation.filter((b32d) => {
+      if (b32d.path.startsWith(keyDetails.root)
+        && b32d.masterFingerprint.toString('hex') === keyDetails.xfp)
+        return b32d
+    });
+
+    if (!bip32Derivation.length) {
+      throw new Error("keyDetails not included in PSBT");
+    }
+
+    bip32Derivations.push(bip32Derivation[0]);
+    // FIXME - this is where we're currently only handling P2SH correctly
     const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
     const fundingTx = Transaction.fromHex(fundingTxHex);
     const multisig = generateMultisigFromHex(network, addressType, dataInput.redeemScript.toString('hex'));
@@ -273,7 +296,7 @@ export function translatePSBT({network, addressType, psbt, keyDetails}) {
       multisig,
     }
   });
-  let outs = localPSBT.txOutputs.map(output => {
+  let txOutputs = localPSBT.txOutputs.map(output => {
     return {
       address: output.address,
       amountSats: output.value,
@@ -281,9 +304,9 @@ export function translatePSBT({network, addressType, psbt, keyDetails}) {
   });
 
   return {
-    ins,
-    outs,
-    b32s
+    txInputs,
+    txOutputs,
+    bip32Derivations
   }
 }
 
@@ -324,13 +347,15 @@ function _addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
  *         which would assume all of the signature(s) are for that pubkey.
  *
  * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {String} psbt - PSBT as base64 string
+ * @param {String} psbt - PSBT as base64 or hex string
  * @param {Buffer[]} pubkeys - public keys map 1:1 with signature(s)
  * @param {Buffer[]} signatures - transaction signatures map 1:1 with public key(s)
- * @return {string} - partially signed PSBT in Base64
+ * @return {null|string} - partially signed PSBT in Base64
  */
 export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
-  let psbtWithSignatures = Psbt.fromBase64(psbt, {network: networkData(network)});
+  let psbtWithSignatures = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (psbtWithSignatures === null) return null;
+
   signatures.forEach((sig, idx) => {
     const pubkey = pubkeys[idx];
       psbtWithSignatures = _addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
@@ -359,18 +384,10 @@ export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
  *
  */
 export function parseSignaturesFromPSBT(psbtFromFile) {
-  let psbt = {};
+  let psbt = autoLoadPSBT(psbtFromFile);
+  if (psbt === null) return null;
 
-  // Auto-detect and decode Base64 and Hex.
-  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
-    psbt = Psbt.fromHex(psbtFromFile);
-  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
-    psbt = Psbt.fromBase64(psbtFromFile);
-  } else {
-    return null;
-  }
-
-  // this is only if you giving a "FULLY SIGNED"
+  // this is only if you are providing a "FULLY SIGNED" PSBT
   // if (!psbt.validateSignaturesOfAllInputs()) {
   //   return null;
   // }
@@ -403,4 +420,22 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
     return null;
   }
   return signatureSet;
+}
+
+/**
+ * Given a string, try to create a Psbt object based on MAGIC (hex or Base64)
+ * @param {String} psbtFromFile -  Base64 or hex PSBT
+ * @param {Object} [options] -  options, e.g. TESTNET
+ * @return {null|Psbt}
+ */
+export function autoLoadPSBT(psbtFromFile, options=null) {
+  if (typeof psbtFromFile !== "string") return null;
+  // Auto-detect and decode Base64 and Hex.
+  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
+    return Psbt.fromHex(psbtFromFile, options);
+  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
+    return Psbt.fromBase64(psbtFromFile, options);
+  } else {
+    return null;
+  }
 }

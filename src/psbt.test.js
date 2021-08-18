@@ -1,5 +1,5 @@
 import {
-  addSignaturesToPSBT,
+  addSignaturesToPSBT, autoLoadPSBT,
   parseSignaturesFromPSBT,
   psbtInputFormatter,
   psbtOutputFormatter,
@@ -50,17 +50,19 @@ describe("psbt", () => {
 
   describe("translatePSBT", () => {
     it(`returns the inputs/outputs translated from the psbt`, () => {
-      const {ins, outs, b32s} = translatePSBT(
-        {
-          network: tx.network,
-          addressType: tx.format,
-          psbt: tx.psbt,
-          keyDetails: {
-            xfp: ROOT_FINGERPRINT,
-            root: "m/45'/1'/100'",
-          },
-        }
-      )
+      const {
+        txInputs,
+        txOutputs,
+        bip32Derivations
+      } = translatePSBT(
+            tx.network,
+            tx.format,
+            tx.psbt,
+            {
+              xfp: ROOT_FINGERPRINT,
+             root: "m/45'/1'/100'",
+            },
+      );
 
       // We can't compare directly because our fixtures contain
       // additional information, so we will build our expected
@@ -83,7 +85,7 @@ describe("psbt", () => {
             }
           }
         )
-      expect(ins).toEqual(expectedInputs);
+      expect(txInputs).toEqual(expectedInputs);
 
       // Same as above, building expected object from a
       // different set of data in the fixtures while the
@@ -96,32 +98,58 @@ describe("psbt", () => {
             };
           });
 
-      expect(outs).toEqual(expectedOutputs);
+      expect(txOutputs).toEqual(expectedOutputs);
 
-      expect(b32s.map(b32d => b32d.path)).toEqual(tx.bip32Paths);
+      expect(bip32Derivations.map(b32d => b32d.path)).toEqual(tx.bip32Paths);
+    });
+
+    it("should return null with non-string PSBT input", () => {
+      expect(translatePSBT(tx.network,
+        tx.format,
+        {},
+        {
+          xfp: ROOT_FINGERPRINT,
+          root: "m/45'/1'/100'",
+        },)).toBeNull();
+    })
+
+    it("should throw on psbt missing details (include psbt for another tx)", () => {
+      expect(() => {
+        translatePSBT(
+          tx.network,
+          tx.format,
+          TRANSACTIONS[1].psbt,
+          {
+            xfp: ROOT_FINGERPRINT,
+            root: "m/45'/1'/100'",
+          },
+        );
+      }).toThrow(/keyDetails not included/i);
     })
 
   });
 
   describe("addSignaturesToPSBT", () => {
-    it("adds signatures to unsigned PSBT", () => {
-       // Function expects Buffers but our fixtures are hex strings
-      const signaturesAsBuffers = tx.signature.map(sig => Buffer.from(sig, "hex"));
-      const signingPubKeyBuffer = Buffer.from(ms.publicKey, "hex");
-      const pubKeys = Array(signaturesAsBuffers.length).fill(signingPubKeyBuffer);
+    // Function expects Buffers but our fixtures are hex strings
+    const signaturesAsBuffers = tx.signature.map(sig => Buffer.from(sig, "hex"));
+    const signingPubKeyBuffer = Buffer.from(ms.publicKey, "hex");
+    const pubKeys = Array(signaturesAsBuffers.length).fill(signingPubKeyBuffer);
 
-      const psbtWithSignature = addSignaturesToPSBT(tx.network, tx.psbt, pubKeys, signaturesAsBuffers)
+    it("adds signatures to unsigned PSBT", () => {
+      const psbtWithSignature = addSignaturesToPSBT(tx.network, tx.psbt, pubKeys, signaturesAsBuffers);
 
       expect(psbtWithSignature).toEqual(ms.psbtOrderedPartiallySigned);
     });
-    it("throws validation error when trying to add valid signatures to the wrong pubkey", () => {
-      // Function expects Buffers but our fixtures are hex strings
-      const signaturesAsBuffers = tx.signature.map(sig => Buffer.from(sig, "hex"));
-      const signingPubKeyBuffer = Buffer.from(ms.publicKeys[1], "hex");
-      const pubKeys = Array(signaturesAsBuffers.length).fill(signingPubKeyBuffer);
 
-      expect(() => addSignaturesToPSBT(tx.network, tx.psbt, pubKeys, signaturesAsBuffers)).toThrow(/invalid signatures/i);
+    it("throws validation error when trying to add valid signatures to the wrong pubkey", () => {
+      const wrongPubKeys = Array(signaturesAsBuffers.length).fill(Buffer.from(ms.publicKeys[1], "hex"));
+
+      expect(() => addSignaturesToPSBT(tx.network, tx.psbt, wrongPubKeys, signaturesAsBuffers)).toThrow(/invalid signature/i);
     });
+
+    it("should return null with non-string PSBT input", () => {
+      expect(addSignaturesToPSBT(tx.network, [], pubKeys, signaturesAsBuffers)).toBeNull();
+    })
   });
 
   describe("parseSignaturesFromPSBT", () => {
@@ -197,7 +225,14 @@ describe("psbt", () => {
       expect(parseSignaturesFromPSBT(multiInputHexPSBT_fullySigned)).toEqual(twoSetsTwoInputs);
       expect(parseSignaturesFromPSBT(multiInputB64PSBT_fullySigned)).toEqual(twoSetsTwoInputs);
     });
+  });
 
+  describe("autoLoadPSBT", () => {
+    it("should fail if you don't send a String", () => {
+        expect(autoLoadPSBT([])).toBeNull();
+        expect(autoLoadPSBT({})).toBeNull();
+        expect(autoLoadPSBT(Buffer.from('foobar', "hex"))).toBeNull();
+      });
   });
 
 });
