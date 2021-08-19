@@ -57,7 +57,7 @@ describe("psbt", () => {
         {},
         {
           xfp: ROOT_FINGERPRINT,
-          root: "m/45'/1'/100'",
+          path: "m/45'/1'/100'",
         })).toThrow(/Unsupported addressType/i);
     })
 
@@ -72,7 +72,7 @@ describe("psbt", () => {
             tx.psbt,
             {
               xfp: ROOT_FINGERPRINT,
-             root: "m/45'/1'/100'",
+              path: "m/45'/1'/100'",
             },
       );
 
@@ -117,7 +117,7 @@ describe("psbt", () => {
         {},
         {
           xfp: ROOT_FINGERPRINT,
-          root: "m/45'/1'/100'",
+          path: "m/45'/1'/100'",
         },)).toBeNull();
     })
 
@@ -129,7 +129,7 @@ describe("psbt", () => {
           TRANSACTIONS[1].psbt,
           {
             xfp: ROOT_FINGERPRINT,
-            root: "m/45'/1'/100'",
+            path: "m/45'/1'/100'",
           },
         );
       }).toThrow(/signing key details not included/i);

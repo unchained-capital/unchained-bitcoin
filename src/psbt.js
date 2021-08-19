@@ -261,7 +261,7 @@ export function psbtOutputFormatter(output) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {String} addressType - address type
  * @param {String} psbt - PSBT as a base64 or hex string
- * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
  * @returns {null|Object} returns object with the format
  * {
  *    txInputs: [],
@@ -291,7 +291,7 @@ export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
     // to filter down to the fingerprint+pubkey+paths that we care about.
     // E.g. which pubkey(s) are we trying to sign for?
 
-    const bip32Derivation = dataInput.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.root) &&
+    const bip32Derivation = dataInput.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.path) &&
       b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
     );
 
