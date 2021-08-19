@@ -30,7 +30,7 @@ export function scriptToOps(multisig) {
  * Extracts the hex representation of a script from a `Multisig`
  * object.
  * 
- * @param {Multisig} script - Multisig object
+ * @param {Multisig} multisigScript - Multisig object
  * @returns {string} hex representation of script
  * @example
  * import {
@@ -41,6 +41,6 @@ export function scriptToOps(multisig) {
  * console.log(scriptToHex(multisig)) // "5121024f355bdcb...5871aa52ae"
  * 
  */
-export function scriptToHex(script) {
-  return script.output.toString('hex');
+export function scriptToHex(multisigScript) {
+  return multisigScript.output.toString('hex');
 }

@@ -1,5 +1,6 @@
 import {
-  addSignaturesToPSBT, autoLoadPSBT,
+  addSignaturesToPSBT,
+  autoLoadPSBT,
   parseSignaturesFromPSBT,
   psbtInputFormatter,
   psbtOutputFormatter,
@@ -11,6 +12,7 @@ import {
 } from './fixtures';
 import {generateMultisigFromHex, generateMultisigFromPublicKeys} from './multisig';
 import {braidConfig} from './braid';
+import {P2WSH} from './p2wsh';
 
 const MULTISIGS = TEST_FIXTURES.multisigs;
 const TRANSACTIONS = TEST_FIXTURES.transactions;
@@ -49,6 +51,16 @@ describe("psbt", () => {
   });
 
   describe("translatePSBT", () => {
+    it("throws error with non-p2sh address type", () => {
+      expect(() => translatePSBT(tx.network,
+        P2WSH,
+        {},
+        {
+          xfp: ROOT_FINGERPRINT,
+          root: "m/45'/1'/100'",
+        })).toThrow(/Unsupported addressType/i);
+    })
+
     it(`returns the inputs/outputs translated from the psbt`, () => {
       const {
         txInputs,
@@ -71,9 +83,8 @@ describe("psbt", () => {
 
       // FIXME - this is specific to P2SH
       const expectedInputs = tx.inputs.map(
-          (input) => {
-            return {
-              amountSats: parseInt(input.amountSats),
+          (input) => ({
+              amountSats: input.value,
               index: input.index,
               transactionHex: input.transactionHex,
               txid: input.txid,
@@ -82,8 +93,7 @@ describe("psbt", () => {
                 tx.format,
                 ms.redeemScriptHex,
               ),
-            }
-          }
+            })
         )
       expect(txInputs).toEqual(expectedInputs);
 
@@ -91,12 +101,10 @@ describe("psbt", () => {
       // different set of data in the fixtures while the
       // returned data is translated from the PSBT itself.
       const expectedOutputs = tx.outputs.map(
-          output => {
-            return {
+          output => ({
               address: output.address,
               amountSats: output.value,
-            };
-          });
+            }));
 
       expect(txOutputs).toEqual(expectedOutputs);
 
@@ -124,7 +132,7 @@ describe("psbt", () => {
             root: "m/45'/1'/100'",
           },
         );
-      }).toThrow(/keyDetails not included/i);
+      }).toThrow(/signing key details not included/i);
     })
 
   });

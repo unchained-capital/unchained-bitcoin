@@ -53,7 +53,25 @@ import {networkData} from './networks';
  */
 
 export const PSBT_MAGIC_HEX = "70736274ff";
-export const PSBT_MAGIC_B64 = "cHNidP8"; 
+export const PSBT_MAGIC_B64 = "cHNidP8";
+
+/**
+ * Given a string, try to create a Psbt object based on MAGIC (hex or Base64)
+ * @param {String} psbtFromFile -  Base64 or hex PSBT
+ * @param {Object} [options] -  options, e.g. TESTNET
+ * @return {null|Psbt} - Psbt object from bitcoinjs-lib or null if failed to detect
+ */
+export function autoLoadPSBT(psbtFromFile, options) {
+  if (typeof psbtFromFile !== "string") return null;
+  // Auto-detect and decode Base64 and Hex.
+  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
+    return Psbt.fromHex(psbtFromFile, options);
+  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
+    return Psbt.fromBase64(psbtFromFile, options);
+  } else {
+    return null;
+  }
+}
 
 /**
  * Return the getBip32Derivation (if known) for a given `Multisig` object.
@@ -241,9 +259,9 @@ export function psbtOutputFormatter(output) {
  * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
  *
  * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
+ * @param {String} addressType - address type
  * @param {String} psbt - PSBT as a base64 or hex string
- * @param {Object} keyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32 prefix)
  * @returns {null|Object} returns object with the format
  * {
  *    txInputs: [],
@@ -251,7 +269,8 @@ export function psbtOutputFormatter(output) {
  *    bip32Derivations: [],
  * }
  */
-export function translatePSBT(network, addressType, psbt, keyDetails) {
+export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
+  if (addressType !== P2SH) throw new Error("Unsupported addressType -- only P2SH is supported right now");
   let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
   if (localPSBT === null) return null;
 
@@ -268,21 +287,19 @@ export function translatePSBT(network, addressType, psbt, keyDetails) {
     //      { masterFingerprint2, pubkey2, path2 },
     //      ...
     //    ]
-    // We need to use the information in the keyDetails object
+    // We need to use the information in the signingKeyDetails object
     // to filter down to the fingerprint+pubkey+paths that we care about.
-    // E.g. which key is trying to sign?
+    // E.g. which pubkey(s) are we trying to sign for?
 
-    const bip32Derivation = dataInput.bip32Derivation.filter((b32d) => {
-      if (b32d.path.startsWith(keyDetails.root)
-        && b32d.masterFingerprint.toString('hex') === keyDetails.xfp)
-        return b32d
-    });
+    const bip32Derivation = dataInput.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.root) &&
+      b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
+    );
 
     if (!bip32Derivation.length) {
-      throw new Error("keyDetails not included in PSBT");
+      throw new Error("Signing key details not included in PSBT");
     }
-
     bip32Derivations.push(bip32Derivation[0]);
+
     // FIXME - this is where we're currently only handling P2SH correctly
     const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
     const fundingTx = Transaction.fromHex(fundingTxHex);
@@ -296,12 +313,10 @@ export function translatePSBT(network, addressType, psbt, keyDetails) {
       multisig,
     }
   });
-  let txOutputs = localPSBT.txOutputs.map(output => {
-    return {
+  let txOutputs = localPSBT.txOutputs.map(output => ({
       address: output.address,
       amountSats: output.value,
-    }
-  });
+    }));
 
   return {
     txInputs,
@@ -324,7 +339,7 @@ export function translatePSBT(network, addressType, psbt, keyDetails) {
  * @return {Object} - validated PSBT Object with an added signature for given input
  * @private
  */
-function _addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
+function addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
   const partialSig = [
     {
       pubkey,
@@ -332,8 +347,7 @@ function _addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
     }
   ]
   psbt.data.updateInput(inputIndex, {partialSig})
-  if (!psbt.validateSignaturesOfInput(inputIndex, pubkey))
-    throw new Error("One or more invalid signatures.");
+  if (!psbt.validateSignaturesOfInput(inputIndex, pubkey)) throw new Error("One or more invalid signatures.");
   return psbt;
 }
 
@@ -358,11 +372,12 @@ export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
 
   signatures.forEach((sig, idx) => {
     const pubkey = pubkeys[idx];
-      psbtWithSignatures = _addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
+      psbtWithSignatures = addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
   }
   )
   return psbtWithSignatures.toBase64();
 }
+
 /**
  * Extracts the signature(s) from a PSBT.
  * NOTE: there should be one signature per input, per signer.
@@ -386,11 +401,6 @@ export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
 export function parseSignaturesFromPSBT(psbtFromFile) {
   let psbt = autoLoadPSBT(psbtFromFile);
   if (psbt === null) return null;
-
-  // this is only if you are providing a "FULLY SIGNED" PSBT
-  // if (!psbt.validateSignaturesOfAllInputs()) {
-  //   return null;
-  // }
 
   const partialSignatures = (
     psbt &&
@@ -420,22 +430,4 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
     return null;
   }
   return signatureSet;
-}
-
-/**
- * Given a string, try to create a Psbt object based on MAGIC (hex or Base64)
- * @param {String} psbtFromFile -  Base64 or hex PSBT
- * @param {Object} [options] -  options, e.g. TESTNET
- * @return {null|Psbt}
- */
-export function autoLoadPSBT(psbtFromFile, options=null) {
-  if (typeof psbtFromFile !== "string") return null;
-  // Auto-detect and decode Base64 and Hex.
-  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
-    return Psbt.fromHex(psbtFromFile, options);
-  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
-    return Psbt.fromBase64(psbtFromFile, options);
-  } else {
-    return null;
-  }
 }
