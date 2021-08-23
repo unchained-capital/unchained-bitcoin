@@ -346,12 +346,12 @@ export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
 
   // The shape of these return objects are specific to existing code
   // in unchained-wallets for signing with Trezor and Ledger devices.
-  const inputs = getUnchainedInputsFromPSBT(network, addressType, localPSBT);
-  const outputs = getUnchainedOutputsFromPSBT(localPSBT);
+  const unchainedInputs = getUnchainedInputsFromPSBT(network, addressType, localPSBT);
+  const unchainedOutputs = getUnchainedOutputsFromPSBT(localPSBT);
 
   return {
-    inputs,
-    outputs,
+    unchainedInputs,
+    unchainedOutputs,
     bip32Derivations,
   }
 }

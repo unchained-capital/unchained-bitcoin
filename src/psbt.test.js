@@ -63,8 +63,8 @@ describe("psbt", () => {
 
     it(`returns the inputs/outputs translated from the psbt`, () => {
       const {
-        inputs,
-        outputs,
+        unchainedInputs,
+        unchainedOutputs,
         bip32Derivations
       } = translatePSBT(
             tx.network,
@@ -95,7 +95,7 @@ describe("psbt", () => {
               ),
             })
         )
-      expect(inputs).toEqual(expectedInputs);
+      expect(unchainedInputs).toEqual(expectedInputs);
 
       // Same as above, building expected object from a
       // different set of data in the fixtures while the
@@ -106,7 +106,7 @@ describe("psbt", () => {
               amountSats: output.value,
             }));
 
-      expect(outputs).toEqual(expectedOutputs);
+      expect(unchainedOutputs).toEqual(expectedOutputs);
 
       expect(bip32Derivations.map(b32d => b32d.path)).toEqual(tx.bip32Paths);
     });
