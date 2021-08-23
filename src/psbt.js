@@ -253,52 +253,16 @@ export function psbtOutputFormatter(output) {
 }
 
 /**
- * Translates a PSBT into inputs/outputs consumable by non-PSBT devices in the
- * `unchained-wallets` library.
- *
- * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
+ * Create unchained-wallets style transaction input objects from a PSBT
  *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {String} addressType - address type
- * @param {String} psbt - PSBT as a base64 or hex string
- * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
- * @returns {null|Object} returns object with the format
- * {
- *    txInputs: [],
- *    txOutputs: [],
- *    bip32Derivations: [],
- * }
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @return {Object[]} unchained multisig transaction inputs array
  */
-export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
-  if (addressType !== P2SH) throw new Error("Unsupported addressType -- only P2SH is supported right now");
-  let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
-  if (localPSBT === null) return null;
-
-  let bip32Derivations = [];
-  // To provide the non-PSBT wallet with the proper info, we actually
-  // need to grab some info from the "data inputs" and some other
-  // information from the "transaction inputs".
-  let txInputs = localPSBT.txInputs.map((input, index) => {
-    const dataInput = localPSBT.data.inputs[index];
-    // The bip32Derivation hanging off of the dataInput contains
-    // an array of objects like:
-    //    [
-    //      { masterFingerprint1, pubkey1, path1 },
-    //      { masterFingerprint2, pubkey2, path2 },
-    //      ...
-    //    ]
-    // We need to use the information in the signingKeyDetails object
-    // to filter down to the fingerprint+pubkey+paths that we care about.
-    // E.g. which pubkey(s) are we trying to sign for?
-
-    const bip32Derivation = dataInput.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.path) &&
-      b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
-    );
-
-    if (!bip32Derivation.length) {
-      throw new Error("Signing key details not included in PSBT");
-    }
-    bip32Derivations.push(bip32Derivation[0]);
+function getUnchainedInputsFromPSBT(network, addressType, psbt) {
+  return psbt.txInputs.map((input, index) => {
+    const dataInput = psbt.data.inputs[index];
 
     // FIXME - this is where we're currently only handling P2SH correctly
     const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
@@ -313,15 +277,82 @@ export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
       multisig,
     }
   });
-  let txOutputs = localPSBT.txOutputs.map(output => ({
-      address: output.address,
-      amountSats: output.value,
-    }));
+}
+
+/**
+ * Create unchained-wallets style transaction output objects from a PSBT
+ *
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @return {Object[]} unchained multisig transaction outputs array
+ */
+function getUnchainedOutputsFromPSBT(psbt) {
+  return psbt.txOutputs.map(output => ({
+    address: output.address,
+    amountSats: output.value,
+  }));
+}
+
+/**
+ * Create unchained-wallets style transaction input objects
+ *
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
+ * @return {Object[]} bip32Derivations - array of signing bip32Derivation objects
+ */
+function filterRelevantBip32Derivations(psbt, signingKeyDetails) {
+  return psbt.data.inputs.map(input => {
+    const bip32Derivation = input.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.path) &&
+      b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
+    );
+
+    if (!bip32Derivation.length) {
+      throw new Error("Signing key details not included in PSBT");
+    }
+    return bip32Derivation[0];
+  })
+}
+
+/**
+ * Translates a PSBT into inputs/outputs consumable by supported non-PSBT devices in the
+ * `unchained-wallets` library.
+ *
+ * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {String} addressType - address type
+ * @param {String} psbt - PSBT as a base64 or hex string
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
+ * @returns {null|Object} returns unchained-wallets transaction object with the format
+ * {
+ *    inputs: [],
+ *    outputs: [],
+ *    bip32Derivations: [],
+ * }
+ */
+export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
+  if (addressType !== P2SH) throw new Error("Unsupported addressType -- only P2SH is supported right now");
+  let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (localPSBT === null) return null;
+
+  // The information we need to provide proper unchained-wallets style objects to the supported
+  // non-PSBT devices, we need to grab info from different places from within the PSBT.
+  //    1. the "data inputs"
+  //    2. the "transaction inputs"
+  //
+  // We'll do that in the functions below.
+
+  // First, we check that we actually do have any inputs to sign:
+  const bip32Derivations = filterRelevantBip32Derivations(localPSBT, signingKeyDetails);
+
+  // The shape of these return objects are specific to existing code
+  // in unchained-wallets for signing with Trezor and Ledger devices.
+  const inputs = getUnchainedInputsFromPSBT(network, addressType, localPSBT);
+  const outputs = getUnchainedOutputsFromPSBT(localPSBT);
 
   return {
-    txInputs,
-    txOutputs,
-    bip32Derivations
+    inputs,
+    outputs,
+    bip32Derivations,
   }
 }
 
