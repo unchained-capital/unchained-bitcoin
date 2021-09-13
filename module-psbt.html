@@ -88,7 +88,7 @@ https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line16">line 16</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -138,6 +138,451 @@ https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki</p></div>
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".addSignaturesToPSBT"><span class="type-signature">(static) </span>addSignaturesToPSBT<span class="signature">(network, psbt, pubkeys, signatures)</span><span class="type-signature"> &rarr; {null|string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Given an unsigned PSBT, an array of signing public key(s) (one per input),
+an array of signature(s) (one per input) in the same order as the pubkey(s),
+adds partial signature object(s) to each input and returns the PSBT with
+partial signature(s) included.</p>
+<p>FIXME - maybe we add functionality of sending in a single pubkey as well,
+which would assume all of the signature(s) are for that pubkey.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>PSBT as base64 or hex string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pubkeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Buffer></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>public keys map 1:1 with signature(s)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>signatures</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Buffer></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>transaction signatures map 1:1 with public key(s)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line400">line 400</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>partially signed PSBT in Base64</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">null</span>
+|
+
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".autoLoadPSBT"><span class="type-signature">(static) </span>autoLoadPSBT<span class="signature">(psbtFromFile, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {null|Psbt}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Given a string, try to create a Psbt object based on MAGIC (hex or Base64)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>psbtFromFile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Base64 or hex PSBT</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>options, e.g. TESTNET</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Psbt object from bitcoinjs-lib or null if failed to detect</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">null</span>
+|
+
+<span class="param-type">Psbt</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
 
         
             
@@ -256,7 +701,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line254">line 254</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line432">line 432</a>
     </li></ul></dd>
     
 
@@ -416,7 +861,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line168">line 168</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line189">line 189</a>
     </li></ul></dd>
     
 
@@ -575,7 +1020,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line206">line 206</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line227">line 227</a>
     </li></ul></dd>
     
 
@@ -616,6 +1061,426 @@ could be used in more than one address, everything would still function properly
     <dd>
         
 <span class="param-type"><a href="module-outputs.html#.TransactionPSBTOutput">module:outputs.TransactionPSBTOutput</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".translatePSBT"><span class="type-signature">(static) </span>translatePSBT<span class="signature">(network, addressType, psbt, signingKeyDetails)</span><span class="type-signature"> &rarr; {null|Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Translates a PSBT into inputs/outputs consumable by supported non-PSBT devices in the
+<code>unchained-wallets</code> library.</p>
+<p>FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>addressType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>address type</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>PSBT as a base64 or hex string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>signingKeyDetails</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing signing key details (Fingerprint + bip32path prefix)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line332">line 332</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns unchained-wallets transaction object with the format
+{
+inputs: [],
+outputs: [],
+bip32Derivations: [],
+}</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">null</span>
+|
+
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~filterRelevantBip32Derivations"><span class="type-signature">(inner) </span>filterRelevantBip32Derivations<span class="signature">(psbt, signingKeyDetails)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Create unchained-wallets style transaction input objects</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Psbt bitcoinjs-lib object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>signingKeyDetails</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing signing key details (Fingerprint + bip32path prefix)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line302">line 302</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>bip32Derivations - array of signing bip32Derivation objects</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Object></span>
 
 
     </dd>
@@ -789,7 +1654,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line79">line 79</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -858,6 +1723,370 @@ console.log(getBip32Derivation(multisig, 0)); // {
   {masterFingerprint: Buffer('3453..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("03...", 'hex')}
   {masterFingerprint: Buffer('1533..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("02...", 'hex')}
 }</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~getUnchainedInputsFromPSBT"><span class="type-signature">(inner) </span>getUnchainedInputsFromPSBT<span class="signature">(network, addressType, psbt)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Create unchained-wallets style transaction input objects from a PSBT</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>network</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoin network</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>addressType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>address type</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Psbt bitcoinjs-lib object</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line263">line 263</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>unchained multisig transaction inputs array</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~getUnchainedOutputsFromPSBT"><span class="type-signature">(inner) </span>getUnchainedOutputsFromPSBT<span class="signature">(psbt)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Create unchained-wallets style transaction output objects from a PSBT</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Psbt bitcoinjs-lib object</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line288">line 288</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>unchained multisig transaction outputs array</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
 
 
 
@@ -968,7 +2197,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line124">line 124</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line145">line 145</a>
     </li></ul></dd>
     
 
@@ -1127,7 +2356,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line102">line 102</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -1286,7 +2515,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line142">line 142</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line163">line 163</a>
     </li></ul></dd>
     
 
@@ -1445,7 +2674,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line115">line 115</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -1519,7 +2748,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Aug 24 2021 17:07:48 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Sep 13 2021 16:17:48 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>

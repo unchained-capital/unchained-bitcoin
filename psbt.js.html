@@ -27,8 +27,10 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import {Psbt, Transaction} from "bitcoinjs-lib";
+import { reverseBuffer } from 'bitcoinjs-lib/src/bufferutils';
 import {toHexString} from './utils';
 import {
+  generateMultisigFromHex,
   multisigAddressType,
   multisigBraidDetails,
   multisigRedeemScript,
@@ -40,6 +42,7 @@ import {P2SH} from './p2sh';
 import {P2WSH} from './p2wsh';
 import {P2SH_P2WSH} from './p2sh_p2wsh';
 import {generateBip32DerivationByIndex, generateBraid} from './braid';
+import {networkData} from './networks';
 
 /**
  * This module provides functions for interacting with PSBTs, see BIP174
@@ -78,7 +81,25 @@ import {generateBip32DerivationByIndex, generateBraid} from './braid';
  */
 
 export const PSBT_MAGIC_HEX = "70736274ff";
-export const PSBT_MAGIC_B64 = "cHNidP8"; 
+export const PSBT_MAGIC_B64 = "cHNidP8";
+
+/**
+ * Given a string, try to create a Psbt object based on MAGIC (hex or Base64)
+ * @param {String} psbtFromFile -  Base64 or hex PSBT
+ * @param {Object} [options] -  options, e.g. TESTNET
+ * @return {null|Psbt} - Psbt object from bitcoinjs-lib or null if failed to detect
+ */
+export function autoLoadPSBT(psbtFromFile, options) {
+  if (typeof psbtFromFile !== "string") return null;
+  // Auto-detect and decode Base64 and Hex.
+  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
+    return Psbt.fromHex(psbtFromFile, options);
+  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
+    return Psbt.fromBase64(psbtFromFile, options);
+  } else {
+    return null;
+  }
+}
 
 /**
  * Return the getBip32Derivation (if known) for a given `Multisig` object.
@@ -260,6 +281,163 @@ export function psbtOutputFormatter(output) {
 }
 
 /**
+ * Create unchained-wallets style transaction input objects from a PSBT
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {String} addressType - address type
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @return {Object[]} unchained multisig transaction inputs array
+ */
+function getUnchainedInputsFromPSBT(network, addressType, psbt) {
+  return psbt.txInputs.map((input, index) => {
+    const dataInput = psbt.data.inputs[index];
+
+    // FIXME - this is where we're currently only handling P2SH correctly
+    const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
+    const fundingTx = Transaction.fromHex(fundingTxHex);
+    const multisig = generateMultisigFromHex(network, addressType, dataInput.redeemScript.toString('hex'));
+
+    return {
+      amountSats: fundingTx.outs[input.index].value,
+      index: input.index,
+      transactionHex: fundingTxHex,
+      txid: reverseBuffer(input.hash).toString('hex'),
+      multisig,
+    }
+  });
+}
+
+/**
+ * Create unchained-wallets style transaction output objects from a PSBT
+ *
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @return {Object[]} unchained multisig transaction outputs array
+ */
+function getUnchainedOutputsFromPSBT(psbt) {
+  return psbt.txOutputs.map(output => ({
+    address: output.address,
+    amountSats: output.value,
+  }));
+}
+
+/**
+ * Create unchained-wallets style transaction input objects
+ *
+ * @param {Object} psbt - Psbt bitcoinjs-lib object
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
+ * @return {Object[]} bip32Derivations - array of signing bip32Derivation objects
+ */
+function filterRelevantBip32Derivations(psbt, signingKeyDetails) {
+  return psbt.data.inputs.map(input => {
+    const bip32Derivation = input.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.path) &amp;&amp;
+      b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
+    );
+
+    if (!bip32Derivation.length) {
+      throw new Error("Signing key details not included in PSBT");
+    }
+    return bip32Derivation[0];
+  })
+}
+
+/**
+ * Translates a PSBT into inputs/outputs consumable by supported non-PSBT devices in the
+ * `unchained-wallets` library.
+ *
+ * FIXME - Have only confirmed this is working for P2SH addresses on Ledger on regtest
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {String} addressType - address type
+ * @param {String} psbt - PSBT as a base64 or hex string
+ * @param {Object} signingKeyDetails - Object containing signing key details (Fingerprint + bip32path prefix)
+ * @returns {null|Object} returns unchained-wallets transaction object with the format
+ * {
+ *    inputs: [],
+ *    outputs: [],
+ *    bip32Derivations: [],
+ * }
+ */
+export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
+  if (addressType !== P2SH) throw new Error("Unsupported addressType -- only P2SH is supported right now");
+  let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (localPSBT === null) return null;
+
+  // The information we need to provide proper unchained-wallets style objects to the supported
+  // non-PSBT devices, we need to grab info from different places from within the PSBT.
+  //    1. the "data inputs"
+  //    2. the "transaction inputs"
+  //
+  // We'll do that in the functions below.
+
+  // First, we check that we actually do have any inputs to sign:
+  const bip32Derivations = filterRelevantBip32Derivations(localPSBT, signingKeyDetails);
+
+  // The shape of these return objects are specific to existing code
+  // in unchained-wallets for signing with Trezor and Ledger devices.
+  const unchainedInputs = getUnchainedInputsFromPSBT(network, addressType, localPSBT);
+  const unchainedOutputs = getUnchainedOutputsFromPSBT(localPSBT);
+
+  return {
+    unchainedInputs,
+    unchainedOutputs,
+    bip32Derivations,
+  }
+}
+
+/**
+ * Given a PSBT, an input index, a pubkey, and a signature,
+ * update the input inside the PSBT with a partial signature object.
+ *
+ * Make sure it validates, and then return the PSBT with the partial
+ * signature inside.
+ *
+ * @param {Object} psbt - Psbt Object from bitcoinjs-lib (unsigned or partially signed)
+ * @param {number} inputIndex - which input is this signature for
+ * @param {Buffer} pubkey - public key associated with signature
+ * @param {Buffer} signature - signature of transaction for pubkey
+ * @return {Object} - validated PSBT Object with an added signature for given input
+ * @private
+ */
+function addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
+  const partialSig = [
+    {
+      pubkey,
+      signature,
+    }
+  ]
+  psbt.data.updateInput(inputIndex, {partialSig})
+  if (!psbt.validateSignaturesOfInput(inputIndex, pubkey)) throw new Error("One or more invalid signatures.");
+  return psbt;
+}
+
+/**
+ * Given an unsigned PSBT, an array of signing public key(s) (one per input),
+ * an array of signature(s) (one per input) in the same order as the pubkey(s),
+ * adds partial signature object(s) to each input and returns the PSBT with
+ * partial signature(s) included.
+ *
+ * FIXME - maybe we add functionality of sending in a single pubkey as well,
+ *         which would assume all of the signature(s) are for that pubkey.
+ *
+ * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {String} psbt - PSBT as base64 or hex string
+ * @param {Buffer[]} pubkeys - public keys map 1:1 with signature(s)
+ * @param {Buffer[]} signatures - transaction signatures map 1:1 with public key(s)
+ * @return {null|string} - partially signed PSBT in Base64
+ */
+export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
+  let psbtWithSignatures = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (psbtWithSignatures === null) return null;
+
+  signatures.forEach((sig, idx) => {
+    const pubkey = pubkeys[idx];
+      psbtWithSignatures = addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
+  }
+  )
+  return psbtWithSignatures.toBase64();
+}
+
+/**
  * Extracts the signature(s) from a PSBT.
  * NOTE: there should be one signature per input, per signer.
  *
@@ -280,16 +458,8 @@ export function psbtOutputFormatter(output) {
  *
  */
 export function parseSignaturesFromPSBT(psbtFromFile) {
-  let psbt = {};
-
-  // Auto-detect and decode Base64 and Hex.
-  if (psbtFromFile.substring(0, 10) === PSBT_MAGIC_HEX) {
-    psbt = Psbt.fromHex(psbtFromFile);
-  } else if (psbtFromFile.substring(0, 7) === PSBT_MAGIC_B64) {
-    psbt = Psbt.fromBase64(psbtFromFile);
-  } else {
-    return null;
-  }
+  let psbt = autoLoadPSBT(psbtFromFile);
+  if (psbt === null) return null;
 
   const partialSignatures = (
     psbt &amp;&amp;
@@ -336,7 +506,7 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Aug 24 2021 17:07:48 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Sep 13 2021 16:17:48 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>
