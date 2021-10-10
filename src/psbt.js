@@ -433,6 +433,10 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   let psbt = autoLoadPSBT(psbtFromFile);
   if (psbt === null) return null;
 
+  if (!psbt.validateSignaturesOfAllInputs()) {
+    return null;
+  }
+
   const partialSignatures = (
     psbt &&
     psbt.data &&
