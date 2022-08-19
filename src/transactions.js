@@ -107,38 +107,39 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const globalXpubs = [];
+  const allExtendedPublicKeysFoundSoFar = [];
   const psbtInputs = inputs.forEach((input) => {
     const formattedInput = psbtInputFormatter({...input});
     psbt.addInput(formattedInput);
-
-    // FIXME -- input.bip32Derivation seems like it contains
-    // masterFingerprint, path, and pubkey, NOT extendedPubkey as
-    // required by the spec for globalXpub
     const braidDetails = input.multisig.braidDetails;
     if (braidDetails && includeGlobalXpubs) {
       const braid = Braid.fromData(JSON.parse(braidDetails));
       braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
-        //   extendedPubkey: Buffer,
-        //   masterFingerprint: Buffer,
-        //   path: string,
         const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
-        const globalXpub = {
-          extendedPubkey: extendedPublicKey.encode(),
-          masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
-          path: extendedPublicKey.path,
-        };
 
-        // FIXME how does include work even?
-        if (!globalXpubs.includes(globalXpub)) {
-          globalXpubs.push(globalXpub);
+        const alreadyFound = allExtendedPublicKeysFoundSoFar.find((existingExtendedPublicKey) => {
+          return existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58();
+        });
+
+        if (!alreadyFound) {
+          allExtendedPublicKeysFoundSoFar.push(extendedPublicKey);
         }
       });
     }
   });
-  if (includeGlobalXpubs && globalXpubs.length > 0) {
-    psbt.updateGlobal({globalXpubs});
+
+  if (includeGlobalXpubs && allExtendedPublicKeysFoundSoFar.length > 0) {
+    const globalXpubs = allExtendedPublicKeysFoundSoFar.map(extendedPublicKey => {
+      const globalXpub = {
+        extendedPubkey: extendedPublicKey.encode(),
+        masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
+        path: extendedPublicKey.path,
+      };
+      return globalXpub;
+    });
+    psbt.updateGlobal({globalXpub: globalXpubs});
   }
+
 
   const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
   psbt.addOutputs(psbtOutputs);
