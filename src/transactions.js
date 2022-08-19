@@ -29,6 +29,8 @@ import {
 import {validateOutputs} from "./outputs";
 import {scriptToHex} from './script';
 import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
+import {Braid} from "./braid";
+import {ExtendedPublicKey} from "./keys";
 
 
 /**
@@ -96,7 +98,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
  * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
-export function unsignedMultisigPSBT(network, inputs, outputs) {
+export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpubs=false) {
   const multisigInputError = validateMultisigInputs(inputs, true);
   assert(!multisigInputError.length, multisigInputError);
   const multisigOutputError = validateOutputs(network, outputs);
@@ -105,11 +107,43 @@ export function unsignedMultisigPSBT(network, inputs, outputs) {
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const psbtInputs = inputs.map((input) => psbtInputFormatter({...input}));
-  psbt.addInputs(psbtInputs);
+  const globalXpubs = [];
+  const psbtInputs = inputs.forEach((input) => {
+    const formattedInput = psbtInputFormatter({...input});
+    psbt.addInput(formattedInput);
+
+    // FIXME -- input.bip32Derivation seems like it contains
+    // masterFingerprint, path, and pubkey, NOT extendedPubkey as
+    // required by the spec for globalXpub
+    const braidDetails = input.multisig.braidDetails;
+    if (braidDetails && includeGlobalXpubs) {
+      const braid = Braid.fromData(JSON.parse(braidDetails));
+      braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
+        //   extendedPubkey: Buffer,
+        //   masterFingerprint: Buffer,
+        //   path: string,
+        const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
+        const globalXpub = {
+          extendedPubkey: extendedPublicKey.encode(),
+          masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
+          path: extendedPublicKey.path,
+        };
+
+        // FIXME how does include work even?
+        if (!globalXpubs.includes(globalXpub)) {
+          globalXpubs.push(globalXpub);
+        }
+      });
+    }
+  });
+  if (includeGlobalXpubs && globalXpubs.length > 0) {
+    psbt.updateGlobal({globalXpubs});
+  }
+
   const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
   psbt.addOutputs(psbtOutputs);
   psbt.txn = psbt.data.globalMap.unsignedTx.tx.toHex();
+  
   return psbt;
 }
 
