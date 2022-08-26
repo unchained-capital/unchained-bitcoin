@@ -462,3 +462,36 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   }
   return signatureSet;
 }
+
+
+/**
+ * Extracts signatures in order of inputs and returns as array
+ *
+  * @param {String} psbtFromFile -  base64 or hex
+ * @returns {Object} returns an array of arrays of ordered signatures
+ *
+ */
+export function parseSignatureArrayFromPSBT(psbtFromFile) {
+  let psbt = autoLoadPSBT(psbtFromFile);
+  if (psbt === null) return null;
+
+  const partialSignatures = (
+    psbt &&
+    psbt.data &&
+    psbt.data.inputs &&
+    psbt.data.inputs[0]
+  ) ? psbt.data.inputs[0].partialSig : undefined;
+  const numSigners = partialSignatures === undefined ? 0 : partialSignatures.length;
+  const signatureArrays =Array.from(Array(numSigners).fill([]));
+  const {inputs} = psbt.data;
+  if (numSigners >= 1) {
+    for (let i = 0; i < inputs.length; i += 1) {
+      for (let j = 0; j < numSigners; j += 1) {
+        signatureArrays[j].push(inputs[i].partialSig[j].signature.toString("hex"));
+      }
+    }
+  } else {
+    return null;
+  }
+  return numSigners === 1 ? signatureArrays[0] : signatureArrays;
+}
