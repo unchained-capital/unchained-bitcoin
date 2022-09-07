@@ -96,6 +96,7 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs : NOTE - must be braid-aware
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
+ * @param {Boolean} includeGlobalXpubs - include global xpub objects in the PSBT?
  * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
 export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpubs=false) {
@@ -108,7 +109,8 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
   const allExtendedPublicKeysFoundSoFar = [];
-  const psbtInputs = inputs.forEach((input) => {
+
+  inputs.forEach((input) => {
     const formattedInput = psbtInputFormatter({...input});
     psbt.addInput(formattedInput);
     const braidDetails = input.multisig.braidDetails;
@@ -117,9 +119,8 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
       braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
         const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
 
-        const alreadyFound = allExtendedPublicKeysFoundSoFar.find((existingExtendedPublicKey) => {
-          return existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58();
-        });
+        const alreadyFound = allExtendedPublicKeysFoundSoFar.find(
+          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58());
 
         if (!alreadyFound) {
           allExtendedPublicKeysFoundSoFar.push(extendedPublicKey);
@@ -129,14 +130,12 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   });
 
   if (includeGlobalXpubs && allExtendedPublicKeysFoundSoFar.length > 0) {
-    const globalXpubs = allExtendedPublicKeysFoundSoFar.map(extendedPublicKey => {
-      const globalXpub = {
+    const globalXpubs = allExtendedPublicKeysFoundSoFar.map(extendedPublicKey => ({
         extendedPubkey: extendedPublicKey.encode(),
         masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
         path: extendedPublicKey.path,
-      };
-      return globalXpub;
-    });
+      })
+    );
     psbt.updateGlobal({globalXpub: globalXpubs});
   }
 
