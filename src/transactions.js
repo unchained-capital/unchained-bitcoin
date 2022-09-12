@@ -108,7 +108,7 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const allExtendedPublicKeysFoundSoFar = [];
+  const globalExtendedPublicKeys = [];
 
   inputs.forEach((input) => {
     const formattedInput = psbtInputFormatter({...input});
@@ -119,18 +119,19 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
       braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
         const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
 
-        const alreadyFound = allExtendedPublicKeysFoundSoFar.find(
-          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58());
+        const alreadyFound = globalExtendedPublicKeys.find(
+          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58()
+        );
 
         if (!alreadyFound) {
-          allExtendedPublicKeysFoundSoFar.push(extendedPublicKey);
+          globalExtendedPublicKeys.push(extendedPublicKey);
         }
       });
     }
   });
 
-  if (includeGlobalXpubs && allExtendedPublicKeysFoundSoFar.length > 0) {
-    const globalXpubs = allExtendedPublicKeysFoundSoFar.map(extendedPublicKey => ({
+  if (includeGlobalXpubs && globalExtendedPublicKeys.length > 0) {
+    const globalXpubs = globalExtendedPublicKeys.map(extendedPublicKey => ({
         extendedPubkey: extendedPublicKey.encode(),
         masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
         path: extendedPublicKey.path,
