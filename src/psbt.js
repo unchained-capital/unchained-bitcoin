@@ -410,6 +410,24 @@ export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
 }
 
 /**
+ * Get number of signers in the PSBT
+ *
+ * @param {Psbt} psbt - bitcoinjs-lib object
+ * @returns {int} number of signers in the PSBT
+ *
+ */
+
+function getNumSigners(psbt) {
+  const partialSignatures = (
+    psbt &&
+    psbt.data &&
+    psbt.data.inputs &&
+    psbt.data.inputs[0]
+  ) ? psbt.data.inputs[0].partialSig : undefined;
+  return partialSignatures === undefined ? 0 : partialSignatures.length;
+}
+
+/**
  * Extracts the signature(s) from a PSBT.
  * NOTE: there should be one signature per input, per signer.
  *
@@ -433,13 +451,7 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   let psbt = autoLoadPSBT(psbtFromFile);
   if (psbt === null) return null;
 
-  const partialSignatures = (
-    psbt &&
-    psbt.data &&
-    psbt.data.inputs &&
-    psbt.data.inputs[0]
-  ) ? psbt.data.inputs[0].partialSig : undefined;
-  const numSigners = partialSignatures === undefined ? 0 : partialSignatures.length;
+  const numSigners = getNumSigners(psbt);
 
   const signatureSet = {};
   let pubKey = '';
@@ -461,4 +473,35 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
     return null;
   }
   return signatureSet;
+}
+
+
+/**
+ * Extracts signatures in order of inputs and returns as array (or array of arrays if multiple signature sets)
+ *
+  * @param {String} psbtFromFile -  base64 or hex
+ * @returns {Object} returns an array of arrays of ordered signatures or an array of signatures if only 1 signer
+ *
+ */
+export function parseSignatureArrayFromPSBT(psbtFromFile) {
+  let psbt = autoLoadPSBT(psbtFromFile);
+  if (psbt === null) return null;
+
+  const numSigners = getNumSigners(psbt);
+
+  const signatureArrays = Array.from(Array(numSigners).fill().map(() => []));
+
+  const {inputs} = psbt.data;
+
+  if (numSigners >= 1) {
+    for (let i = 0; i < inputs.length; i += 1) {
+      for (let j = 0; j < numSigners; j += 1) {
+        let signature = inputs[i].partialSig[j].signature.toString("hex");
+        signatureArrays[j].push(signature)
+      }
+    }
+  } else {
+    return null;
+  }
+  return numSigners === 1 ? signatureArrays[0] : signatureArrays;
 }

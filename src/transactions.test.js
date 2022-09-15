@@ -72,6 +72,52 @@ describe("transactions", () => {
 
   });
 
+  describe("unsignedMultisigPSBT", () => {
+
+    describe("validating arguments", () => {
+      const fixture = TEST_FIXTURES.transactions[0];
+
+      it("throws an error when there are no inputs", () => {
+        expect(() => { unsignedMultisigPSBT(fixture.network, [], fixture.outputs); }).toThrow(/at least one input/i);
+      });
+
+      it("throws an error when there an input is invalid", () => {
+        expect(() => { unsignedMultisigPSBT(fixture.network, [{}], fixture.outputs); }).toThrow(/does not have.*txid/i);
+      });
+
+      it("throws an error when there are no outputs", () => {
+        expect(() => { unsignedMultisigPSBT(fixture.network, fixture.inputs, []); }).toThrow(/at least one output/i);
+      });
+
+      it("throws an error when there an output is invalid", () => {
+        expect(() => { unsignedMultisigPSBT(fixture.network, fixture.inputs, [{}]); }).toThrow(/does not have.*amount/i);
+      });
+
+    });
+
+
+    TEST_FIXTURES.transactions.forEach((fixture) => {
+      it(`can construct an unsigned multisig PSBT which ${fixture.description}`, () => {
+        if (fixture.psbt) {
+          const psbt = unsignedMultisigPSBT(fixture.network, fixture.inputs, fixture.outputs);
+          expect(fixture.psbt).toEqual(psbt.toBase64());
+        }
+      });
+    });
+
+    TEST_FIXTURES.transactions.forEach((fixture) => {
+      it(`can construct an unsigned multisig PSBT with global xpubs which ${fixture.description}`, () => {
+        if (fixture.psbt) {
+          const psbt = unsignedMultisigPSBT(fixture.network, fixture.inputs, fixture.outputs, true);
+
+          expect(fixture.psbt).not.toEqual(psbt.toBase64());
+          expect(fixture.psbtWithGlobalXpub).toEqual(psbt.toBase64());
+        }
+      });
+    });
+
+  });
+
   describe("signedMultisigTransaction", () => {
 
     const fixture = TEST_FIXTURES.transactions[0];
