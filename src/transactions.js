@@ -29,6 +29,8 @@ import {
 import {validateOutputs} from "./outputs";
 import {scriptToHex} from './script';
 import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
+import {Braid} from "./braid";
+import {ExtendedPublicKey} from "./keys";
 
 
 /**
@@ -94,9 +96,10 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs : NOTE - must be braid-aware
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
+ * @param {Boolean} includeGlobalXpubs - include global xpub objects in the PSBT?
  * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
-export function unsignedMultisigPSBT(network, inputs, outputs) {
+export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpubs=false) {
   const multisigInputError = validateMultisigInputs(inputs, true);
   assert(!multisigInputError.length, multisigInputError);
   const multisigOutputError = validateOutputs(network, outputs);
@@ -105,11 +108,43 @@ export function unsignedMultisigPSBT(network, inputs, outputs) {
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const psbtInputs = inputs.map((input) => psbtInputFormatter({...input}));
-  psbt.addInputs(psbtInputs);
+  const globalExtendedPublicKeys = [];
+
+  inputs.forEach((input) => {
+    const formattedInput = psbtInputFormatter({...input});
+    psbt.addInput(formattedInput);
+    const braidDetails = input.multisig.braidDetails;
+    if (braidDetails && includeGlobalXpubs) {
+      const braid = Braid.fromData(JSON.parse(braidDetails));
+      braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
+        const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
+
+        const alreadyFound = globalExtendedPublicKeys.find(
+          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58()
+        );
+
+        if (!alreadyFound) {
+          globalExtendedPublicKeys.push(extendedPublicKey);
+        }
+      });
+    }
+  });
+
+  if (includeGlobalXpubs && globalExtendedPublicKeys.length > 0) {
+    const globalXpubs = globalExtendedPublicKeys.map(extendedPublicKey => ({
+        extendedPubkey: extendedPublicKey.encode(),
+        masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
+        path: extendedPublicKey.path,
+      })
+    );
+    psbt.updateGlobal({globalXpub: globalXpubs});
+  }
+
+
   const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
   psbt.addOutputs(psbtOutputs);
   psbt.txn = psbt.data.globalMap.unsignedTx.tx.toHex();
+  
   return psbt;
 }
 
