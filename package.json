@@ -1,6 +1,6 @@
 {
   "name": "unchained-bitcoin",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Unchained Capital's bitcoin utilities library.",
   "main": "lib/index.js",
   "repository": {
@@ -13,6 +13,9 @@
     "url": "https://github.com/unchained-capital/unchained-bitcoin/issues"
   },
   "homepage": "https://unchained-capital.github.io/unchained-bitcoin",
+  "engines": {
+    "node": ">=16"
+  },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
     "@babel/core": "^7.7.2",
