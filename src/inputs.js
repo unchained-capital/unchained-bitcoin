@@ -1,7 +1,7 @@
-/** 
+/**
  * This module provides functions for sorting & validating multisig
  * transaction inputs.
- * 
+ *
  * @module inputs
  */
 
@@ -13,28 +13,28 @@ import {multisigBraidDetails} from './multisig';
  *
  * The [`Multisig`]{@link module:multisig.MULTISIG} object represents
  * the address the corresponding UTXO belongs to.
- * 
- * @typedef module:inputs.MultisigTransactionInput
+ *
+ * @typedef MultisigTransactionInput
  * @type {Object}
  * @property {string} txid - The transaction ID where funds were received
  * @property {number} index - The index in the transaction referred to by {txid}
  * @property {module:multisig.Multisig} multisig - The multisig object encumbering this UTXO
- * 
+ *
  */
 
 /**
  * Sorts the given inputs according to the [BIP69 standard]{@link https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki#transaction-inputs}: ascending lexicographic order.
- * 
+ *
  * @param {module:inputs.MultisigTransactionInput[]} inputs - inputs to sort
  * @returns {module:inputs.MultisigTransactionInput[]} inputs sorted according to BIP69
  */
 export function sortInputs(inputs) {
   return inputs.sort((input1, input2) => {
-    if (input1.txid > input2.txid) { 
-      return 1; 
+    if (input1.txid > input2.txid) {
+      return 1;
     } else {
-      if (input1.txid < input2.txid) { 
-        return -1; 
+      if (input1.txid < input2.txid) {
+        return -1;
       } else {
         return ((input1.index < input2.index) ? -1 : 1);
       }
@@ -85,7 +85,7 @@ export function validateMultisigInputs(inputs, braidRequired) {
  *
  * @param {module:inputs.MultisigTransactionInput} input - input to validate
  * @returns {string} empty if valid or corresponding validation message if not
- * 
+ *
  */
 export function validateMultisigInput(input) {
   if (!input.txid) {
@@ -111,7 +111,7 @@ const TXID_LENGTH = 64;
  *
  * @param {string} txid - transaction ID to validate
  * @returns {string} empty if valid or corresponding validation message if not
- * 
+ *
  */
 export function validateTransactionID(txid) {
   if (txid === null || txid === undefined || txid === '') {
@@ -132,7 +132,7 @@ export function validateTransactionID(txid) {
  *
  * @param {string|number} indexString - transaction index to validate
  * @returns {string} empty if valid or corresponding validation message if not
- * 
+ *
  */
 export function validateTransactionIndex(indexString) {
   if (indexString === null || indexString === undefined || indexString === '') {

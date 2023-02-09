@@ -29,7 +29,7 @@ import {networkData} from './networks';
  * The [`Multisig`]{@link module:multisig.MULTISIG} object represents
  * the address the corresponding UTXO belongs to.
  *
- * @typedef module:inputs.MultisigTransactionPSBTInput
+ * @typedef MultisigTransactionPSBTInput
  * @type {Object}
  * @property {string} hash - The transaction ID where funds were received
  * @property {number} index - The index in the transaction referred to by {txid}
@@ -42,7 +42,7 @@ import {networkData} from './networks';
 /**
  * Represents an output in a PSBT transaction.
  *
- * @typedef module:outputs.TransactionPSBTOutput
+ * @typedef TransactionPSBTOutput
  * @type {Object}
  * @property {string} address - the output address
  * @property {number} value - output amount in Satoshis
