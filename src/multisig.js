@@ -69,7 +69,7 @@ import {payments} from "bitcoinjs-lib";
  *
  * The remaining functions accept these objects as arguments.
  *
- * @typedef module:multisig.Multisig
+ * @typedef Multisig
  * @type {Object}
  * @property {string} address - The multisig address
  * @property {Object} redeem - the redeem object from p2ms

@@ -1306,7 +1306,7 @@ const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test),
  * -   `unchained` - unchained fixtures
  * -     `nodes` -- an object mapping BIP32 paths to the corresponding [HD node]{@link module:fixtures.HDNode} derived from unchained seed phrase (not shared).
  * - `multisigs` -- an array of [multisig addresses]{@link module:fixtures.MultisigAddress} derived from the HD nodes above.
- * - `braids` -- an array of [braids]{@link module:fixtures.Braid} derived from the open_source + unchained HD nodes above.
+ * - `braids` -- an array of [braids]{@link module.braid.Braid} derived from the open_source + unchained HD nodes above.
  * - `transactions` -- an array of [transactions]{@link module:fixtures.MultisigTransaction} from the multisig address above.
  *
  * @example
@@ -1349,33 +1349,20 @@ export const TEST_FIXTURES = {
  *
  * Not all HD node fixtures have all properties below.
  *
- * @typedef module:fixtures.HDNode
+ * @typedef HDNode
  * @type {Object}
  * @property {string} pub - the (compressed) public key in hex
  * @property {string} xpub - the extended public key formatted for mainnet
  * @property {string} tpub - the extended public key formatted for testnet
  */
 
-/**
- * A braid fixture including details to build the P2SH transaction
- *
- * The particular braid included has some additional fixtures for unit tests
- *
- * @typedef module:fixtures.Braid
- * @type {Object}
- * @property {string} options.network = mainnet - mainnet or testnet
- * @property {string} options.addressType P2SH, P2SH-P2WSH, P2WSH
- * @property {ExtendedPublicKey[]} options.extendedPublicKeys ExtendedPublicKeys that make up this braid
- * @property {number} requiredSigners - how many required signers in this braid
- * @property {string} options.index - One value, relative, to add on to all xpub absolute bip32paths (0=deposit, 1=change)
- */
 
 /**
  * A multisig address fixture.  At least one of the public
  * keys in the redeem/witness script for each address is derived from
  * the BIP39 seed phrase fixture.
  *
- * @typedef module:fixtures.MultisigAddress
+ * @typedef MultisigAddress
  * @type {Object}
  * @property {module:networks.NETWORKS} network - bitcoin network
  * @property {module:multisig.MULTISIG_ADDRESS_TYPES} type - multisig address type
@@ -1394,8 +1381,8 @@ export const TEST_FIXTURES = {
  * @property {string} scriptOps - script in opcodes
  * @property {module:multisig.Multisig} multisig - `Multisig` object for address
  * @property {module:transactions.UTXO[]} utxos - UTXOs at this address
- * @property {module:fixtures.Braid} braidDetails - details to construct the braid where this Multisig address resides
- * @property {module:fixtures.Braid} changeBraidDetails - details to construct the change braid where the Change Multisig address resides (if needed)
+ * @property {module.braid.Braid} braidDetails - details to construct the braid where this Multisig address resides
+ * @property {module.braid.Braid} changeBraidDetails - details to construct the change braid where the Change Multisig address resides (if needed)
  * @property {string} psbt - unsigned psbt of the Transaction
  * @property {string} psbtPartiallySigned - psbt that has a single set of signatures inside for the open source words
  *
@@ -1415,7 +1402,7 @@ export const TEST_FIXTURES = {
  * signature(s) required to spend them cannot be produced publicly
  * (their private keys are held by Unchained Capital).
  *
- * @typedef module:fixtures.MultisigTransaction
+ * @typedef MultisigTransaction
  * @type {Object}
  * @property {string} description - describes the transaction
  * @property {module:networks.NETWORKS} network - bitcoin network
