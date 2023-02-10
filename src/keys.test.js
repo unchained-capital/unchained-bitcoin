@@ -496,12 +496,12 @@ describe("keys", () => {
     it("encodes and decodes an extended public key", () => {
       const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0", null];
       for (const path of paths) {
-        const { 
-          parentFingerprint, 
-          chaincode, 
-          xpub, 
-          pub: pubkey, 
-          tpub, 
+        const {
+          parentFingerprint,
+          chaincode,
+          xpub,
+          pub: pubkey,
+          tpub,
           rootFingerprint,
           depth,
           index
