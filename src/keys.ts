@@ -79,7 +79,7 @@ export class ExtendedPublicKey extends Struct {
   depth?: number;
   chaincode?: string;
   pubkey?: string;
-  parentFingerprint?: string;
+  parentFingerprint?: number;
   network?: NETWORKS;
   version?: KeyVersion;
   rootFingerprint?: string;
@@ -573,7 +573,7 @@ export function extendedPublicKeyRootFingerprint(extendedPublicKey: Struct): str
  * @param {string} bip32Path e.g. m/45'/0'/0
  * @param {string} pubkey pubkey to derive from
  * @param {string} chaincode chaincode corresponding to pubkey and path
- * @param {string} parentFingerprint - fingerprint of parent public key
+ * @param {number} parentFingerprint - fingerprint of parent public key
  * @param {string} network - mainnet or testnet
  * @returns {string} base58 encoded extended public key (xpub or tpub)
  */
@@ -581,7 +581,7 @@ export function deriveExtendedPublicKey(
   bip32Path: string,
   pubkey: string,
   chaincode: string,
-  parentFingerprint: string,
+  parentFingerprint: number,
   network: string = MAINNET,
 ): string {
   const xpub = new ExtendedPublicKey({

@@ -199,6 +199,7 @@ const NODES = {
 
   "m/45'/1'/0'/0/0": {
     pub: "037226e92491b2cf9691152fc2e9a0a7cff8f9ab7ad1b24b6f6506d7c8bf18911b",
+    tpub: "tpubDFqzhdm1iDvKkHNwVMxFnWZjBX4m1QQK4qNELiux6RXteZdPidpymFeWFKm5koNvjTiwPZb4i456pW5JBymaCcKumuhN7DYLwX9wwGAJ71H",
     rootFingerprint: ROOT_FINGERPRINT,
   },
 
@@ -221,6 +222,7 @@ const NODES = {
 
   "m/48'/1'/0'/2'/0/0": {
     pub: "03ecf349ecf63fcd0ece9de7eb1abfb8f8b243fecc443bd62ef47744f0f6b7eef6",
+    tpub: "tpubDKVKJjFQrticLSSf77TWYmvFq6XTALifW1shoo4snhfh7YGhMHcsCB2WwvfAbQGQDJy8EwuD6kjfvYPqSxJptSKqZDvzxQFcpYy88iS85kd",
     rootFingerprint: ROOT_FINGERPRINT,
   },
 
