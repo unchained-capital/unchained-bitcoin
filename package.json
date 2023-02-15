@@ -41,13 +41,14 @@
     "typescript": "^4.1.3"
   },
   "scripts": {
-    "check-types": "tsc",
-    "check-types:watch": "tsc --watch",
+    "build-types": "tsc -p tsconfig.json",
+    "build-types:watch": "tsc --watch",
+    "check-types": "tsc -p tsconfig.json --noEmit --emitDeclarationOnly false",
     "compile": "babel --extensions .ts,.js -d lib/ src/",
     "compile:watch": "babel --watch -d lib/ src/",
     "coverage": "jest --coverage",
     "prepublish": "npm run compile",
-    "pretest": "npm run check-types && npm run compile",
+    "pretest": "npm run build-types && npm run compile",
     "prepare": "npm run compile && husky install",
     "test": "jest lib",
     "test:watch": "jest --watch src",
@@ -89,10 +90,5 @@
         }
       ]
     ]
-  },
-  "lint-staged": {
-    "*.{ts,js}": "eslint --cache --fix",
-    "*.{ts,js,css,md}": "prettier --write",
-    "src/*.ts?(x)": "tsc --noEmit --esModuleInterop"
   }
 }
