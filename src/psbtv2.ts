@@ -85,6 +85,7 @@ Global Constants
 const PSBT_MAGIC_BYTES = Buffer.from([0x70, 0x73, 0x62, 0x74, 0xff]);
 const PSBT_MAP_SEPARATOR = Buffer.from([0x00]);
 const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/ig;
+const BIP_32_HARDENING_OFFSET = 0x80000000;
 const ERROR_PSBT_NOT_VALID = Error("Not a valid psbt");
 
 
@@ -140,7 +141,7 @@ function getNonUniqueKeyTypeValues (
   }
   
   const map = maps;
-  let vals:{ key:string, value:string|null }[] = [];
+  const vals:{ key:string, value:string|null }[] = [];
 
   for (const key of map.keys()) {
     if (key.indexOf(keytype) === 0) {
@@ -190,7 +191,7 @@ function parseDerivationPathNodesToBytes (path:string):Buffer {
 
     if (node.indexOf('\'') > -1) {
       // Hardened node needs hardening
-      num += 0x80000000;
+      num += BIP_32_HARDENING_OFFSET;
     }
 
     bw.writeU32(num);
@@ -224,11 +225,11 @@ function serializeMap (map:Map<Key, Value>, bw:BufferWriter): void {
     // Add <keylen><keytype><keydata>
     const keyBuf = Buffer.from(key, 'hex');
     const keyLen = keyBuf.length;
-    bw.writeU8(keyLen);
+    bw.writeVarint(keyLen);
     bw.writeString(key, 'hex');
 
     // Add <valuelen><valuedata>
-    bw.writeU8(value.length);
+    bw.writeVarint(value.length);
     bw.writeBytes(value);
   });
 
@@ -247,7 +248,7 @@ export class PsbtV2 {
   constructor(psbt?:Buffer|string) {
     if (!psbt) {
       this.globalMap.set(
-        KeyType.PSBT_GLOBAL_VERSION, Buffer.from([ 0x02, 0x00, 0x00, 0x00])
+        KeyType.PSBT_GLOBAL_VERSION, Buffer.from([0x02, 0x00, 0x00, 0x00])
       );
       return;
     }
@@ -256,7 +257,6 @@ export class PsbtV2 {
     if (!br.readBytes(PSBT_MAGIC_BYTES.length, true).equals(PSBT_MAGIC_BYTES)) {
       throw ERROR_PSBT_NOT_VALID;
     }
-
     // Build globalMap
     while(readAndSetKeyPair(this.globalMap, br));
     if (
@@ -849,8 +849,8 @@ export class PsbtV2 {
   }
 
 
-  // Attempt to return a PsbtV2 by converting from a PsbtV0
-  static DeserializeFromV0 (psbt:string|Buffer):PsbtV2 {
+  // Attempt to return a PsbtV2 by converting from a PsbtV0 string or Buffer
+  static FromV0 (psbt:string|Buffer):PsbtV2 {
     const psbtv0Buf = bufferize(psbt);
     const psbtv0 = Psbt.fromBuffer(psbtv0Buf);
     const psbtv2 = new PsbtV2()
