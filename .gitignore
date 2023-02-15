@@ -7,6 +7,7 @@ tmp/
 # dependencies
 node_modules/
 .venv/
+.eslintcache
 
 # testing
 coverage/
@@ -19,3 +20,4 @@ lib/
 
 # misc
 .DS_Store
+.vscode
