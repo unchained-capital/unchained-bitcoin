@@ -1,5 +1,20 @@
+/**
+ * The PsbtV2 class is intended to represent an easily modifiable and
+ * serializable psbt of version 2 conforming to BIP0174. Getters exist for all
+ * BIP-defined keytypes. Very few setters and modifier methods exist. As they
+ * are added, they should enforce implied and documented rules and limitations.
+ * 
+ * Defining BIPs:
+ * https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki
+ * https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki
+ */
+
 import { BufferReader, BufferWriter } from 'bufio';
 import { Psbt } from 'bitcoinjs-lib';
+
+import { validateHex, validBase64 } from './utils';
+import { validateBIP32Path } from './paths';
+import { PSBT_MAGIC_BYTES } from './psbt.js';
 
 
 /* 
@@ -17,6 +32,8 @@ type Key = string;
 // Buffers so that getters can decide how they should be formatted.
 type Value = Buffer
 
+
+type NonUniqueKeyTypeValue = { key:string, value:string|null };
 
 // These keytypes are hex bytes, but here they are used as string enums to
 // assist in Map lookups. See type Key above for more info.
@@ -82,7 +99,6 @@ enum PsbtGlobalTxModifiableBits {
 Global Constants
  */
 
-const PSBT_MAGIC_BYTES = Buffer.from([0x70, 0x73, 0x62, 0x74, 0xff]);
 const PSBT_MAP_SEPARATOR = Buffer.from([0x00]);
 const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/ig;
 const BIP_32_HARDENING_OFFSET = 0x80000000;
@@ -95,24 +111,21 @@ Helper Functions
 
 // Return psbt as Buffer.
 function bufferize (psbt:string|Buffer):Buffer {
-  let buf:Buffer|undefined;
-
   if (Buffer.isBuffer(psbt)) {
-    buf = psbt;
-  } else if (typeof psbt === 'string' && (/^([0-9A-Fa-f][0-9A-Fa-f])+$/).test(psbt)) {
-    // Is a hex string
-    buf = Buffer.from(psbt, 'hex');
-  } else if (
-    typeof psbt === 'string' && 
-    (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/).test(psbt)
-  ) {
-    // Is a base64 string
-    buf = Buffer.from(psbt, 'base64');
-  } else {
-    throw ERROR_PSBT_NOT_VALID;
+    return psbt;
   }
 
-  return buf;
+  if (typeof psbt === 'string') {    
+    if (validateHex(psbt) === '') {
+      return Buffer.from(psbt, 'hex');
+    }
+
+    if (validBase64(psbt)) {
+      return Buffer.from(psbt, 'base64');
+    }
+  }
+
+  throw ERROR_PSBT_NOT_VALID
 }
 
 
@@ -128,66 +141,54 @@ function getNonUniqueKeyTypeValues (
   if (Array.isArray(maps)) {
     // It's a set of input or output maps, so recursively check each map and set
     // values.
-    const values:({ key:string, value:string|null})[][] = [];
-
-    for (const map of maps) {
-      values.push(
-        // There is probably a better way to type this
-        getNonUniqueKeyTypeValues(map, keytype) as { key:string, value:string|null }[]
-      );
-    }
+    const values:(NonUniqueKeyTypeValue)[][] = maps.map(map => (
+      // TODO: Figure out a better way to type this
+      getNonUniqueKeyTypeValues(map, keytype) as NonUniqueKeyTypeValue[]
+    ));
 
     return values;
   }
   
-  const map = maps;
-  const vals:{ key:string, value:string|null }[] = [];
+  const map = maps; // Not an array
+  const values:NonUniqueKeyTypeValue[] = [];
 
-  for (const key of map.keys()) {
-    if (key.indexOf(keytype) === 0) {
-      const value = map.get(key)?.toString('hex') || null;
-      vals.push({ key, value });
+  for (const [key, value] of map.entries()) {
+    if (key.startsWith(keytype)) {
+      values.push({ key, value: value?.toString('hex') || null });
     }
   }
 
-  return vals;
+  return values;
 }
 
 
 // A getter helper for optional keytypes which returns lists of values as hex
 // strings.
 function getOptionalMappedBytesAsHex (maps:Map<Key, Value>[], keytype:KeyType) {
-  const bytes:(string|null)[] = [];
-
-  for (const map of maps) {
-    bytes.push(map.get(keytype)?.toString('hex') ?? null);
-  }
-
-  return bytes;
+  return  maps.map(map => map.get(keytype)?.toString('hex') ?? null);
 }
 
 
 // A getter helper for optional keytypes which returns lists of values as
 // numbers.
 function getOptionalMappedBytesAsUInt (maps:Map<Key, Value>[], keytype:KeyType) {
-  const bytes:(number|null)[] = [];
-
-  for (const map of maps) {
-    bytes.push(map.get(keytype)?.readUInt32LE() ?? null);
-  }
-
-  return bytes;
+  return  maps.map(map => map.get(keytype)?.readUInt32LE() ?? null);
 }
 
 
 // Accepts a BIP0032 path as a string and returns a Buffer containing uint32
 // values for each path node.
 function parseDerivationPathNodesToBytes (path:string):Buffer {
+  const validationMessage = validateBIP32Path(path);
+  if (validationMessage !== '') {
+    throw Error(validationMessage);
+  }
+
   const bw = new BufferWriter();
 
   for (const node of path.match(BIP_32_NODE_REGEX) ?? []) {
     // Skip slash and parse int
-    let num = parseInt(node.substring(1), 10);
+    let num = parseInt(node.slice(1), 10);
 
     if (node.indexOf('\'') > -1) {
       // Hardened node needs hardening
@@ -203,10 +204,10 @@ function parseDerivationPathNodesToBytes (path:string):Buffer {
 
 // Takes a BufferReader and a Map then reads keypairs until it gets to a map
 // separator (keyLen 0x00 byte);
-function readAndSetKeyPair (map:Map<Key, Buffer>, br:BufferReader):boolean {
+function readAndSetKeyPairs (map:Map<Key, Buffer>, br:BufferReader) {
   const nextByte:Buffer = br.readBytes(1);
   if (nextByte.equals(PSBT_MAP_SEPARATOR)) {
-    return false;
+    return
   }
 
   const keyLen = nextByte.readUInt8();
@@ -214,7 +215,7 @@ function readAndSetKeyPair (map:Map<Key, Buffer>, br:BufferReader):boolean {
   const value = br.readVarBytes();
 
   map.set(key.toString('hex'), value);
-  return true;
+  readAndSetKeyPairs(map, br);
 }
 
 
@@ -245,7 +246,7 @@ export class PsbtV2 {
   private outputMaps:Map<Key, Value>[] = [];
 
 
-  constructor(psbt?:Buffer|string) {
+  constructor (psbt?:Buffer|string) {
     if (!psbt) {
       this.globalMap.set(
         KeyType.PSBT_GLOBAL_VERSION, Buffer.from([0x02, 0x00, 0x00, 0x00])
@@ -258,7 +259,7 @@ export class PsbtV2 {
       throw ERROR_PSBT_NOT_VALID;
     }
     // Build globalMap
-    while(readAndSetKeyPair(this.globalMap, br));
+    readAndSetKeyPairs(this.globalMap, br);
     if (
       this.PSBT_GLOBAL_TX_VERSION === undefined || 
       this.PSBT_GLOBAL_INPUT_COUNT === undefined || 
@@ -271,7 +272,7 @@ export class PsbtV2 {
     // Build inputMaps
     for (let i = 0; i < this.PSBT_GLOBAL_INPUT_COUNT; i++) {
       const map = new Map<Key, Value>();
-      while(readAndSetKeyPair(map, br));
+      readAndSetKeyPairs(map, br);
       this.inputMaps.push(map);
     }
     if (
@@ -284,7 +285,7 @@ export class PsbtV2 {
     // Build outputMaps
     for (let i = 0; i < this.PSBT_GLOBAL_OUTPUT_COUNT; i++) {
       const map = new Map<Key, Value>();
-      while(readAndSetKeyPair(map, br));
+      readAndSetKeyPairs(map, br);
       this.outputMaps.push(map);
     }
     if (
