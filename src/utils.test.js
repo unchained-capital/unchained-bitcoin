@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import {
+  validBase64,
   validateHex,
   toHexString,
   satoshisToBitcoins,
@@ -8,6 +9,21 @@ import {
 } from './utils';
 
 describe("utils", () => {
+
+  describe('validBase64', () => {
+    it('returns true on valid base64', () => {
+      expect(validBase64('A1+/abAB')).toBe(true);
+      expect(validBase64('A1+/abA=')).toBe(true);
+      expect(validBase64('A1+/ab==')).toBe(true);
+    });
+    
+    it('returns false on invalid base64', () => {
+      expect(validBase64('A1+/abAB=')).toBe(false);
+      expect(validBase64('A1+/ab=')).toBe(false);
+      expect(validBase64('A1+/a===')).toBe(false);
+      expect(validBase64('A1+/,bAB')).toBe(false);
+    });
+  });
 
   describe('validateHex', () => {
 
