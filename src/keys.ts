@@ -49,8 +49,11 @@ export function validatePrefix(prefix: KeyPrefix): never | null {
  * @param {string} rootFingerprint - fingerprint to validate
  * @return {void}
  */
-export function validateRootFingerprint(rootFingerprint:string): void {
-  assert(typeof rootFingerprint === "string", 'Root fingerprint must be a string.');
+export function validateRootFingerprint(rootFingerprint: string): void {
+  assert(
+    typeof rootFingerprint === "string",
+    "Root fingerprint must be a string."
+  );
   assert(rootFingerprint.length === 8, `Expected hex value of length 8`);
   const rootXfpError = validateHex(rootFingerprint);
   assert(!rootXfpError.length, `Root fingerprint must be valid hex`);
@@ -100,22 +103,22 @@ export class ExtendedPublicKey extends Struct {
     } else {
       assert(
         options.depth !== undefined &&
-        options.index !== undefined &&
-        options.depth >= 0 && options.index >= 0,
-        'Either an absolute bip32 path or index and depth are required to create ExtendedPublicKey'
-      )
+          options.index !== undefined &&
+          options.depth >= 0 &&
+          options.index >= 0,
+        "Either an absolute bip32 path or index and depth are required to create ExtendedPublicKey"
+      );
       this.depth = options.depth;
       this.index = options.index;
     }
-    assert(options.pubkey, 'pubkey required to create ExtendedPublicKey');
+    assert(options.pubkey, "pubkey required to create ExtendedPublicKey");
     const pubKeyError = validatePublicKey(options.pubkey);
     assert(!pubKeyError.length, pubKeyError);
     this.pubkey = isKeyCompressed(options.pubkey)
       ? options.pubkey
       : compressPublicKey(options.pubkey);
     assert(
-      options.chaincode &&
-      options.chaincode.length === 64,
+      options.chaincode && options.chaincode.length === 64,
       "xpub derivation requires 32-byte chaincode"
     );
     const chaincodeError = validateHex(options.chaincode);
@@ -199,7 +202,7 @@ export class ExtendedPublicKey extends Struct {
     this.rootFingerprint = rootFingerprint;
   }
 
-  encode(extra?:any): Buffer {
+  encode(extra?: any): Buffer {
     return super.encode(extra);
   }
 
@@ -245,7 +248,7 @@ export class ExtendedPublicKey extends Struct {
     this.index = br.readU32BE();
     this.chaincode = br.readString(32, "hex");
     this.pubkey = br.readString(33, "hex");
-    this.base58String = this.toBase58()
+    this.base58String = this.toBase58();
     return this;
   }
 
@@ -263,10 +266,13 @@ export class ExtendedPublicKey extends Struct {
  * const tpub = convertExtendedPublicKey("xpub6CCH...", "tpub");
  * console.log(tpub.extendedPublicKey, tpub.message)
  * // tpubDCZv...
- * @returns {(string|object)} converted extended public key or error object
+ * @returns {(string|Record<string, unknown>)} converted extended public key or error object
  * with the failed key and error message
  */
-export function convertExtendedPublicKey(extendedPublicKey: string, targetPrefix: KeyPrefix): (string | object) {
+export function convertExtendedPublicKey(
+  extendedPublicKey: string,
+  targetPrefix: KeyPrefix
+): string | Record<string, unknown> {
   try {
     const sourcePrefix = extendedPublicKey.slice(0, 4);
     validatePrefix(targetPrefix);
@@ -278,8 +284,9 @@ export function convertExtendedPublicKey(extendedPublicKey: string, targetPrefix
       extendedPublicKeyNoPrefix,
     ]);
     return bs58check.encode(extendedPublicKeyNewPrefix);
-  } catch (err) {
-    throw new Error("Unable to convert extended public key: " + err.message);
+  } catch (err: unknown) {
+    const e = err as { message: string };
+    throw new Error("Unable to convert extended public key: " + e.message);
   }
 }
 
@@ -303,7 +310,12 @@ export function validateExtendedPublicKeyForNetwork(
     requiredPrefix += " or 'tpub'";
   }
   const prefix = extendedPublicKey.slice(0, 4);
-  if (!((network === MAINNET && prefix === "xpub") || (network === TESTNET && prefix === "tpub"))) {
+  if (
+    !(
+      (network === MAINNET && prefix === "xpub") ||
+      (network === TESTNET && prefix === "tpub")
+    )
+  ) {
     return `Extended public key must begin with ${requiredPrefix}.`;
   }
   return "";
@@ -327,7 +339,10 @@ export function validateExtendedPublicKeyForNetwork(
  * console.log(validateExtendedPublicKey("xpub123%%!~~...", MAINNET)); // "Invalid extended public key"
  * console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""
  */
-export function validateExtendedPublicKey(xpubString: string, network: NETWORKS): string {
+export function validateExtendedPublicKey(
+  xpubString: string,
+  network: NETWORKS
+): string {
   if (xpubString === null || xpubString === undefined || xpubString === "") {
     return "Extended public key cannot be blank.";
   }
@@ -376,7 +391,10 @@ export function validateExtendedPublicKey(xpubString: string, network: NETWORKS)
  * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2SH")); // ""
  * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2WSH")); // "P2WSH does not support uncompressed public keys."
  */
-export function validatePublicKey(pubkeyHex: string, addressType?: string): string {
+export function validatePublicKey(
+  pubkeyHex: string,
+  addressType?: string
+): string {
   if (pubkeyHex === null || pubkeyHex === undefined || pubkeyHex === "") {
     return "Public key cannot be blank.";
   }
@@ -443,7 +461,11 @@ export function compressPublicKey(publicKey: string): string {
  * // "021a0b6eb37bd9d2767a364601e41635a11c1dbbbb601efab8406281e210336ace"
  *
  */
-export function deriveChildPublicKey(extendedPublicKey: string, bip32Path: string, network: NETWORKS): string {
+export function deriveChildPublicKey(
+  extendedPublicKey: string,
+  bip32Path: string,
+  network: NETWORKS
+): string {
   if (bip32Path.slice(0, 2) === "m/") {
     return deriveChildPublicKey(extendedPublicKey, bip32Path.slice(2), network);
   }
@@ -561,7 +583,9 @@ export function fingerprintToFixedLengthHex(xfp: number): string {
  * xpub.setRootFingerprint('12341234');
  * console.log(extendedPublicKeyRootFingerprint(xpub)) // 12341234
  */
-export function extendedPublicKeyRootFingerprint(extendedPublicKey: Struct): string | null {
+export function extendedPublicKeyRootFingerprint(
+  extendedPublicKey: Struct
+): string | null {
   return extendedPublicKey.rootFingerprint
     ? extendedPublicKey.rootFingerprint
     : null;
@@ -582,7 +606,7 @@ export function deriveExtendedPublicKey(
   pubkey: string,
   chaincode: string,
   parentFingerprint: string,
-  network: string = MAINNET,
+  network: string = MAINNET
 ): string {
   const xpub = new ExtendedPublicKey({
     path: bip32Path,
