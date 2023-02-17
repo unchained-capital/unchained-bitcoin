@@ -696,9 +696,10 @@ export class PsbtV2 {
     }
 
     // From BIP0370: If none of the inputs have a PSBT_IN_REQUIRED_TIME_LOCKTIME
-    // and  PSBT_IN_REQUIRED_HEIGHT_LOCKTIME, then PSBT_GLOBAL_FALLBACK_LOCKTIME
-    // must be used. If PSBT_GLOBAL_FALLBACK_LOCKTIME is not provided, then it
-    // is assumed to be 0.
+    // and *(or) PSBT_IN_REQUIRED_HEIGHT_LOCKTIME, then
+    // PSBT_GLOBAL_FALLBACK_LOCKTIME must be used. If
+    // PSBT_GLOBAL_FALLBACK_LOCKTIME is not provided, then it is assumed to be
+    // 0.
     if (heights.length === 0 && times.length === 0) {
       return this.PSBT_GLOBAL_FALLBACK_LOCKTIME || 0;
     }
