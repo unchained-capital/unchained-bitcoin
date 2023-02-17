@@ -49,13 +49,13 @@
  *
  */
 
-import {networkData} from "./networks";
-import {P2SH} from "./p2sh";
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
-import {toHexString} from "./utils";
+import { networkData } from "./networks";
+import { P2SH } from "./p2sh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
+import { toHexString } from "./utils";
 
-import {payments} from "bitcoinjs-lib";
+import { payments } from "bitcoinjs-lib";
 
 /**
  * Describes the return type of several functions in the
@@ -109,10 +109,15 @@ export const MULTISIG_ADDRESS_TYPES = {
  * const multisigP2SH = generateMultisigFromPublicKeys(MAINNET, P2SH, 2, "03a...", "03b...", "03c...");
  * const multisigP2WSH = generateMultisigFromPublicKeys(MAINNET, P2WSH, 2, "03a...", "03b...", "03c...");
  */
-export function generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys) {
+export function generateMultisigFromPublicKeys(
+  network,
+  addressType,
+  requiredSigners,
+  ...publicKeys
+) {
   const multisig = payments.p2ms({
     m: requiredSigners,
-    pubkeys: publicKeys.map((hex) => Buffer.from(hex, 'hex')),
+    pubkeys: publicKeys.map((hex) => Buffer.from(hex, "hex")),
     network: networkData(network),
   });
   return generateMultisigFromRaw(addressType, multisig);
@@ -142,9 +147,13 @@ export function generateMultisigFromPublicKeys(network, addressType, requiredSig
  * const multisigP2SH = generateMultisigFromHex(MAINNET, P2SH, multisigScript);
  * const multisigP2WSH = generateMultisigFromHex(MAINNET, P2WSH, multisigScript);
  */
-export function generateMultisigFromHex(network, addressType, multisigScriptHex) {
+export function generateMultisigFromHex(
+  network,
+  addressType,
+  multisigScriptHex
+) {
   const multisig = payments.p2ms({
-    output: Buffer.from(multisigScriptHex, 'hex'),
+    output: Buffer.from(multisigScriptHex, "hex"),
     network: networkData(network),
   });
   return generateMultisigFromRaw(addressType, multisig);
@@ -165,13 +174,13 @@ export function generateMultisigFromHex(network, addressType, multisigScriptHex)
 export function generateMultisigFromRaw(addressType, multisig) {
   switch (addressType) {
     case P2SH:
-      return payments.p2sh({redeem: multisig});
+      return payments.p2sh({ redeem: multisig });
     case P2SH_P2WSH:
       return payments.p2sh({
-        redeem: payments.p2wsh({redeem: multisig}),
+        redeem: payments.p2wsh({ redeem: multisig }),
       });
     case P2WSH:
-      return payments.p2wsh({redeem: multisig});
+      return payments.p2wsh({ redeem: multisig });
     default:
       return null;
   }
@@ -227,7 +236,9 @@ export function multisigAddressType(multisig) {
  * console.log(multisigRequiredSigners(multisig)); // 2
  */
 export function multisigRequiredSigners(multisig) {
-  return (multisigAddressType(multisig) === P2SH_P2WSH) ? multisig.redeem.redeem.m : multisig.redeem.m;
+  return multisigAddressType(multisig) === P2SH_P2WSH
+    ? multisig.redeem.redeem.m
+    : multisig.redeem.m;
 }
 
 /**
@@ -245,7 +256,9 @@ export function multisigRequiredSigners(multisig) {
  * console.log(multisigTotalSigners(multisig)); // 3
  */
 export function multisigTotalSigners(multisig) {
-  return (multisigAddressType(multisig) === P2SH_P2WSH) ? multisig.redeem.redeem.n : multisig.redeem.n;
+  return multisigAddressType(multisig) === P2SH_P2WSH
+    ? multisig.redeem.redeem.n
+    : multisig.redeem.n;
 }
 
 /**
@@ -279,7 +292,6 @@ export function multisigScript(multisig) {
       return null;
   }
 }
-
 
 /**
  * Return the redeem script for the given `Multisig` object.
@@ -362,7 +374,11 @@ export function multisigWitnessScript(multisig) {
  *
  */
 export function multisigPublicKeys(multisig) {
-  return ((multisigAddressType(multisig) === P2SH) ? multisigRedeemScript(multisig) : multisigWitnessScript(multisig)).pubkeys.map(toHexString);
+  return (
+    multisigAddressType(multisig) === P2SH
+      ? multisigRedeemScript(multisig)
+      : multisigWitnessScript(multisig)
+  ).pubkeys.map(toHexString);
 }
 
 /**
