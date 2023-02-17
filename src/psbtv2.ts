@@ -281,6 +281,20 @@ export class PsbtV2 {
     ) {
       throw Error("Provided psbtV2 not valid. Missing required input values.")
     }
+    for (const locktime of this.PSBT_IN_REQUIRED_TIME_LOCKTIME) {
+      if (locktime && locktime < 500000000) {
+        throw Error(
+          "Provided psbtV2 not valid. An input time locktime is less than 500000000."
+        );
+      }
+    }
+    for (const locktime of this.PSBT_IN_REQUIRED_HEIGHT_LOCKTIME) {
+      if (locktime && locktime >= 500000000) {
+        throw Error(
+          "Provided psbtV2 not valid. An input hight locktime is gte 500000000."
+        );
+      }
+    }
 
     // Build outputMaps
     for (let i = 0; i < this.PSBT_GLOBAL_OUTPUT_COUNT; i++) {
@@ -297,9 +311,9 @@ export class PsbtV2 {
   }
 
 
-  /* 
-  Globals Getters
-  */
+  /**
+   * Globals Getters/Setters
+   */
 
   get PSBT_GLOBAL_XPUB () {
     return getNonUniqueKeyTypeValues(this.globalMap, KeyType.PSBT_GLOBAL_XPUB);
@@ -402,9 +416,9 @@ export class PsbtV2 {
   }
 
 
-  /* 
-  Input Getters 
-  */
+  /**
+   * Input Getters/Setters
+   */
 
   get PSBT_IN_NON_WITNESS_UTXO () {
     return getOptionalMappedBytesAsHex(
@@ -599,9 +613,9 @@ export class PsbtV2 {
   }
 
 
-  /* 
-  Output Getters
-  */
+  /**
+   * Output Getters/Setters
+   */
 
   get PSBT_OUT_REDEEM_SCRIPT () {
     return getOptionalMappedBytesAsHex(
@@ -674,6 +688,63 @@ export class PsbtV2 {
       this.outputMaps, 
       KeyType.PSBT_OUT_PROPRIETARY
     );
+  }
+
+  /**
+   * Other Getters/Setters
+   */
+
+  get nLockTime () {
+    // From BIP0370: The nLockTime field of a transaction is determined by
+    // inspecting the PSBT_GLOBAL_FALLBACK_LOCKTIME and each input's
+    // PSBT_IN_REQUIRED_TIME_LOCKTIME and PSBT_IN_REQUIRED_HEIGHT_LOCKTIME
+    // fields.
+    //
+    // First collect total locks
+    const inputCount = this.PSBT_GLOBAL_INPUT_COUNT;
+    const heightLocks = this.PSBT_IN_REQUIRED_HEIGHT_LOCKTIME;
+    const timeLocks = this.PSBT_IN_REQUIRED_TIME_LOCKTIME;
+    let heights:number[] = [];
+    let times:number[] = [];
+    for (let i = 0; i < this.PSBT_GLOBAL_INPUT_COUNT; i++) {
+      if (heightLocks[i] !== null) {
+        heights.push(heightLocks[i] as number);
+      } 
+      
+      if (timeLocks[i] !== null) {
+        times.push(timeLocks[i] as number);
+      }
+    }
+
+    // From BIP0370: If none of the inputs have a PSBT_IN_REQUIRED_TIME_LOCKTIME
+    // and  PSBT_IN_REQUIRED_HEIGHT_LOCKTIME, then PSBT_GLOBAL_FALLBACK_LOCKTIME
+    // must be used. If PSBT_GLOBAL_FALLBACK_LOCKTIME is not provided, then it
+    // is assumed to be 0.
+    if (heights.length === 0 && times.length === 0) {
+      return this.PSBT_GLOBAL_FALLBACK_LOCKTIME || 0;
+    }
+
+    // From BIP0370: If one or more inputs have a PSBT_IN_REQUIRED_TIME_LOCKTIME
+    // or PSBT_IN_REQUIRED_HEIGHT_LOCKTIME, then the field chosen is the one
+    // which is supported by all of the inputs. This can be determined by
+    // looking at all of the inputs which specify a locktime in either of those
+    // fields, and choosing the field which is present in all of those inputs.
+    // Inputs not specifying a lock time field can take both types of lock
+    // times, as can those that specify both. The lock time chosen is then the
+    // maximum value of the chosen type of lock time.
+    //
+    // If a PSBT has both types of locktimes possible because one or more inputs
+    // specify both PSBT_IN_REQUIRED_TIME_LOCKTIME and
+    // PSBT_IN_REQUIRED_HEIGHT_LOCKTIME, then locktime determined by looking at
+    // the PSBT_IN_REQUIRED_HEIGHT_LOCKTIME fields of the inputs must be chosen.
+    if (heights.length === inputCount || heights.length > times.length) {
+      return Math.max(...heights);
+    }
+    if (times.length > heights.length) {
+      return Math.max(...times);
+    }
+
+    return null
   }
 
 
