@@ -237,7 +237,7 @@ export abstract class PsbtV2Maps {
   protected globalMap: Map<Key, Value> = new Map();
   protected inputMaps: Map<Key, Value>[] = [];
   protected outputMaps: Map<Key, Value>[] = [];
-  
+
   constructor(psbt?: Buffer | string) {
     if (!psbt) {
       this.globalMap.set(
@@ -263,7 +263,8 @@ export abstract class PsbtV2Maps {
     }
 
     // Build inputMaps
-    const inputCount = this.globalMap.get(KeyType.PSBT_GLOBAL_INPUT_COUNT)?.readUInt8() ?? 0;
+    const inputCount =
+      this.globalMap.get(KeyType.PSBT_GLOBAL_INPUT_COUNT)?.readUInt8() ?? 0;
     for (let i = 0; i < inputCount; i++) {
       const map = new Map<Key, Value>();
       readAndSetKeyPairs(map, br);
@@ -271,7 +272,8 @@ export abstract class PsbtV2Maps {
     }
 
     // Build outputMaps
-    const outputCount = this.globalMap.get(KeyType.PSBT_GLOBAL_OUTPUT_COUNT)?.readUInt8() ?? 0;
+    const outputCount =
+      this.globalMap.get(KeyType.PSBT_GLOBAL_OUTPUT_COUNT)?.readUInt8() ?? 0;
     for (let i = 0; i < outputCount; i++) {
       const map = new Map<Key, Value>();
       readAndSetKeyPairs(map, br);
@@ -299,7 +301,6 @@ export abstract class PsbtV2Maps {
 }
 
 export class PsbtV2 extends PsbtV2Maps {
-
   constructor(psbt?: Buffer | string) {
     super(psbt);
 
