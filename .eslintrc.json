@@ -103,7 +103,6 @@
         "lines-around-comment": "error",
         "lines-around-directive": "error",
         "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
-        "max-classes-per-file": "error",
         "max-depth": "error",
         "max-len": "off",
         "max-lines": "off",
