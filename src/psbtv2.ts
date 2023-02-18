@@ -877,7 +877,7 @@ export class PsbtV2 {
   }
 
   // Return the current state of the psbt as a string in the specified format.
-  public serialize(format: "base64" | "hex" = "base64") {
+  public serialize(format: "base64" | "hex" = "base64"): string {
     // Build hex string from maps
     let bw = new BufferWriter();
     bw.writeBytes(PSBT_MAGIC_BYTES);
