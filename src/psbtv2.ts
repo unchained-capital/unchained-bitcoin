@@ -298,6 +298,28 @@ export abstract class PsbtV2Maps {
 
     return bw.render().toString(format);
   }
+
+  public copy(to: PsbtV2) {
+    this.copyMap(this.globalMap, to.globalMap);
+    this.copyMaps(this.inputMaps, to.inputMaps);
+    this.copyMaps(this.outputMaps, to.outputMaps);
+  }
+
+  private copyMaps(
+    from: readonly ReadonlyMap<string, Buffer>[],
+    to: Map<string, Buffer>[]
+  ) {
+    from.forEach((m, index) => {
+      const to_index = new Map();
+      this.copyMap(m, to_index);
+      to[index] = to_index;
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private copyMap(from: ReadonlyMap<string, Buffer>, to: Map<string, Buffer>) {
+    from.forEach((v, k) => to.set(k, Buffer.from(v)));
+  }
 }
 
 export class PsbtV2 extends PsbtV2Maps {
