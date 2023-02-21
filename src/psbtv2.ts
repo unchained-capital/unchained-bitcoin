@@ -16,7 +16,7 @@ import { validateHex, validBase64 } from "./utils";
 import { validateBIP32Path } from "./paths";
 import { PSBT_MAGIC_BYTES } from "./psbt.js";
 
-/* 
+/*
 Global Types
 */
 
@@ -90,7 +90,7 @@ enum PsbtGlobalTxModifiableBits {
   SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b000000100
 }
 
-/* 
+/*
 Global Constants
  */
 
@@ -99,7 +99,7 @@ const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/gi;
 const BIP_32_HARDENING_OFFSET = 0x80000000;
 const ERROR_PSBT_NOT_VALID = Error("Not a valid psbt");
 
-/* 
+/*
 Helper Functions
 */
 
@@ -348,7 +348,7 @@ export class PsbtV2 extends PsbtV2Maps {
       throw Error("PSBT_GLOBAL_TX_VERSION not set");
     }
 
-    return val.readInt32LE();
+    return val.readInt32LE(0);
   }
 
   set PSBT_GLOBAL_TX_VERSION(version: number) {
@@ -913,7 +913,7 @@ export class PsbtV2 extends PsbtV2Maps {
     const psbtv2 = new PsbtV2();
     const psbtv0GlobalMap = psbtv0.data.globalMap;
 
-    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE();
+    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
     psbtv2.PSBT_GLOBAL_INPUT_COUNT = psbtv0.data.inputs.length;
     psbtv2.PSBT_GLOBAL_OUTPUT_COUNT = psbtv0.data.outputs.length;
     psbtv2.PSBT_GLOBAL_FALLBACK_LOCKTIME = 0; // Is this necessary?
