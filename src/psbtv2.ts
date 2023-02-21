@@ -986,3 +986,13 @@ export class PsbtV2 extends PsbtV2Maps {
     return psbtv2;
   }
 }
+
+/**
+ * extracts the version number as uint32LE from raw psbt
+ * @param {string | Buffer} psbt - hex, base64 or buffer of psbt
+ * @returns {number} version number
+ */
+export function getPsbtVersionNumber(psbt: string | Buffer): number {
+  const psbtBuf = bufferize(psbt);
+  return psbtBuf[PSBT_MAGIC_BYTES.length + 1];
+}
