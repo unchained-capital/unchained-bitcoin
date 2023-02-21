@@ -16,7 +16,7 @@ import { validateHex, validBase64 } from "./utils";
 import { validateBIP32Path } from "./paths";
 import { PSBT_MAGIC_BYTES } from "./psbt.js";
 
-/* 
+/*
 Global Types
 */
 
@@ -90,7 +90,7 @@ enum PsbtGlobalTxModifiableBits {
   SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b000000100
 }
 
-/* 
+/*
 Global Constants
  */
 
@@ -99,7 +99,7 @@ const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/gi;
 const BIP_32_HARDENING_OFFSET = 0x80000000;
 const ERROR_PSBT_NOT_VALID = Error("Not a valid psbt");
 
-/* 
+/*
 Helper Functions
 */
 
@@ -298,6 +298,34 @@ export abstract class PsbtV2Maps {
 
     return bw.render().toString(format);
   }
+
+  // NOTE: This set of copy methods is made available to
+  // achieve parity with the PSBT api required by ledger-bitcoin
+  // for creating merklized PSBTs. HOWEVER, it is not recommended
+  // to use this when avoidable as copying maps bypasses the validation
+  // defined in the constructor, so it could create a psbtv2 in an invalid psbt status.
+  // PsbtV2.serialize is preferable whenever possible.
+  public copy(to: PsbtV2) {
+    this.copyMap(this.globalMap, to.globalMap);
+    this.copyMaps(this.inputMaps, to.inputMaps);
+    this.copyMaps(this.outputMaps, to.outputMaps);
+  }
+
+  private copyMaps(
+    from: readonly ReadonlyMap<string, Buffer>[],
+    to: Map<string, Buffer>[]
+  ) {
+    from.forEach((m, index) => {
+      const to_index = new Map();
+      this.copyMap(m, to_index);
+      to[index] = to_index;
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private copyMap(from: ReadonlyMap<string, Buffer>, to: Map<string, Buffer>) {
+    from.forEach((v, k) => to.set(k, Buffer.from(v)));
+  }
 }
 
 export class PsbtV2 extends PsbtV2Maps {
@@ -348,7 +376,7 @@ export class PsbtV2 extends PsbtV2Maps {
       throw Error("PSBT_GLOBAL_TX_VERSION not set");
     }
 
-    return val.readInt32LE();
+    return val.readInt32LE(0);
   }
 
   set PSBT_GLOBAL_TX_VERSION(version: number) {
@@ -913,7 +941,7 @@ export class PsbtV2 extends PsbtV2Maps {
     const psbtv2 = new PsbtV2();
     const psbtv0GlobalMap = psbtv0.data.globalMap;
 
-    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE();
+    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
     psbtv2.PSBT_GLOBAL_INPUT_COUNT = psbtv0.data.inputs.length;
     psbtv2.PSBT_GLOBAL_OUTPUT_COUNT = psbtv0.data.outputs.length;
     psbtv2.PSBT_GLOBAL_FALLBACK_LOCKTIME = 0; // Is this necessary?
@@ -963,4 +991,14 @@ export class PsbtV2 extends PsbtV2Maps {
 
     return psbtv2;
   }
+}
+
+/**
+ * extracts the version number as uint32LE from raw psbt
+ * @param {string | Buffer} psbt - hex, base64 or buffer of psbt
+ * @returns {number} version number
+ */
+export function getPsbtVersionNumber(psbt: string | Buffer): number {
+  const psbtBuf = bufferize(psbt);
+  return psbtBuf[PSBT_MAGIC_BYTES.length + 1];
 }
