@@ -299,6 +299,12 @@ export abstract class PsbtV2Maps {
     return bw.render().toString(format);
   }
 
+  // NOTE: This set of copy methods is made available to
+  // achieve parity with the PSBT api required by ledger-bitcoin
+  // for creating merklized PSBTs. HOWEVER, it is not recommended
+  // to use this when avoidable as copying maps bypasses the validation
+  // defined in the constructor, so it could create a psbtv2 in an invalid psbt status.
+  // PsbtV2.serialize is preferable whenever possible.
   public copy(to: PsbtV2) {
     this.copyMap(this.globalMap, to.globalMap);
     this.copyMaps(this.inputMaps, to.inputMaps);
