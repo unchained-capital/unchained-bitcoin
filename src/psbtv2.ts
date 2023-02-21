@@ -16,7 +16,7 @@ import { validateHex, validBase64 } from "./utils";
 import { validateBIP32Path } from "./paths";
 import { PSBT_MAGIC_BYTES } from "./psbt.js";
 
-/* 
+/*
 Global Types
 */
 
@@ -90,7 +90,7 @@ enum PsbtGlobalTxModifiableBits {
   SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b000000100
 }
 
-/* 
+/*
 Global Constants
  */
 
@@ -99,7 +99,7 @@ const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/gi;
 const BIP_32_HARDENING_OFFSET = 0x80000000;
 const ERROR_PSBT_NOT_VALID = Error("Not a valid psbt");
 
-/* 
+/*
 Helper Functions
 */
 
@@ -232,11 +232,11 @@ function serializeMap(map: Map<Key, Value>, bw: BufferWriter): void {
   bw.writeBytes(PSBT_MAP_SEPARATOR);
 }
 
-export class PsbtV2 {
+export abstract class PsbtV2Maps {
   // These maps directly correspond to the maps defined in BIP0174
-  private globalMap: Map<Key, Value> = new Map();
-  private inputMaps: Map<Key, Value>[] = [];
-  private outputMaps: Map<Key, Value>[] = [];
+  protected globalMap: Map<Key, Value> = new Map();
+  protected inputMaps: Map<Key, Value>[] = [];
+  protected outputMaps: Map<Key, Value>[] = [];
 
   constructor(psbt?: Buffer | string) {
     if (!psbt) {
@@ -254,20 +254,84 @@ export class PsbtV2 {
     // Build globalMap
     readAndSetKeyPairs(this.globalMap, br);
     if (
-      this.PSBT_GLOBAL_TX_VERSION === undefined ||
-      this.PSBT_GLOBAL_INPUT_COUNT === undefined ||
-      this.PSBT_GLOBAL_OUTPUT_COUNT === undefined ||
+      !this.globalMap.has(KeyType.PSBT_GLOBAL_TX_VERSION) ||
+      !this.globalMap.has(KeyType.PSBT_GLOBAL_INPUT_COUNT) ||
+      !this.globalMap.has(KeyType.PSBT_GLOBAL_OUTPUT_COUNT) ||
       this.globalMap.has("00") // PsbtV2 must exclude key 0x00
     ) {
       throw Error("Provided psbtV2 not valid. Missing required global values.");
     }
 
     // Build inputMaps
-    for (let i = 0; i < this.PSBT_GLOBAL_INPUT_COUNT; i++) {
+    const inputCount =
+      this.globalMap.get(KeyType.PSBT_GLOBAL_INPUT_COUNT)?.readUInt8() ?? 0;
+    for (let i = 0; i < inputCount; i++) {
       const map = new Map<Key, Value>();
       readAndSetKeyPairs(map, br);
       this.inputMaps.push(map);
     }
+
+    // Build outputMaps
+    const outputCount =
+      this.globalMap.get(KeyType.PSBT_GLOBAL_OUTPUT_COUNT)?.readUInt8() ?? 0;
+    for (let i = 0; i < outputCount; i++) {
+      const map = new Map<Key, Value>();
+      readAndSetKeyPairs(map, br);
+      this.outputMaps.push(map);
+    }
+  }
+
+  // Return the current state of the psbt as a string in the specified format.
+  public serialize(format: "base64" | "hex" = "base64"): string {
+    // Build hex string from maps
+    let bw = new BufferWriter();
+    bw.writeBytes(PSBT_MAGIC_BYTES);
+    serializeMap(this.globalMap, bw);
+
+    for (const map of this.inputMaps) {
+      serializeMap(map, bw);
+    }
+
+    for (const map of this.outputMaps) {
+      serializeMap(map, bw);
+    }
+
+    return bw.render().toString(format);
+  }
+
+  // NOTE: This set of copy methods is made available to
+  // achieve parity with the PSBT api required by ledger-bitcoin
+  // for creating merklized PSBTs. HOWEVER, it is not recommended
+  // to use this when avoidable as copying maps bypasses the validation
+  // defined in the constructor, so it could create a psbtv2 in an invalid psbt status.
+  // PsbtV2.serialize is preferable whenever possible.
+  public copy(to: PsbtV2) {
+    this.copyMap(this.globalMap, to.globalMap);
+    this.copyMaps(this.inputMaps, to.inputMaps);
+    this.copyMaps(this.outputMaps, to.outputMaps);
+  }
+
+  private copyMaps(
+    from: readonly ReadonlyMap<string, Buffer>[],
+    to: Map<string, Buffer>[]
+  ) {
+    from.forEach((m, index) => {
+      const to_index = new Map();
+      this.copyMap(m, to_index);
+      to[index] = to_index;
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private copyMap(from: ReadonlyMap<string, Buffer>, to: Map<string, Buffer>) {
+    from.forEach((v, k) => to.set(k, Buffer.from(v)));
+  }
+}
+
+export class PsbtV2 extends PsbtV2Maps {
+  constructor(psbt?: Buffer | string) {
+    super(psbt);
+
     if (
       this.PSBT_IN_PREVIOUS_TXID === undefined ||
       this.PSBT_IN_OUTPUT_INDEX === undefined
@@ -289,12 +353,6 @@ export class PsbtV2 {
       }
     }
 
-    // Build outputMaps
-    for (let i = 0; i < this.PSBT_GLOBAL_OUTPUT_COUNT; i++) {
-      const map = new Map<Key, Value>();
-      readAndSetKeyPairs(map, br);
-      this.outputMaps.push(map);
-    }
     if (
       this.PSBT_OUT_AMOUNT === undefined ||
       this.PSBT_OUT_SCRIPT === undefined
@@ -318,7 +376,7 @@ export class PsbtV2 {
       throw Error("PSBT_GLOBAL_TX_VERSION not set");
     }
 
-    return val.readInt32LE();
+    return val.readInt32LE(0);
   }
 
   set PSBT_GLOBAL_TX_VERSION(version: number) {
@@ -876,24 +934,6 @@ export class PsbtV2 {
     this.outputMaps = newOutputs;
   }
 
-  // Return the current state of the psbt as a string in the specified format.
-  public serialize(format: "base64" | "hex" = "base64"): string {
-    // Build hex string from maps
-    let bw = new BufferWriter();
-    bw.writeBytes(PSBT_MAGIC_BYTES);
-    serializeMap(this.globalMap, bw);
-
-    for (const map of this.inputMaps) {
-      serializeMap(map, bw);
-    }
-
-    for (const map of this.outputMaps) {
-      serializeMap(map, bw);
-    }
-
-    return bw.render().toString(format);
-  }
-
   // Attempt to return a PsbtV2 by converting from a PsbtV0 string or Buffer
   static FromV0(psbt: string | Buffer): PsbtV2 {
     const psbtv0Buf = bufferize(psbt);
@@ -901,7 +941,7 @@ export class PsbtV2 {
     const psbtv2 = new PsbtV2();
     const psbtv0GlobalMap = psbtv0.data.globalMap;
 
-    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE();
+    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
     psbtv2.PSBT_GLOBAL_INPUT_COUNT = psbtv0.data.inputs.length;
     psbtv2.PSBT_GLOBAL_OUTPUT_COUNT = psbtv0.data.outputs.length;
     psbtv2.PSBT_GLOBAL_FALLBACK_LOCKTIME = 0; // Is this necessary?
@@ -951,4 +991,14 @@ export class PsbtV2 {
 
     return psbtv2;
   }
+}
+
+/**
+ * extracts the version number as uint32LE from raw psbt
+ * @param {string | Buffer} psbt - hex, base64 or buffer of psbt
+ * @returns {number} version number
+ */
+export function getPsbtVersionNumber(psbt: string | Buffer): number {
+  const psbtBuf = bufferize(psbt);
+  return psbtBuf[PSBT_MAGIC_BYTES.length + 1];
 }
