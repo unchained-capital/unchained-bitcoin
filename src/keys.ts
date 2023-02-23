@@ -16,7 +16,7 @@ import { bip32PathToSequence, validateBIP32Path } from "./paths";
 import { TESTNET, networkData, MAINNET, NETWORKS } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
-import { KeyPrefix, KeyVersion } from "./types";
+import { BitcoinNetwork, KeyPrefix, KeyVersion } from "./types";
 
 export const EXTENDED_PUBLIC_KEY_VERSIONS = {
   xpub: "0488b21e",
@@ -83,7 +83,7 @@ export class ExtendedPublicKey extends Struct {
   chaincode?: string;
   pubkey?: string;
   parentFingerprint?: number;
-  network?: NETWORKS;
+  network?: BitcoinNetwork;
   version?: KeyVersion;
   rootFingerprint?: string;
   base58String?: string;
@@ -171,7 +171,7 @@ export class ExtendedPublicKey extends Struct {
    * @param {string} network - one of "mainnet" or "testnet"
    * @returns {void}
    */
-  setNetwork(network: string): void {
+  setNetwork(network: BitcoinNetwork): void {
     assert(
       [MAINNET, TESTNET].includes(network),
       `Expected network to be one of ${MAINNET} or ${TESTNET}.`
@@ -341,7 +341,7 @@ export function validateExtendedPublicKeyForNetwork(
  */
 export function validateExtendedPublicKey(
   xpubString: string,
-  network: NETWORKS
+  network: BitcoinNetwork
 ): string {
   if (xpubString === null || xpubString === undefined || xpubString === "") {
     return "Extended public key cannot be blank.";
@@ -464,7 +464,7 @@ export function compressPublicKey(publicKey: string): string {
 export function deriveChildPublicKey(
   extendedPublicKey: string,
   bip32Path: string,
-  network: NETWORKS
+  network: BitcoinNetwork
 ): string {
   if (bip32Path.slice(0, 2) === "m/") {
     return deriveChildPublicKey(extendedPublicKey, bip32Path.slice(2), network);
@@ -494,7 +494,7 @@ export function deriveChildPublicKey(
 export function deriveChildExtendedPublicKey(
   extendedPublicKey: string,
   bip32Path: string,
-  network: NETWORKS
+  network: BitcoinNetwork
 ): string {
   if (bip32Path.slice(0, 2) === "m/") {
     return deriveChildExtendedPublicKey(
@@ -606,7 +606,7 @@ export function deriveExtendedPublicKey(
   pubkey: string,
   chaincode: string,
   parentFingerprint: number,
-  network: string = MAINNET
+  network: BitcoinNetwork = MAINNET
 ): string {
   const xpub = new ExtendedPublicKey({
     path: bip32Path,
@@ -617,4 +617,20 @@ export function deriveExtendedPublicKey(
   });
 
   return xpub.toBase58();
+}
+
+/**
+ *
+ * @param {string} options.xpub - base58 encoded xpub string
+ * @param {string} options.bip32Path - path to check if requires masking
+ * @param {string} toMask - string to match if it requires masking
+ * @returns {string} masked bip32Path
+ */
+export function getMaskedDerivation(
+  { xpub, bip32Path }: { xpub: string; bip32Path: string },
+  toMask = "unknown"
+): string {
+  const unknownBip32 = bip32Path.toLowerCase().includes(toMask);
+  const depth: number = ExtendedPublicKey.fromBase58(xpub).depth || 0;
+  return unknownBip32 ? `m${"/0".repeat(depth)}` : bip32Path;
 }

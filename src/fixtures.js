@@ -549,7 +549,7 @@ const MULTISIGS_BASE = [
     type: P2SH,
     bip32Path: "m/45'/1'/100'/0/0",
     policyHmac:
-      "34edf68e8dbe9dd08675aa312662ea9e28863d979ed71213b9db40c8c716be93",
+      "6fb498be86e7accd2b264c6d129e2b1bf5edad95dbc194db962ca8958c4af0c9",
     publicKey:
       "02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4",
     publicKeys: [
@@ -714,7 +714,7 @@ const MULTISIGS_BASE = [
     type: P2SH_P2WSH,
     bip32Path: "m/48'/1'/100'/1'/0/0",
     policyHmac:
-      "7a7dcba7ba4f3fde9bf1a4f374061f59f80083264abd794261efade627256827",
+      "e472b8592c1543d3befc248b204d1403d7ed0fde10d12c96f09b3495cd4fb933",
     publicKey:
       "026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422",
     publicKeys: [
@@ -830,7 +830,7 @@ const MULTISIGS_BASE = [
     type: P2WSH,
     bip32Path: "m/48'/1'/100'/2'/0/0",
     policyHmac:
-      "0e4653f440b0a44f90feb17d46c522b2d0e140f4b26da07cbf006bd71bd9b63e",
+      "df0127563de3e9c98a9970f599b39c504e4b3ed77da208d315e5da511d9afabc",
     publicKey:
       "03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469",
     publicKeys: [
@@ -1277,7 +1277,6 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
   return {
     ...test,
     ...{
-      walletName: `${test.network} ${test.type} 2-of-2 multisig wallet`,
       description: `${test.network} ${test.type} 2-of-2 multisig address`,
       utxos: test.utxos.map((utxo) => ({
         ...utxo,
@@ -1356,7 +1355,8 @@ function singleMultisigTransaction(test) {
   };
 }
 
-const TRANSACTIONS = MULTISIGS.map((test) => singleMultisigTransaction(test)
+const TRANSACTIONS = MULTISIGS.map((test) =>
+  singleMultisigTransaction(test)
 ).concat([
   // {
   //   ...selectFirstUTXOFromEach(MULTISIGS.filter((test) => test.network === TESTNET)),
