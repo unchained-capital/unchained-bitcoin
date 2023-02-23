@@ -618,3 +618,19 @@ export function deriveExtendedPublicKey(
 
   return xpub.toBase58();
 }
+
+/**
+ *
+ * @param {string} options.xpub - base58 encoded xpub string
+ * @param {string} options.bip32Path - path to check if requires masking
+ * @param {string} toMask - string to match if it requires masking
+ * @returns {string} masked bip32Path
+ */
+export function getMaskedDerivation(
+  { xpub, bip32Path }: { xpub: string; bip32Path: string },
+  toMask = "unknown"
+): string {
+  const unknownBip32 = bip32Path.toLowerCase().includes(toMask);
+  const depth: number = ExtendedPublicKey.fromBase58(xpub).depth || 0;
+  return unknownBip32 ? `m${"/0".repeat(depth)}` : bip32Path;
+}
