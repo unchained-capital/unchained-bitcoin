@@ -97,13 +97,12 @@ Global Constants
 const PSBT_MAP_SEPARATOR = Buffer.from([0x00]);
 const BIP_32_NODE_REGEX = /(\/[0-9]+'?)/gi;
 const BIP_32_HARDENING_OFFSET = 0x80000000;
-const ERROR_PSBT_NOT_VALID = Error("Not a valid psbt");
 
 /*
 Helper Functions
 */
 
-// Return psbt as Buffer.
+// Ensure base64 and hex strings are a buffer. No-op if already a buffer.
 function bufferize(psbt: string | Buffer): Buffer {
   if (Buffer.isBuffer(psbt)) {
     return psbt;
@@ -119,7 +118,7 @@ function bufferize(psbt: string | Buffer): Buffer {
     }
   }
 
-  throw ERROR_PSBT_NOT_VALID;
+  throw Error("Input cannot be bufferized.");
 }
 
 // Some keytypes have keydata which allows for multiple unique keys of the same
@@ -232,6 +231,9 @@ function serializeMap(map: Map<Key, Value>, bw: BufferWriter): void {
   bw.writeBytes(PSBT_MAP_SEPARATOR);
 }
 
+// This is provided for utility to allow for mapping, map copying, and
+// serialization operations for psbts. This does almost no validation, so do not
+// rely on it for ensuring a valid psbt.
 export abstract class PsbtV2Maps {
   // These maps directly correspond to the maps defined in BIP0174
   protected globalMap: Map<Key, Value> = new Map();
@@ -240,26 +242,24 @@ export abstract class PsbtV2Maps {
 
   constructor(psbt?: Buffer | string) {
     if (!psbt) {
-      this.globalMap.set(
-        KeyType.PSBT_GLOBAL_VERSION,
-        Buffer.from([0x02, 0x00, 0x00, 0x00])
-      );
       return;
     }
+
     const buf = bufferize(psbt);
     const br = new BufferReader(buf);
     if (!br.readBytes(PSBT_MAGIC_BYTES.length, true).equals(PSBT_MAGIC_BYTES)) {
-      throw ERROR_PSBT_NOT_VALID;
+      throw Error("PsbtV2 magic bytes are incorrect.");
     }
     // Build globalMap
     readAndSetKeyPairs(this.globalMap, br);
-    if (
+    if ( // Assuming that psbt being passed in is a valid psbtv2
+      !this.globalMap.has(KeyType.PSBT_GLOBAL_VERSION) ||
       !this.globalMap.has(KeyType.PSBT_GLOBAL_TX_VERSION) ||
       !this.globalMap.has(KeyType.PSBT_GLOBAL_INPUT_COUNT) ||
       !this.globalMap.has(KeyType.PSBT_GLOBAL_OUTPUT_COUNT) ||
       this.globalMap.has("00") // PsbtV2 must exclude key 0x00
     ) {
-      throw Error("Provided psbtV2 not valid. Missing required global values.");
+      throw Error("Provided PsbtV2 not valid. Missing required global keys.");
     }
 
     // Build inputMaps
@@ -332,33 +332,11 @@ export class PsbtV2 extends PsbtV2Maps {
   constructor(psbt?: Buffer | string) {
     super(psbt);
 
-    if (
-      this.PSBT_IN_PREVIOUS_TXID === undefined ||
-      this.PSBT_IN_OUTPUT_INDEX === undefined
-    ) {
-      throw Error("Provided psbtV2 not valid. Missing required input values.");
-    }
-    for (const locktime of this.PSBT_IN_REQUIRED_TIME_LOCKTIME) {
-      if (locktime && locktime < 500000000) {
-        throw Error(
-          "Provided psbtV2 not valid. An input time locktime is less than 500000000."
-        );
-      }
-    }
-    for (const locktime of this.PSBT_IN_REQUIRED_HEIGHT_LOCKTIME) {
-      if (locktime && locktime >= 500000000) {
-        throw Error(
-          "Provided psbtV2 not valid. An input hight locktime is gte 500000000."
-        );
-      }
+    if (!psbt) {
+      this.create();
     }
 
-    if (
-      this.PSBT_OUT_AMOUNT === undefined ||
-      this.PSBT_OUT_SCRIPT === undefined
-    ) {
-      throw Error("Provided psbtV2 not valid. Missing required output values.");
-    }
+    this.validate();
   }
 
   /**
@@ -454,9 +432,25 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   get PSBT_GLOBAL_VERSION() {
-    return (
-      this.globalMap.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE() ?? null
-    );
+    const version = 
+      this.globalMap.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE();
+    if (version === undefined) { // This should never happen.
+      console.warn("PSBT_GLOBAL_VERSION key is missing! Setting to version 2.");
+      this.PSBT_GLOBAL_VERSION = 2;
+    }
+    return version ?? 2;
+  }
+
+  set PSBT_GLOBAL_VERSION(version: number) {
+    let workingVersion = version;
+    if (workingVersion < 2) {
+      console.warn(`PsbtV2 cannot have a global version less than 2. Version ${workingVersion} specified. Setting to version 2.`);
+      workingVersion = 2;
+    }
+
+    const bw = new BufferWriter();
+    bw.writeU32(workingVersion);
+    this.globalMap.set(KeyType.PSBT_GLOBAL_VERSION, bw.render());
   }
 
   get PSBT_GLOBAL_PROPRIETARY() {
@@ -691,7 +685,7 @@ export class PsbtV2 extends PsbtV2Maps {
     const indexes: string[] = [];
     for (const map of this.outputMaps) {
       const txid = map.get(KeyType.PSBT_OUT_SCRIPT);
-      if (!txid) {
+      if (!txid) { // This should never happen, but it can't be gracefully handled.
         throw Error("PSBT_OUT_SCRIPT not set for an output");
       }
       indexes.push(txid.toString("hex"));
@@ -785,6 +779,71 @@ export class PsbtV2 extends PsbtV2Maps {
     return null;
   }
 
+  /**
+   * Creator/Constructor Methods
+   */
+
+  // This method ensures that global fields have initial values required by a
+  // PsbtV2 Creator. It is called by the constructor if constructed without a
+  // psbt. 
+  private create() {
+    this.PSBT_GLOBAL_VERSION = 2;
+    this.PSBT_GLOBAL_TX_VERSION = 2;
+    this.PSBT_GLOBAL_INPUT_COUNT = 0;
+    this.PSBT_GLOBAL_OUTPUT_COUNT = 0;
+    this.PSBT_GLOBAL_FALLBACK_LOCKTIME = 0;
+  }
+
+  // This method should check initial construction of any valid PsbtV2. It is
+  // called when a psbt is passed to the constructor or when a new psbt is being
+  // created. If constructed with a psbt, this method acts outside of the
+  // Creator role to validate the current state of the psbt.
+  private validate() {
+    if (this.PSBT_GLOBAL_VERSION < 2)  {
+      throw Error("PsbtV2 has a version field set less than 2");
+    }
+    if (this.PSBT_GLOBAL_TX_VERSION < 2)  {
+      throw Error("PsbtV2 has a tx version field set less than 2");
+    }
+
+    for (const prevInTxid of this.PSBT_IN_PREVIOUS_TXID) {
+      if (!prevInTxid) {
+        throw Error("PsbtV2 input is missing PSBT_IN_PREVIOUS_TXID")
+      }
+    }
+    for (const prevInVOut of this.PSBT_IN_OUTPUT_INDEX) {
+      if (prevInVOut === undefined) {
+        throw Error("PsbtV2 input is missing PSBT_IN_OUTPUT_INDEX")
+      }
+    }
+    for (const amount of this.PSBT_OUT_AMOUNT) {
+      if (!amount) {
+        throw Error("PsbtV2 input is missing PSBT_OUT_AMOUNT")
+      }
+    }
+    for (const script of this.PSBT_OUT_SCRIPT) {
+      if (!script) {
+        throw Error("PsbtV2 input is missing PSBT_OUT_SCRIPT")
+      }
+    }
+    for (const locktime of this.PSBT_IN_REQUIRED_TIME_LOCKTIME) {
+      if (locktime && locktime < 500000000) {
+        throw Error(
+          "PsbtV2 input time locktime is less than 500000000."
+        );
+      }
+    }
+    for (const locktime of this.PSBT_IN_REQUIRED_HEIGHT_LOCKTIME) {
+      if (locktime && locktime >= 500000000) {
+        throw Error(
+          "PsbtV2 input hight locktime is gte 500000000."
+        );
+      }
+    }
+  }
+
+  // Is this a Creator/Constructor role action, or something else. BIPs don't
+  // define it well.
   public addGlobalXpub(xpub: Buffer, fingerprint: Buffer, path: string) {
     const bw = new BufferWriter();
     bw.writeBytes(Buffer.from(KeyType.PSBT_GLOBAL_XPUB, "hex"));
@@ -822,13 +881,15 @@ export class PsbtV2 extends PsbtV2Maps {
   }) {
     // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
     // performing the operation.
+    // TODO: This must accept and add appropriate locktime fields. There is
+    // significant validation concerning this step detailed in the BIP0370
+    // Constructor role:
+    // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#constructor 
     const map = new Map<Key, Value>();
     const bw = new BufferWriter();
-    if (Buffer.isBuffer(previousTxId)) {
-      bw.writeBytes(previousTxId);
-    } else {
-      bw.writeString(previousTxId, "hex");
-    }
+    const prevTxIdBuf = bufferize(previousTxId);
+    bw.writeBytes(prevTxIdBuf);
+
     map.set(KeyType.PSBT_IN_PREVIOUS_TXID, bw.render());
     bw.writeI32(outputIndex);
     map.set(KeyType.PSBT_IN_OUTPUT_INDEX, bw.render());
@@ -864,15 +925,7 @@ export class PsbtV2 extends PsbtV2Maps {
     }
 
     this.inputMaps.push(map);
-  }
-
-  // Removes an input-map from inputMaps
-  public deleteInput(index: number) {
-    // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
-    // performing the operation.
-    const newInputs = this.inputMaps.filter((_, i) => i !== index);
-    this.PSBT_GLOBAL_INPUT_COUNT = newInputs.length;
-    this.inputMaps = newInputs;
+    this.PSBT_GLOBAL_INPUT_COUNT = this.inputMaps.length;
   }
 
   public addOutput({
@@ -905,12 +958,10 @@ export class PsbtV2 extends PsbtV2Maps {
       bw.writeBytes(script);
       map.set(KeyType.PSBT_OUT_REDEEM_SCRIPT, bw.render());
     }
-
     if (witnessScript) {
       bw.writeBytes(script);
       map.set(KeyType.PSBT_OUT_WITNESS_SCRIPT, bw.render());
     }
-
     if (bip32Derivation) {
       for (const bip32 of bip32Derivation) {
         bw.writeString(KeyType.PSBT_OUT_BIP32_DERIVATION, "hex");
@@ -923,29 +974,42 @@ export class PsbtV2 extends PsbtV2Maps {
     }
 
     this.outputMaps.push(map);
+    this.PSBT_GLOBAL_OUTPUT_COUNT = this.outputMaps.length;
+  }
+
+  /**
+   * Updater/Signer Methods
+   */
+
+  // Removes an input-map from inputMaps
+  public deleteInput(index: number) {
+    // TODO: This needs to check PSBT_GLOBAL_TX_MODIFIABLE before performing the
+    // operation.
+    const newInputs = this.inputMaps.filter((_, i) => i !== index);
+    this.inputMaps = newInputs;
+    this.PSBT_GLOBAL_INPUT_COUNT = this.inputMaps.length;
   }
 
   // Removes an output-map from outputMaps
   public deleteOutput(index: number) {
-    // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
-    // performing the operation.
+    // TODO: This needs to check PSBT_GLOBAL_TX_MODIFIABLE before performing the
+    // operation.
     const newOutputs = this.outputMaps.filter((_, i) => i !== index);
-    this.PSBT_GLOBAL_OUTPUT_COUNT = newOutputs.length;
     this.outputMaps = newOutputs;
+    this.PSBT_GLOBAL_OUTPUT_COUNT = this.outputMaps.length;
   }
 
   // Attempt to return a PsbtV2 by converting from a PsbtV0 string or Buffer
   static FromV0(psbt: string | Buffer): PsbtV2 {
     const psbtv0Buf = bufferize(psbt);
     const psbtv0 = Psbt.fromBuffer(psbtv0Buf);
-    const psbtv2 = new PsbtV2();
     const psbtv0GlobalMap = psbtv0.data.globalMap;
-
+    
+    // Creator Role
+    const psbtv2 = new PsbtV2();
     psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
-    psbtv2.PSBT_GLOBAL_INPUT_COUNT = psbtv0.data.inputs.length;
-    psbtv2.PSBT_GLOBAL_OUTPUT_COUNT = psbtv0.data.outputs.length;
-    psbtv2.PSBT_GLOBAL_FALLBACK_LOCKTIME = 0; // Is this necessary?
 
+    // Is this also a Creator role step? Unknown.
     for (const globalXpub of psbtv0GlobalMap.globalXpub ?? []) {
       psbtv2.addGlobalXpub(
         globalXpub.extendedPubkey,
@@ -954,6 +1018,7 @@ export class PsbtV2 extends PsbtV2Maps {
       );
     }
 
+    // Constructor Role
     let txInputs: any = [];
     for (const [index, txInput] of psbtv0.txInputs.entries()) {
       txInputs[index] = txInput;

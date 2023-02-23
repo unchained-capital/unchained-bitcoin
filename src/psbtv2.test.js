@@ -797,6 +797,15 @@ describe("PsbtV2", () => {
     );
     expect(heightLocks.length).not.toBe(0);
   });
+
+  it("Initializes Creator values when constructed without a psbt", () => {
+    const psbt = new PsbtV2();
+    expect(psbt.PSBT_GLOBAL_VERSION).toBe(2);
+    expect(psbt.PSBT_GLOBAL_TX_VERSION).toBe(2);
+    expect(psbt.PSBT_GLOBAL_INPUT_COUNT).toBe(0);
+    expect(psbt.PSBT_GLOBAL_OUTPUT_COUNT).toBe(0);
+    expect(psbt.PSBT_GLOBAL_FALLBACK_LOCKTIME).toBe(0);
+  });
 });
 
 describe("PsbtV2.nLockTime", () => {
