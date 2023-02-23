@@ -994,11 +994,15 @@ export class PsbtV2 extends PsbtV2Maps {
 }
 
 /**
- * extracts the version number as uint32LE from raw psbt
+ * Attempts to extract the version number as uint32LE from raw psbt regardless
+ * of psbt validity.
  * @param {string | Buffer} psbt - hex, base64 or buffer of psbt
  * @returns {number} version number
  */
 export function getPsbtVersionNumber(psbt: string | Buffer): number {
-  const psbtBuf = bufferize(psbt);
-  return psbtBuf[PSBT_MAGIC_BYTES.length + 1];
+  const buf = bufferize(psbt);
+  const map = new Map();
+  const br = new BufferReader(buf.slice(PSBT_MAGIC_BYTES.length));
+  readAndSetKeyPairs(map, br); 
+  return map.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE() || 0;
 }
