@@ -28,10 +28,6 @@
 
 <header>
     
-        
-            
-        
-    
 </header>
 
 <article>
@@ -43,20 +39,6 @@ https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki</p></div>
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <dl class="details">
@@ -98,24 +80,6 @@ https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki</p></div>
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -200,7 +164,7 @@ which would assume all of the signature(s) are for that pubkey.</p>
             <td class="type">
             
                 
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+<span class="param-type">module:networks.NETWORKS</span>
 
 
             
@@ -320,7 +284,7 @@ which would assume all of the signature(s) are for that pubkey.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line400">line 400</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line401">line 401</a>
     </li></ul></dd>
     
 
@@ -527,7 +491,7 @@ which would assume all of the signature(s) are for that pubkey.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line64">line 64</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line65">line 65</a>
     </li></ul></dd>
     
 
@@ -573,6 +537,165 @@ which would assume all of the signature(s) are for that pubkey.</p>
 |
 
 <span class="param-type">Psbt</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".parseSignatureArrayFromPSBT"><span class="type-signature">(static) </span>parseSignatureArrayFromPSBT<span class="signature">(psbtFromFile)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Extracts signatures in order of inputs and returns as array (or array of arrays if multiple signature sets)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>psbtFromFile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>base64 or hex</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line487">line 487</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns an array of arrays of ordered signatures or an array of signatures if only 1 signer</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -701,7 +824,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line432">line 432</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line451">line 451</a>
     </li></ul></dd>
     
 
@@ -760,7 +883,7 @@ could be used in more than one address, everything would still function properly
     
 
     
-    <h4 class="name" id=".psbtInputFormatter"><span class="type-signature">(static) </span>psbtInputFormatter<span class="signature">(input)</span><span class="type-signature"> &rarr; {<a href="module-inputs.html#.MultisigTransactionPSBTInput">module:inputs.MultisigTransactionPSBTInput</a>}</span></h4>
+    <h4 class="name" id=".psbtInputFormatter"><span class="type-signature">(static) </span>psbtInputFormatter<span class="signature">(input)</span><span class="type-signature"> &rarr; {module:inputs.MultisigTransactionPSBTInput}</span></h4>
     
 
     
@@ -810,7 +933,7 @@ could be used in more than one address, everything would still function properly
             <td class="type">
             
                 
-<span class="param-type"><a href="module-inputs.html#.MultisigTransactionInput">module:inputs.MultisigTransactionInput</a></span>
+<span class="param-type">module:inputs.MultisigTransactionInput</span>
 
 
             
@@ -861,7 +984,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line189">line 189</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -901,7 +1024,7 @@ could be used in more than one address, everything would still function properly
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-inputs.html#.MultisigTransactionPSBTInput">module:inputs.MultisigTransactionPSBTInput</a></span>
+<span class="param-type">module:inputs.MultisigTransactionPSBTInput</span>
 
 
     </dd>
@@ -919,7 +1042,7 @@ could be used in more than one address, everything would still function properly
     
 
     
-    <h4 class="name" id=".psbtOutputFormatter"><span class="type-signature">(static) </span>psbtOutputFormatter<span class="signature">(output)</span><span class="type-signature"> &rarr; {<a href="module-outputs.html#.TransactionPSBTOutput">module:outputs.TransactionPSBTOutput</a>}</span></h4>
+    <h4 class="name" id=".psbtOutputFormatter"><span class="type-signature">(static) </span>psbtOutputFormatter<span class="signature">(output)</span><span class="type-signature"> &rarr; {module:outputs.TransactionPSBTOutput}</span></h4>
     
 
     
@@ -1020,7 +1143,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line227">line 227</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -1060,7 +1183,7 @@ could be used in more than one address, everything would still function properly
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-outputs.html#.TransactionPSBTOutput">module:outputs.TransactionPSBTOutput</a></span>
+<span class="param-type">module:outputs.TransactionPSBTOutput</span>
 
 
     </dd>
@@ -1130,7 +1253,7 @@ could be used in more than one address, everything would still function properly
             <td class="type">
             
                 
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+<span class="param-type">module:networks.NETWORKS</span>
 
 
             
@@ -1250,7 +1373,7 @@ could be used in more than one address, everything would still function properly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line332">line 332</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line333">line 333</a>
     </li></ul></dd>
     
 
@@ -1440,7 +1563,7 @@ bip32Derivations: [],
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line302">line 302</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line303">line 303</a>
     </li></ul></dd>
     
 
@@ -1552,7 +1675,7 @@ bip32Derivations: [],
             <td class="type">
             
                 
-<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+<span class="param-type">module:multisig.Multisig</span>
 
 
             
@@ -1654,7 +1777,7 @@ bip32Derivations: [],
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line100">line 100</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -1732,6 +1855,165 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
 
     
+    <h4 class="name" id="~getNumSigners"><span class="type-signature">(inner) </span>getNumSigners<span class="signature">(psbt)</span><span class="type-signature"> &rarr; {int}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Get number of signers in the PSBT</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>psbt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Psbt</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitcoinjs-lib object</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line421">line 421</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>number of signers in the PSBT</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">int</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="~getUnchainedInputsFromPSBT"><span class="type-signature">(inner) </span>getUnchainedInputsFromPSBT<span class="signature">(network, addressType, psbt)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
     
 
@@ -1782,7 +2064,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
             <td class="type">
             
                 
-<span class="param-type"><a href="module-networks.html#.NETWORKS">module:networks.NETWORKS</a></span>
+<span class="param-type">module:networks.NETWORKS</span>
 
 
             
@@ -1879,7 +2161,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line263">line 263</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line264">line 264</a>
     </li></ul></dd>
     
 
@@ -2038,7 +2320,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line288">line 288</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line289">line 289</a>
     </li></ul></dd>
     
 
@@ -2146,7 +2428,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
             <td class="type">
             
                 
-<span class="param-type"><a href="module-inputs.html#.MultisigTransactionInput">module:inputs.MultisigTransactionInput</a></span>
+<span class="param-type">module:inputs.MultisigTransactionInput</span>
 
 
             
@@ -2197,7 +2479,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line145">line 145</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line146">line 146</a>
     </li></ul></dd>
     
 
@@ -2305,7 +2587,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
             <td class="type">
             
                 
-<span class="param-type"><a href="module-inputs.html#.MultisigTransactionInput">module:inputs.MultisigTransactionInput</a></span>
+<span class="param-type">module:inputs.MultisigTransactionInput</span>
 
 
             
@@ -2356,7 +2638,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line123">line 123</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -2464,7 +2746,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
             <td class="type">
             
                 
-<span class="param-type"><a href="module-multisig.html#.Multisig">module:multisig.Multisig</a></span>
+<span class="param-type">module:multisig.Multisig</span>
 
 
             
@@ -2515,7 +2797,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line163">line 163</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line164">line 164</a>
     </li></ul></dd>
     
 
@@ -2674,7 +2956,7 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line136">line 136</a>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line137">line 137</a>
     </li></ul></dd>
     
 
@@ -2730,6 +3012,485 @@ console.log(getBip32Derivation(multisig, 0)); // {
     
 
     
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="~MultisigTransactionPSBTInput">MultisigTransactionPSBTInput</h4>
+
+
+
+
+<div class="description">
+    <p>Represents a transaction PSBT input.</p>
+<p>The <code>Multisig</code> object represents
+the address the corresponding UTXO belongs to.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hash</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The transaction ID where funds were received</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The index in the transaction referred to by {txid}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>utxoToVerify</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The UTXO to verify</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>multisigScript</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Multisig</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Locking script(s) for the multisig address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bip32Derivation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the set of (rootFingerprints &amp;&amp; pubkeys &amp;&amp; bip32paths) for this Multisig</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="~TransactionPSBTOutput">TransactionPSBTOutput</h4>
+
+
+
+
+<div class="description">
+    <p>Represents an output in a PSBT transaction.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>address</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>the output address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>output amount in Satoshis</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redeemScript</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>For change addresses - Locking script(s) for the multisig address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>witnessScript</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>For change addresses - Locking script(s) for the multisig address</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bip32Derivation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>For change addresses - the set of (rootFingerprints &amp;&amp; pubkeys &amp;&amp; bip32paths) for this Multisig</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="psbt.js.html">psbt.js</a>, <a href="psbt.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
 
     
 </article>
@@ -2742,13 +3503,13 @@ console.log(getBip32Derivation(multisig, 0)); // {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Oct 08 2021 17:26:49 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Fri Feb 24 2023 14:08:23 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

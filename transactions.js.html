@@ -57,6 +57,8 @@ import {
 import {validateOutputs} from "./outputs";
 import {scriptToHex} from './script';
 import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
+import {Braid} from "./braid";
+import {ExtendedPublicKey} from "./keys";
 
 
 /**
@@ -122,9 +124,10 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs : NOTE - must be braid-aware
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
+ * @param {Boolean} includeGlobalXpubs - include global xpub objects in the PSBT?
  * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
-export function unsignedMultisigPSBT(network, inputs, outputs) {
+export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpubs=false) {
   const multisigInputError = validateMultisigInputs(inputs, true);
   assert(!multisigInputError.length, multisigInputError);
   const multisigOutputError = validateOutputs(network, outputs);
@@ -133,11 +136,43 @@ export function unsignedMultisigPSBT(network, inputs, outputs) {
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const psbtInputs = inputs.map((input) => psbtInputFormatter({...input}));
-  psbt.addInputs(psbtInputs);
+  const globalExtendedPublicKeys = [];
+
+  inputs.forEach((input) => {
+    const formattedInput = psbtInputFormatter({...input});
+    psbt.addInput(formattedInput);
+    const braidDetails = input.multisig.braidDetails;
+    if (braidDetails &amp;&amp; includeGlobalXpubs) {
+      const braid = Braid.fromData(JSON.parse(braidDetails));
+      braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
+        const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
+
+        const alreadyFound = globalExtendedPublicKeys.find(
+          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58()
+        );
+
+        if (!alreadyFound) {
+          globalExtendedPublicKeys.push(extendedPublicKey);
+        }
+      });
+    }
+  });
+
+  if (includeGlobalXpubs &amp;&amp; globalExtendedPublicKeys.length > 0) {
+    const globalXpubs = globalExtendedPublicKeys.map(extendedPublicKey => ({
+        extendedPubkey: extendedPublicKey.encode(),
+        masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
+        path: extendedPublicKey.path,
+      })
+    );
+    psbt.updateGlobal({globalXpub: globalXpubs});
+  }
+
+
   const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
   psbt.addOutputs(psbtOutputs);
   psbt.txn = psbt.data.globalMap.unsignedTx.tx.toHex();
+  
   return psbt;
 }
 
@@ -320,13 +355,13 @@ function multisigScriptSig(multisig, signersInputSignatures) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-networks.html">networks</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-address.html">address</a></li><li><a href="module-block_explorer.html">block_explorer</a></li><li><a href="module-braid.html">braid</a></li><li><a href="module-fees.html">fees</a></li><li><a href="module-fixtures.html">fixtures</a></li><li><a href="module-inputs.html">inputs</a></li><li><a href="module-multisig.html">multisig</a></li><li><a href="module-outputs.html">outputs</a></li><li><a href="module-p2sh.html">p2sh</a></li><li><a href="module-p2sh_p2wsh.html">p2sh_p2wsh</a></li><li><a href="module-p2wsh.html">p2wsh</a></li><li><a href="module-paths.html">paths</a></li><li><a href="module-psbt.html">psbt</a></li><li><a href="module-script.html">script</a></li><li><a href="module-signatures.html">signatures</a></li><li><a href="module-transactions.html">transactions</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-braid.Braid.html">Braid</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Oct 08 2021 17:26:49 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Fri Feb 24 2023 14:08:23 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
