@@ -8,6 +8,10 @@
 import BigNumber from "bignumber.js";
 import { crypto } from "bitcoinjs-lib";
 
+const VALID_BASE64_REGEX = 
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+const VALID_HEX_REGEX = /^[0-9A-Fa-f]*$/;
+
 /**
  * Converts a byte array to its hex representation.
  * 
@@ -24,6 +28,20 @@ export function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function (byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
   }).join('');
+}
+
+/**
+ * Validate whether the given string is base64.
+ *
+ * - Valid base64 consists of whole groups of 4 characters containing `a-z`, `A-Z`, 0-9,
+ *   `+`, or `/`. The end of the string may be padded with `==` or `=` to
+ *   complete the four character group.
+ * 
+ * @param {string} inputString - string to validate
+ * @returns {boolean} true if base64, false otherwise.
+ */
+export function validBase64(inputString) {
+  return (VALID_BASE64_REGEX).test(inputString);
 }
 
 /**
@@ -50,8 +68,7 @@ export function validateHex(inputString) {
   if (inputString.length % 2) {
     return 'Invalid hex: odd-length string.';
   }
-  const re = /^[0-9A-Fa-f]*$/;
-  if (!re.test(inputString)) {
+  if (!VALID_HEX_REGEX.test(inputString)) {
     return 'Invalid hex: only characters a-f, A-F and 0-9 allowed.';
   }
   return '';

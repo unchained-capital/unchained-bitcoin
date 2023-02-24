@@ -12,22 +12,23 @@ import assert from "assert";
 import {
   bip32PathToSequence,
   validateBIP32Index,
-  validateBIP32Path} from "./paths";
+  validateBIP32Path,
+} from "./paths";
 import { NETWORKS } from "./networks";
 import {
   MULTISIG_ADDRESS_TYPES,
-  generateMultisigFromPublicKeys
-} from './multisig';
+  generateMultisigFromPublicKeys,
+} from "./multisig";
 import {
   validateExtendedPublicKey,
   deriveChildPublicKey,
   extendedPublicKeyRootFingerprint,
-} from './keys';
+} from "./keys";
 
 // In building the information objects that PSBTs want, one must include information
 // about the root fingerprint for the device. If that information is unknown, just fill
 // it in with zeros.
-const FAKE_ROOT_FINGERPRINT = '00000000';
+const FAKE_ROOT_FINGERPRINT = "00000000";
 
 /**
  * Struct object for encoding and decoding braids.
@@ -47,7 +48,9 @@ export class Braid extends Struct {
 
     assert(
       Object.values(MULTISIG_ADDRESS_TYPES).includes(options.addressType),
-      `Expected addressType to be one of:  ${Object.values(MULTISIG_ADDRESS_TYPES)}. You sent ${options.addressType}`
+      `Expected addressType to be one of:  ${Object.values(
+        MULTISIG_ADDRESS_TYPES
+      )}. You sent ${options.addressType}`
     );
     this.addressType = options.addressType;
     assert(
@@ -58,31 +61,40 @@ export class Braid extends Struct {
 
     options.extendedPublicKeys.forEach((xpub) => {
       const xpubValidationError = validateExtendedPublicKey(
-        typeof xpub === 'string'
-          ? xpub
-          : xpub.base58String,
-        this.network);
+        typeof xpub === "string" ? xpub : xpub.base58String,
+        this.network
+      );
       assert(!xpubValidationError.length, xpubValidationError);
     });
     this.extendedPublicKeys = options.extendedPublicKeys;
 
     assert(typeof options.requiredSigners === "number");
-    assert(options.requiredSigners <= this.extendedPublicKeys.length,
-      `Can't have more requiredSigners than there are keys.`)
+    assert(
+      options.requiredSigners <= this.extendedPublicKeys.length,
+      `Can't have more requiredSigners than there are keys.`
+    );
     this.requiredSigners = options.requiredSigners;
 
     // index is a technically a bip32path, but it's also just an
     // unhardened index (single number) - if we think of the bip32path as a
     // filepath, then this is a directory that historically/typically tells you
     // deposit (0) or change (1) braid, but could be any unhardened index.
-    const pathError = validateBIP32Index(options.index, {mode: "unhardened"});
+    const pathError = validateBIP32Index(options.index, { mode: "unhardened" });
     assert(!pathError.length, pathError);
     this.index = options.index;
     this.sequence = bip32PathToSequence(this.index);
   }
 
+  toJSON() {
+    return braidConfig(this);
+  }
+
   static fromData(data) {
     return new this(data);
+  }
+
+  static fromJSON(string) {
+    return new this(JSON.parse(string));
   }
 }
 
@@ -160,11 +172,13 @@ export function validateBip32PathForBraid(braid, path) {
   // The function bip32PathToSequence blindly slices the first index after splitting on '/',
   // so make sure the slash is there. E.g. a path of "0/0" would validate in the above function,
   // but fail to do what we expect here unless we prepend '/' as '/0/0'.
-  const pathToCheck = (path.startsWith('m/') || path.startsWith('/'))
-    ? path
-    : "/" + path;
+  const pathToCheck =
+    path.startsWith("m/") || path.startsWith("/") ? path : "/" + path;
   const pathSequence = bip32PathToSequence(pathToCheck);
-  assert(pathSequence[0].toString() === braid.index, `Cannot derive paths outside of the braid's index: ${braid.index}`);
+  assert(
+    pathSequence[0].toString() === braid.index,
+    `Cannot derive paths outside of the braid's index: ${braid.index}`
+  );
 }
 
 /**
@@ -178,15 +192,13 @@ export function validateBip32PathForBraid(braid, path) {
 function derivePublicKeyObjectsAtPath(braid, path) {
   validateBip32PathForBraid(braid, path);
   const dataRichPubKeyObjects = {};
-  const actualPathSuffix = path.startsWith('m/') ? path.slice(2) : path;
+  const actualPathSuffix = path.startsWith("m/") ? path.slice(2) : path;
 
   braidExtendedPublicKeys(braid).forEach((xpub) => {
     const completePath = xpub.path + "/" + actualPathSuffix;
     // Provide ability to work whether this was called with plain xpub strings or with xpub structs
     const pubkey = deriveChildPublicKey(
-      typeof xpub === 'string'
-        ? xpub
-        : xpub.base58String,
+      typeof xpub === "string" ? xpub : xpub.base58String,
       path,
       braidNetwork(braid)
     );
@@ -194,11 +206,13 @@ function derivePublicKeyObjectsAtPath(braid, path) {
     // signing won't work. On Coldcard, this must match what was included in the multisig
     // wallet config file.
     const rootFingerprint = extendedPublicKeyRootFingerprint(xpub);
-    const masterFingerprint = rootFingerprint ? rootFingerprint: FAKE_ROOT_FINGERPRINT;
+    const masterFingerprint = rootFingerprint
+      ? rootFingerprint
+      : FAKE_ROOT_FINGERPRINT;
     dataRichPubKeyObjects[pubkey] = {
-      masterFingerprint: Buffer.from(masterFingerprint, 'hex'),
+      masterFingerprint: Buffer.from(masterFingerprint, "hex"),
       path: completePath,
-      pubkey: Buffer.from(pubkey, 'hex'),
+      pubkey: Buffer.from(pubkey, "hex"),
     };
   });
   return dataRichPubKeyObjects;
@@ -259,7 +273,11 @@ export function generateBip32DerivationByIndex(braid, index) {
 export function deriveMultisigByPath(braid, path) {
   const pubkeys = generatePublicKeysAtPath(braid, path);
   const bip32Derivation = generateBip32DerivationByPath(braid, path);
-  return generateBraidAwareMultisigFromPublicKeys(braid, pubkeys, bip32Derivation);
+  return generateBraidAwareMultisigFromPublicKeys(
+    braid,
+    pubkeys,
+    bip32Derivation
+  );
 }
 
 /**
@@ -285,12 +303,14 @@ export function deriveMultisigByIndex(braid, index) {
 function generateBraidAwareMultisigFromPublicKeys(
   braid,
   pubkeys,
-  bip32Derivation) {
+  bip32Derivation
+) {
   const multisig = generateMultisigFromPublicKeys(
     braidNetwork(braid),
     braidAddressType(braid),
     braidRequiredSigners(braid),
-    ...pubkeys);
+    ...pubkeys
+  );
   multisig.braidDetails = braidConfig(braid);
   multisig.bip32Derivation = bip32Derivation;
   return multisig;
@@ -311,7 +331,7 @@ export function generateBraid(
   addressType,
   extendedPublicKeys,
   requiredSigners,
-  index,
+  index
 ) {
   return new Braid({
     network,

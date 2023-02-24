@@ -75,7 +75,8 @@
         "func-names": "off",
         "func-style": [
             "error",
-            "declaration"
+            "declaration",
+            { "allowArrowFunctions": true }
         ],
         "function-paren-newline": "off",
         "generator-star-spacing": "error",
@@ -85,10 +86,6 @@
         "id-blacklist": "error",
         "id-length": "off",
         "id-match": "error",
-        "implicit-arrow-linebreak": [
-            "error",
-            "beside"
-        ],
         "indent": "off",
         "indent-legacy": "off",
         "init-declarations": "off",
@@ -102,8 +99,13 @@
         ],
         "lines-around-comment": "error",
         "lines-around-directive": "error",
-        "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
-        "max-classes-per-file": "error",
+        "lines-between-class-members": [
+            "error",
+            "always",
+            {
+                "exceptAfterSingleLine": true
+            }
+        ],
         "max-depth": "error",
         "max-len": "off",
         "max-lines": "off",
@@ -310,5 +312,8 @@
             "never"
         ]
     },
-    "plugins": ["jest", "@typescript-eslint"]
+    "plugins": [
+        "jest",
+        "@typescript-eslint"
+    ]
 }

@@ -16,7 +16,8 @@ import {
   ExtendedPublicKey,
   fingerprintToFixedLengthHex,
   extendedPublicKeyRootFingerprint,
-  validateExtendedPublicKeyForNetwork
+  validateExtendedPublicKeyForNetwork,
+  getMaskedDerivation,
 } from "./keys";
 
 import { TESTNET, MAINNET } from "./networks";
@@ -344,10 +345,9 @@ describe("keys", () => {
 
   describe("convertExtendedPublicKey", () => {
     it(`should fail to convert`, () => {
-      expect(() => convertExtendedPublicKey(
-        'tpub',
-        'xpub',
-      )).toThrow(/Unable to convert extended/);
+      expect(() => convertExtendedPublicKey("tpub", "xpub")).toThrow(
+        /Unable to convert extended/
+      );
     });
 
     Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertTo) => {
@@ -381,7 +381,7 @@ describe("keys", () => {
         isKeyCompressed(compressPublicKey(uncompressedPubkey))
       ).toBeTruthy();
 
-      const uncompressedPubkeyBuffer = Buffer.from(uncompressedPubkey, 'hex');
+      const uncompressedPubkeyBuffer = Buffer.from(uncompressedPubkey, "hex");
       expect(isKeyCompressed(uncompressedPubkeyBuffer)).toBeFalsy();
     });
   });
@@ -419,27 +419,33 @@ describe("keys", () => {
     it("returns root fingerprint if set", () => {
       const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0"];
       for (const path of paths) {
-        const { parentFingerprint, chaincode, pub, rootFingerprint } = NODES[path];
+        const { parentFingerprint, chaincode, pub, rootFingerprint } =
+          NODES[path];
         let pubToUse = pub;
         // Make sure compressing works as intended
-        if (pub === '0387cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03') {
-          pubToUse = '0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907'
+        if (
+          pub ===
+          "0387cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03"
+        ) {
+          pubToUse =
+            "0487cb4929c287665fbda011b1afbebb0e691a5ee11ee9a561fcd6adba266afe03f7c55f784242305cfd8252076d038b0f3c92836754308d06b097d11e37bc0907";
         }
-        const derivedXpub = ExtendedPublicKey.fromBase58(deriveExtendedPublicKey(
-          path,
-          pubToUse,
-          chaincode,
-          parentFingerprint,
-        ));
-        derivedXpub.setRootFingerprint(rootFingerprint)
-        const derivedTpub = ExtendedPublicKey.fromBase58(deriveExtendedPublicKey(
-          path,
-          pubToUse,
-          chaincode,
-          parentFingerprint,
-          TESTNET
-        ));
-        expect(extendedPublicKeyRootFingerprint(derivedXpub)).toEqual(rootFingerprint);
+        const derivedXpub = ExtendedPublicKey.fromBase58(
+          deriveExtendedPublicKey(path, pubToUse, chaincode, parentFingerprint)
+        );
+        derivedXpub.setRootFingerprint(rootFingerprint);
+        const derivedTpub = ExtendedPublicKey.fromBase58(
+          deriveExtendedPublicKey(
+            path,
+            pubToUse,
+            chaincode,
+            parentFingerprint,
+            TESTNET
+          )
+        );
+        expect(extendedPublicKeyRootFingerprint(derivedXpub)).toEqual(
+          rootFingerprint
+        );
         expect(extendedPublicKeyRootFingerprint(derivedTpub)).toBe(null);
       }
     });
@@ -448,24 +454,24 @@ describe("keys", () => {
   describe("fingerprintToFixedLengthHex", () => {
     it("returns 4-byte zero-padded hex string", () => {
       const hexOutputs = {
-        '00000007': 7,
-        '0000007b': 123,
-        '00000943': 2371,
-        '0000d2bb': 53947,
-        '0004ec4f': 322639,
-        '00f4a5bc': 16033212,
-        '01808a52': 25201234,
-        '32a7ae1c': 849849884,
-        'fa8cae68': 8498490984, // should be 1fa8cae68 but truncated front 1
+        "00000007": 7,
+        "0000007b": 123,
+        "00000943": 2371,
+        "0000d2bb": 53947,
+        "0004ec4f": 322639,
+        "00f4a5bc": 16033212,
+        "01808a52": 25201234,
+        "32a7ae1c": 849849884,
+        fa8cae68: 8498490984, // should be 1fa8cae68 but truncated front 1
       };
 
       for (const [xfpHex, xfpNumber] of Object.entries(hexOutputs)) {
         const hexFingerprint = fingerprintToFixedLengthHex(xfpNumber);
         expect(hexFingerprint.length).toEqual(8);
-        expect(hexFingerprint).toEqual(xfpHex)
+        expect(hexFingerprint).toEqual(xfpHex);
       }
-    })
-  })
+    });
+  });
 
   describe("deriveExtendedPublicKey", () => {
     it("derives a valid bip32 node with all matching HD wallet properties", () => {
@@ -496,15 +502,15 @@ describe("keys", () => {
     it("encodes and decodes an extended public key", () => {
       const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0", null];
       for (const path of paths) {
-        const { 
-          parentFingerprint, 
-          chaincode, 
-          xpub, 
-          pub: pubkey, 
-          tpub, 
+        const {
+          parentFingerprint,
+          chaincode,
+          xpub,
+          pub: pubkey,
+          tpub,
           rootFingerprint,
           depth,
-          index
+          index,
         } = NODES[path || paths[0]]; // test with a null path but need to pull a real node
 
         const extendedPubkey = new ExtendedPublicKey({
@@ -514,18 +520,16 @@ describe("keys", () => {
           parentFingerprint,
           rootFingerprint,
           depth,
-          index
+          index,
         });
-
 
         expect(extendedPubkey.base58String).toEqual(xpub);
         expect(extendedPubkey.rootFingerprint).toEqual(rootFingerprint);
-        extendedPubkey.setRootFingerprint('12341234');
-        expect(extendedPubkey.rootFingerprint).toEqual('12341234');
+        extendedPubkey.setRootFingerprint("12341234");
+        expect(extendedPubkey.rootFingerprint).toEqual("12341234");
 
-        extendedPubkey.setBip32Path('0/0');
-        expect(extendedPubkey.path).toEqual('0/0');
-
+        extendedPubkey.setBip32Path("0/0");
+        expect(extendedPubkey.path).toEqual("0/0");
 
         expect(extendedPubkey.toBase58()).toEqual(xpub);
         extendedPubkey.setNetwork(TESTNET);
@@ -561,5 +565,35 @@ describe("keys", () => {
         expect(decodedTestnetXpub.chaincode).toEqual(chaincode);
       }
     });
+  });
+
+  describe("getMaskedDerivation", () => {
+    const nodes = TEST_FIXTURES.keys.open_source.nodes;
+    const cases = Object.keys(nodes)
+      .filter((path) => nodes[path].xpub)
+      .map((path) => ({
+        path,
+        depth: path.split("/").length - 1,
+        xpub: nodes[path].xpub,
+      }));
+    test.each(cases)(`getting masked for xpub with path $path`, (vect) => {
+      const actual = getMaskedDerivation({
+        xpub: vect.xpub,
+        bip32Path: "Unknown",
+      });
+      const expected = `m${"/0".repeat(vect.depth)}`;
+      expect(actual).toEqual(expected);
+    });
+
+    test.each(cases)(
+      `returns path if not unknown for xpub with path $path`,
+      (vect) => {
+        const actual = getMaskedDerivation({
+          xpub: vect.xpub,
+          bip32Path: vect.path,
+        });
+        expect(actual).toEqual(vect.path);
+      }
+    );
   });
 });

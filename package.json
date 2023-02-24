@@ -45,7 +45,7 @@
     "build-types:watch": "tsc --watch",
     "check-types": "tsc -p tsconfig.json --noEmit --emitDeclarationOnly false",
     "compile": "babel --extensions .ts,.js -d lib/ src/",
-    "compile:watch": "babel --watch -d lib/ src/",
+    "compile:watch": "babel --extensions .ts,.js --watch -d lib/ src/",
     "coverage": "jest --coverage",
     "prepublish": "npm run compile",
     "pretest": "npm run build-types && npm run compile",
