@@ -169,7 +169,7 @@ function getOptionalMappedBytesAsUInt(
   maps: Map<Key, Value>[],
   keytype: KeyType
 ) {
-  return maps.map((map) => map.get(keytype)?.readUInt32LE() ?? null);
+  return maps.map((map) => map.get(keytype)?.readUInt32LE(0) ?? null);
 }
 
 // Accepts a BIP0032 path as a string and returns a Buffer containing uint32
@@ -205,7 +205,7 @@ function readAndSetKeyPairs(map: Map<Key, Buffer>, br: BufferReader) {
     return;
   }
 
-  const keyLen = nextByte.readUInt8();
+  const keyLen = nextByte.readUInt8(0);
   const key = br.readBytes(keyLen);
   const value = br.readVarBytes();
 
@@ -264,7 +264,7 @@ export abstract class PsbtV2Maps {
 
     // Build inputMaps
     const inputCount =
-      this.globalMap.get(KeyType.PSBT_GLOBAL_INPUT_COUNT)?.readUInt8() ?? 0;
+      this.globalMap.get(KeyType.PSBT_GLOBAL_INPUT_COUNT)?.readUInt8(0) ?? 0;
     for (let i = 0; i < inputCount; i++) {
       const map = new Map<Key, Value>();
       readAndSetKeyPairs(map, br);
@@ -273,7 +273,7 @@ export abstract class PsbtV2Maps {
 
     // Build outputMaps
     const outputCount =
-      this.globalMap.get(KeyType.PSBT_GLOBAL_OUTPUT_COUNT)?.readUInt8() ?? 0;
+      this.globalMap.get(KeyType.PSBT_GLOBAL_OUTPUT_COUNT)?.readUInt8(0) ?? 0;
     for (let i = 0; i < outputCount; i++) {
       const map = new Map<Key, Value>();
       readAndSetKeyPairs(map, br);
@@ -367,7 +367,7 @@ export class PsbtV2 extends PsbtV2Maps {
     return (
       this.globalMap
         .get(KeyType.PSBT_GLOBAL_FALLBACK_LOCKTIME)
-        ?.readUInt32LE() ?? null
+        ?.readUInt32LE(0) ?? null
     );
   }
 
@@ -388,7 +388,7 @@ export class PsbtV2 extends PsbtV2Maps {
       throw Error("PSBT_GLOBAL_INPUT_COUNT not set");
     }
 
-    return val.readUInt8();
+    return val.readUInt8(0);
   }
 
   set PSBT_GLOBAL_INPUT_COUNT(count: number) {
@@ -404,7 +404,7 @@ export class PsbtV2 extends PsbtV2Maps {
       throw Error("PSBT_GLOBAL_OUTPUT_COUNT not set");
     }
 
-    return val.readUInt8();
+    return val.readUInt8(0);
   }
 
   set PSBT_GLOBAL_OUTPUT_COUNT(count: number) {
@@ -415,7 +415,7 @@ export class PsbtV2 extends PsbtV2Maps {
 
   get PSBT_GLOBAL_TX_MODIFIABLE() {
     const val =
-      this.globalMap.get(KeyType.PSBT_GLOBAL_TX_MODIFIABLE)?.readUInt8() || 0;
+      this.globalMap.get(KeyType.PSBT_GLOBAL_TX_MODIFIABLE)?.readUInt8(0) || 0;
     let modifiable: PsbtGlobalTxModifiableBits[] = [];
 
     if (val & 0b000000001) {
@@ -433,7 +433,7 @@ export class PsbtV2 extends PsbtV2Maps {
 
   get PSBT_GLOBAL_VERSION() {
     const version = 
-      this.globalMap.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE();
+      this.globalMap.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE(0);
     if (version === undefined) { // This should never happen.
       console.warn("PSBT_GLOBAL_VERSION key is missing! Setting to version 2.");
       this.PSBT_GLOBAL_VERSION = 2;
@@ -569,7 +569,7 @@ export class PsbtV2 extends PsbtV2Maps {
       if (!txid) {
         throw Error("PSBT_IN_OUTPUT_INDEX not set for an input");
       }
-      indexes.push(txid.readUInt32LE());
+      indexes.push(txid.readUInt32LE(0));
     }
     return indexes;
   }
@@ -1065,9 +1065,9 @@ export class PsbtV2 extends PsbtV2Maps {
  * @returns {number} version number
  */
 export function getPsbtVersionNumber(psbt: string | Buffer): number {
+  const map = new Map<Key, Value>();
   const buf = bufferize(psbt);
-  const map = new Map();
   const br = new BufferReader(buf.slice(PSBT_MAGIC_BYTES.length));
-  readAndSetKeyPairs(map, br); 
-  return map.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE() || 0;
+  readAndSetKeyPairs(map, br);
+  return map.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE(0) || 0;
 }
