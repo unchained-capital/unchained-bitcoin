@@ -13,7 +13,7 @@ import { Struct, BufferWriter, BufferReader } from "bufio";
 import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
-import { TESTNET, networkData, MAINNET, NETWORKS } from "./networks";
+import { TESTNET, networkData, MAINNET, NETWORKS, REGTEST } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
 import { BitcoinNetwork, KeyPrefix, KeyVersion } from "./types";
@@ -173,8 +173,8 @@ export class ExtendedPublicKey extends Struct {
    */
   setNetwork(network: BitcoinNetwork): void {
     assert(
-      [MAINNET, TESTNET].includes(network),
-      `Expected network to be one of ${MAINNET} or ${TESTNET}.`
+      [MAINNET, TESTNET, REGTEST].includes(network),
+      `Expected network to be one of ${MAINNET}, ${TESTNET}, or ${REGTEST}.`
     );
     this.network = network;
     this.version =
