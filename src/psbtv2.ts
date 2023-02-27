@@ -955,11 +955,11 @@ export class PsbtV2 extends PsbtV2Maps {
     map.set(KeyType.PSBT_OUT_SCRIPT, bw.render());
 
     if (redeemScript) {
-      bw.writeBytes(script);
+      bw.writeBytes(redeemScript);
       map.set(KeyType.PSBT_OUT_REDEEM_SCRIPT, bw.render());
     }
     if (witnessScript) {
-      bw.writeBytes(script);
+      bw.writeBytes(witnessScript);
       map.set(KeyType.PSBT_OUT_WITNESS_SCRIPT, bw.render());
     }
     if (bip32Derivation) {
