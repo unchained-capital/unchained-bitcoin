@@ -551,27 +551,27 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   get PSBT_IN_PREVIOUS_TXID() {
-    const txids: string[] = [];
+    const indices: string[] = [];
     for (const map of this.inputMaps) {
-      const txid = map.get(KeyType.PSBT_IN_PREVIOUS_TXID);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_IN_PREVIOUS_TXID);
+      if (!value) {
         throw Error("PSBT_IN_PREVIOUS_TXID not set for an input");
       }
-      txids.push(txid.toString("hex"));
+      indices.push(value.toString("hex"));
     }
-    return txids;
+    return indices;
   }
 
   get PSBT_IN_OUTPUT_INDEX() {
-    const indexes: number[] = [];
+    const indices: number[] = [];
     for (const map of this.inputMaps) {
-      const txid = map.get(KeyType.PSBT_IN_OUTPUT_INDEX);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_IN_OUTPUT_INDEX);
+      if (!value) {
         throw Error("PSBT_IN_OUTPUT_INDEX not set for an input");
       }
-      indexes.push(txid.readUInt32LE(0));
+      indices.push(value.readUInt32LE(0));
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_IN_SEQUENCE() {
@@ -670,27 +670,27 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   get PSBT_OUT_AMOUNT() {
-    const indexes: bigint[] = [];
+    const indices: bigint[] = [];
     for (const map of this.outputMaps) {
-      const txid = map.get(KeyType.PSBT_OUT_AMOUNT);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_OUT_AMOUNT);
+      if (!value) {
         throw Error("PSBT_OUT_AMOUNT not set for an output");
       }
-      indexes.push(txid.readBigInt64LE());
+      indices.push(value.readBigInt64LE());
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_OUT_SCRIPT() {
-    const indexes: string[] = [];
+    const indices: string[] = [];
     for (const map of this.outputMaps) {
-      const txid = map.get(KeyType.PSBT_OUT_SCRIPT);
-      if (!txid) { // This should never happen, but it can't be gracefully handled.
+      const value = map.get(KeyType.PSBT_OUT_SCRIPT);
+      if (!value) { // This should never happen, but it can't be gracefully handled.
         throw Error("PSBT_OUT_SCRIPT not set for an output");
       }
-      indexes.push(txid.toString("hex"));
+      indices.push(value.toString("hex"));
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_OUT_TAP_INTERNAL_KEY() {
