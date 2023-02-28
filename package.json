@@ -63,7 +63,7 @@
     "bitcoin-address-validation": "^0.2.9",
     "bitcoinjs-lib": "^5.1.10",
     "bs58check": "^2.1.2",
-    "bufio": "^1.0.6",
+    "bufio": "^1.2.0",
     "core-js": "^2.6.10"
   },
   "directories": {
