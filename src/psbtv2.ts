@@ -684,7 +684,8 @@ export class PsbtV2 extends PsbtV2Maps {
       if (!value) {
         throw Error("PSBT_OUT_AMOUNT not set for an output");
       }
-      indices.push(value.readBigInt64LE());
+      const br = new BufferReader(value);
+      indices.push(br.readBigI64(value));
     }
     return indices;
   }
