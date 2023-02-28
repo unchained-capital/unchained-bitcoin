@@ -358,6 +358,14 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   set PSBT_GLOBAL_TX_VERSION(version: number) {
+    if (version < 2) {
+      // It's unfortunate this setter has to throw, but a PsbtV2 is invalid with
+      // a txn version < 2. The Creator role is responsible for setting this
+      // value and BIP0370 specifies that it cannot be less than 2.
+      // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#cite_note-3
+      throw Error(`PsbtV2 cannot have a global tx version less than 2. Version ${version} specified.`);
+    }
+
     const bw = new BufferWriter();
     bw.writeI32(version);
     this.globalMap.set(KeyType.PSBT_GLOBAL_TX_VERSION, bw.render());
@@ -842,6 +850,22 @@ export class PsbtV2 extends PsbtV2Maps {
     }
   }
 
+  // This method is provided for compatibility issues and probably shouldn't be
+  // used since a PsbtV2 with PSBT_GLOBAL_TX_VERSION = 1 is BIP0370
+  // non-compliant. No guarantees can be made here that a serialized PsbtV2
+  // which used this method will be compatible with outside consumers.
+  //
+  // One may wish to instance this class from a partially signed
+  // PSBTv0 with a txn version 1 by using the static PsbtV2.FromV0. This method
+  // provides a way to override validation logic for the txn version and roles
+  // lifecycle defined for PsbtV2.
+  public dangerouslySetGlobalTxVersion1() {
+    console.warn('Dangerously setting PsbtV2.PSBT_GLOBAL_TX_VERSION to 1!');
+    const bw = new BufferWriter();
+    bw.writeI32(1);
+    this.globalMap.set(KeyType.PSBT_GLOBAL_TX_VERSION, bw.render());
+  }
+
   // Is this a Creator/Constructor role action, or something else. BIPs don't
   // define it well.
   public addGlobalXpub(xpub: Buffer, fingerprint: Buffer, path: string) {
@@ -1000,14 +1024,19 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   // Attempt to return a PsbtV2 by converting from a PsbtV0 string or Buffer
-  static FromV0(psbt: string | Buffer): PsbtV2 {
+  static FromV0(psbt: string | Buffer, allowTxnVersion1 = false): PsbtV2 {
     const psbtv0Buf = bufferize(psbt);
     const psbtv0 = Psbt.fromBuffer(psbtv0Buf);
     const psbtv0GlobalMap = psbtv0.data.globalMap;
     
     // Creator Role
     const psbtv2 = new PsbtV2();
-    psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
+    const txVersion = psbtv0.data.getTransaction().readInt32LE(0);
+    if (txVersion === 1 && allowTxnVersion1) {
+      psbtv2.dangerouslySetGlobalTxVersion1();
+    } else {
+      psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
+    }
 
     // Is this also a Creator role step? Unknown.
     for (const globalXpub of psbtv0GlobalMap.globalXpub ?? []) {
