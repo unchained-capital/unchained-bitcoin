@@ -870,7 +870,7 @@ export class PsbtV2 extends PsbtV2Maps {
     outputIndex: number;
     sequence?: number;
     nonWitnessUtxo?: Buffer;
-    witnessUtxo?: Buffer;
+    witnessUtxo?: { amount: number; script: Buffer };
     redeemScript?: Buffer;
     witnessScript?: Buffer;
     bip32Derivation?: {
@@ -902,7 +902,9 @@ export class PsbtV2 extends PsbtV2Maps {
       map.set(KeyType.PSBT_IN_NON_WITNESS_UTXO, bw.render());
     }
     if (witnessUtxo) {
-      bw.writeBytes(witnessUtxo);
+      bw.writeI64(witnessUtxo.amount);
+      bw.writeU8(witnessUtxo.script.length);
+      bw.writeBytes(witnessUtxo.script);
       map.set(KeyType.PSBT_IN_WITNESS_UTXO, bw.render());
     }
     if (redeemScript) {
@@ -1031,7 +1033,10 @@ export class PsbtV2 extends PsbtV2Maps {
         outputIndex: txInput.index,
         sequence: txInput.sequence,
         nonWitnessUtxo: input.nonWitnessUtxo,
-        witnessUtxo: input.witnessUtxo?.script,
+        witnessUtxo: input.witnessUtxo && { 
+          amount: input.witnessUtxo.value, 
+          script: input.witnessUtxo.script 
+        },
         redeemScript: input.redeemScript,
         witnessScript: input.witnessScript,
         bip32Derivation: input.bip32Derivation,
