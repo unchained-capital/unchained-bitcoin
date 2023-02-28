@@ -358,8 +358,14 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   set PSBT_GLOBAL_TX_VERSION(version: number) {
+    let workingVersion = version;
+    if (workingVersion < 2) {
+      console.warn(`PsbtV2 cannot have a global tx version less than 2. Version ${workingVersion} specified. Setting to version 2.`);
+      workingVersion = 2;
+    }
+
     const bw = new BufferWriter();
-    bw.writeI32(version);
+    bw.writeI32(workingVersion);
     this.globalMap.set(KeyType.PSBT_GLOBAL_TX_VERSION, bw.render());
   }
 
@@ -551,27 +557,27 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   get PSBT_IN_PREVIOUS_TXID() {
-    const txids: string[] = [];
+    const indices: string[] = [];
     for (const map of this.inputMaps) {
-      const txid = map.get(KeyType.PSBT_IN_PREVIOUS_TXID);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_IN_PREVIOUS_TXID);
+      if (!value) {
         throw Error("PSBT_IN_PREVIOUS_TXID not set for an input");
       }
-      txids.push(txid.toString("hex"));
+      indices.push(value.toString("hex"));
     }
-    return txids;
+    return indices;
   }
 
   get PSBT_IN_OUTPUT_INDEX() {
-    const indexes: number[] = [];
+    const indices: number[] = [];
     for (const map of this.inputMaps) {
-      const txid = map.get(KeyType.PSBT_IN_OUTPUT_INDEX);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_IN_OUTPUT_INDEX);
+      if (!value) {
         throw Error("PSBT_IN_OUTPUT_INDEX not set for an input");
       }
-      indexes.push(txid.readUInt32LE(0));
+      indices.push(value.readUInt32LE(0));
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_IN_SEQUENCE() {
@@ -670,27 +676,27 @@ export class PsbtV2 extends PsbtV2Maps {
   }
 
   get PSBT_OUT_AMOUNT() {
-    const indexes: bigint[] = [];
+    const indices: bigint[] = [];
     for (const map of this.outputMaps) {
-      const txid = map.get(KeyType.PSBT_OUT_AMOUNT);
-      if (!txid) {
+      const value = map.get(KeyType.PSBT_OUT_AMOUNT);
+      if (!value) {
         throw Error("PSBT_OUT_AMOUNT not set for an output");
       }
-      indexes.push(txid.readBigInt64LE());
+      indices.push(value.readBigInt64LE());
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_OUT_SCRIPT() {
-    const indexes: string[] = [];
+    const indices: string[] = [];
     for (const map of this.outputMaps) {
-      const txid = map.get(KeyType.PSBT_OUT_SCRIPT);
-      if (!txid) { // This should never happen, but it can't be gracefully handled.
+      const value = map.get(KeyType.PSBT_OUT_SCRIPT);
+      if (!value) { // This should never happen, but it can't be gracefully handled.
         throw Error("PSBT_OUT_SCRIPT not set for an output");
       }
-      indexes.push(txid.toString("hex"));
+      indices.push(value.toString("hex"));
     }
-    return indexes;
+    return indices;
   }
 
   get PSBT_OUT_TAP_INTERNAL_KEY() {
@@ -870,7 +876,7 @@ export class PsbtV2 extends PsbtV2Maps {
     outputIndex: number;
     sequence?: number;
     nonWitnessUtxo?: Buffer;
-    witnessUtxo?: Buffer;
+    witnessUtxo?: { amount: number; script: Buffer };
     redeemScript?: Buffer;
     witnessScript?: Buffer;
     bip32Derivation?: {
@@ -902,7 +908,9 @@ export class PsbtV2 extends PsbtV2Maps {
       map.set(KeyType.PSBT_IN_NON_WITNESS_UTXO, bw.render());
     }
     if (witnessUtxo) {
-      bw.writeBytes(witnessUtxo);
+      bw.writeI64(witnessUtxo.amount);
+      bw.writeU8(witnessUtxo.script.length);
+      bw.writeBytes(witnessUtxo.script);
       map.set(KeyType.PSBT_IN_WITNESS_UTXO, bw.render());
     }
     if (redeemScript) {
@@ -1031,7 +1039,10 @@ export class PsbtV2 extends PsbtV2Maps {
         outputIndex: txInput.index,
         sequence: txInput.sequence,
         nonWitnessUtxo: input.nonWitnessUtxo,
-        witnessUtxo: input.witnessUtxo?.script,
+        witnessUtxo: input.witnessUtxo && { 
+          amount: input.witnessUtxo.value, 
+          script: input.witnessUtxo.script 
+        },
         redeemScript: input.redeemScript,
         witnessScript: input.witnessScript,
         bip32Derivation: input.bip32Derivation,
