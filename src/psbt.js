@@ -1,20 +1,20 @@
-import {Psbt, Transaction} from "bitcoinjs-lib";
-import { reverseBuffer } from 'bitcoinjs-lib/src/bufferutils';
-import {toHexString} from './utils';
+import { Psbt, Transaction } from "bitcoinjs-lib";
+import { reverseBuffer } from "bitcoinjs-lib/src/bufferutils";
+import { toHexString } from "./utils";
 import {
   generateMultisigFromHex,
   multisigAddressType,
   multisigBraidDetails,
   multisigRedeemScript,
   multisigWitnessScript,
-} from './multisig';
-import {bip32PathToSequence} from './paths';
-import BigNumber from 'bignumber.js';
-import {P2SH} from './p2sh';
-import {P2WSH} from './p2wsh';
-import {P2SH_P2WSH} from './p2sh_p2wsh';
-import {generateBip32DerivationByIndex, generateBraid} from './braid';
-import {networkData} from './networks';
+} from "./multisig";
+import { bip32PathToSequence } from "./paths";
+import BigNumber from "bignumber.js";
+import { P2SH } from "./p2sh";
+import { P2WSH } from "./p2wsh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { generateBip32DerivationByIndex, generateBraid } from "./braid";
+import { networkData } from "./networks";
 
 /**
  * This module provides functions for interacting with PSBTs, see BIP174
@@ -98,7 +98,7 @@ export function autoLoadPSBT(psbtFromFile, options) {
  *   {masterFingerprint: Buffer('1533..', 'hex'), path: "m/45'/0/0/0/0", pubkey: Buffer.from("02...", 'hex')}
  * }
  */
-function getBip32Derivation(multisig, index= 0) {
+function getBip32Derivation(multisig, index = 0) {
   // Already have one, return it
   if (multisig.bip32Derivation) {
     return multisig.bip32Derivation;
@@ -110,7 +110,7 @@ function getBip32Derivation(multisig, index= 0) {
     config.addressType,
     config.extendedPublicKeys,
     config.requiredSigners,
-    config.index,
+    config.index
   );
   return generateBip32DerivationByIndex(braid, index);
 }
@@ -124,7 +124,9 @@ function getBip32Derivation(multisig, index= 0) {
 function psbtInputDerivation(input) {
   // Multi-address inputs will have different bip32Derivations per address (index/path),
   // so specify the index ... If the input is missing a path, assume you want index = 0.
-  const index = input.bip32Path ? bip32PathToSequence(input.bip32Path).slice(-1)[0] : 0;
+  const index = input.bip32Path
+    ? bip32PathToSequence(input.bip32Path).slice(-1)[0]
+    : 0;
   return getBip32Derivation(input.multisig, index);
 }
 
@@ -200,13 +202,20 @@ export function psbtInputFormatter(input) {
   // For SegWit inputs, you need an object with the output script buffer and output value
   const witnessUtxo = getWitnessOutputScriptFromInput(input);
   // For non-SegWit inputs, you must pass the full transaction buffer
-  const nonWitnessUtxo = Buffer.from(input.transactionHex, 'hex');
+  const nonWitnessUtxo = Buffer.from(input.transactionHex, "hex");
 
   // FIXME - this makes the assumption that the funding transaction used the same transaction type as the current input
-  //   we dont have isSegWit info on our inputs at the moment, so we don't know for sure.
+  //   we don't have isSegWit info on our inputs at the moment, so we don't know for sure.
   //   This assumption holds in our fixtures, but it may need to be remedied in the future.
-  const isSegWit = multisigWitnessScript(input.multisig) !== null;
-  const utxoToVerify = isSegWit ? {witnessUtxo} : {nonWitnessUtxo};
+  const addressType = multisigAddressType(input.multisig);
+
+  // The PSBT class in bitcoinjs-lib won't accept both nonWitnessUxo and witnessUtxo
+  // but ledger v2 needs nonWitnessUtxo data in the PSBT for any transactions that aren't
+  // native segwit. So we need to pick which one to give based on the address type
+  // https://github.com/bitcoinjs/bitcoinjs-lib/issues/1595
+  const utxoToVerify =
+    addressType === P2WSH ? { witnessUtxo } : { nonWitnessUtxo };
+
   const multisigScripts = psbtMultisigLock(input.multisig);
 
   const bip32Derivation = psbtInputDerivation(input);
@@ -250,7 +259,7 @@ export function psbtOutputFormatter(output) {
     address: output.address,
     value: BigNumber(output.amountSats).toNumber(),
     ...output, // the output may have come in already decorated with bip32Derivation/multisigScripts
-  }
+  };
 }
 
 /**
@@ -266,17 +275,21 @@ function getUnchainedInputsFromPSBT(network, addressType, psbt) {
     const dataInput = psbt.data.inputs[index];
 
     // FIXME - this is where we're currently only handling P2SH correctly
-    const fundingTxHex = dataInput.nonWitnessUtxo.toString('hex');
+    const fundingTxHex = dataInput.nonWitnessUtxo.toString("hex");
     const fundingTx = Transaction.fromHex(fundingTxHex);
-    const multisig = generateMultisigFromHex(network, addressType, dataInput.redeemScript.toString('hex'));
+    const multisig = generateMultisigFromHex(
+      network,
+      addressType,
+      dataInput.redeemScript.toString("hex")
+    );
 
     return {
       amountSats: fundingTx.outs[input.index].value,
       index: input.index,
       transactionHex: fundingTxHex,
-      txid: reverseBuffer(input.hash).toString('hex'),
+      txid: reverseBuffer(input.hash).toString("hex"),
       multisig,
-    }
+    };
   });
 }
 
@@ -287,7 +300,7 @@ function getUnchainedInputsFromPSBT(network, addressType, psbt) {
  * @return {Object[]} unchained multisig transaction outputs array
  */
 function getUnchainedOutputsFromPSBT(psbt) {
-  return psbt.txOutputs.map(output => ({
+  return psbt.txOutputs.map((output) => ({
     address: output.address,
     amountSats: output.value,
   }));
@@ -301,16 +314,18 @@ function getUnchainedOutputsFromPSBT(psbt) {
  * @return {Object[]} bip32Derivations - array of signing bip32Derivation objects
  */
 function filterRelevantBip32Derivations(psbt, signingKeyDetails) {
-  return psbt.data.inputs.map(input => {
-    const bip32Derivation = input.bip32Derivation.filter(b32d => b32d.path.startsWith(signingKeyDetails.path) &&
-      b32d.masterFingerprint.toString('hex') === signingKeyDetails.xfp
+  return psbt.data.inputs.map((input) => {
+    const bip32Derivation = input.bip32Derivation.filter(
+      (b32d) =>
+        b32d.path.startsWith(signingKeyDetails.path) &&
+        b32d.masterFingerprint.toString("hex") === signingKeyDetails.xfp
     );
 
     if (!bip32Derivation.length) {
       throw new Error("Signing key details not included in PSBT");
     }
     return bip32Derivation[0];
-  })
+  });
 }
 
 /**
@@ -331,8 +346,10 @@ function filterRelevantBip32Derivations(psbt, signingKeyDetails) {
  * }
  */
 export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
-  if (addressType !== P2SH) throw new Error("Unsupported addressType -- only P2SH is supported right now");
-  let localPSBT = autoLoadPSBT(psbt, {network: networkData(network)});
+  if (addressType !== P2SH) throw new Error(
+      "Unsupported addressType -- only P2SH is supported right now"
+    );
+  let localPSBT = autoLoadPSBT(psbt, { network: networkData(network) });
   if (localPSBT === null) return null;
 
   // The information we need to provide proper unchained-wallets style objects to the supported
@@ -343,18 +360,25 @@ export function translatePSBT(network, addressType, psbt, signingKeyDetails) {
   // We'll do that in the functions below.
 
   // First, we check that we actually do have any inputs to sign:
-  const bip32Derivations = filterRelevantBip32Derivations(localPSBT, signingKeyDetails);
+  const bip32Derivations = filterRelevantBip32Derivations(
+    localPSBT,
+    signingKeyDetails
+  );
 
   // The shape of these return objects are specific to existing code
   // in unchained-wallets for signing with Trezor and Ledger devices.
-  const unchainedInputs = getUnchainedInputsFromPSBT(network, addressType, localPSBT);
+  const unchainedInputs = getUnchainedInputsFromPSBT(
+    network,
+    addressType,
+    localPSBT
+  );
   const unchainedOutputs = getUnchainedOutputsFromPSBT(localPSBT);
 
   return {
     unchainedInputs,
     unchainedOutputs,
     bip32Derivations,
-  }
+  };
 }
 
 /**
@@ -376,9 +400,9 @@ function addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
     {
       pubkey,
       signature,
-    }
-  ]
-  psbt.data.updateInput(inputIndex, {partialSig})
+    },
+  ];
+  psbt.data.updateInput(inputIndex, { partialSig });
   if (!psbt.validateSignaturesOfInput(inputIndex, pubkey)) throw new Error("One or more invalid signatures.");
   return psbt;
 }
@@ -399,14 +423,20 @@ function addSignatureToPSBT(psbt, inputIndex, pubkey, signature) {
  * @return {null|string} - partially signed PSBT in Base64
  */
 export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
-  let psbtWithSignatures = autoLoadPSBT(psbt, {network: networkData(network)});
+  let psbtWithSignatures = autoLoadPSBT(psbt, {
+    network: networkData(network),
+  });
   if (psbtWithSignatures === null) return null;
 
   signatures.forEach((sig, idx) => {
     const pubkey = pubkeys[idx];
-      psbtWithSignatures = addSignatureToPSBT(psbtWithSignatures, idx, pubkey, sig);
-  }
-  )
+    psbtWithSignatures = addSignatureToPSBT(
+      psbtWithSignatures,
+      idx,
+      pubkey,
+      sig
+    );
+  });
   return psbtWithSignatures.toBase64();
 }
 
@@ -419,12 +449,10 @@ export function addSignaturesToPSBT(network, psbt, pubkeys, signatures) {
  */
 
 function getNumSigners(psbt) {
-  const partialSignatures = (
-    psbt &&
-    psbt.data &&
-    psbt.data.inputs &&
-    psbt.data.inputs[0]
-  ) ? psbt.data.inputs[0].partialSig : undefined;
+  const partialSignatures =
+    psbt && psbt.data && psbt.data.inputs && psbt.data.inputs[0]
+      ? psbt.data.inputs[0].partialSig
+      : undefined;
   return partialSignatures === undefined ? 0 : partialSignatures.length;
 }
 
@@ -455,18 +483,24 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   const numSigners = getNumSigners(psbt);
 
   const signatureSet = {};
-  let pubKey = '';
+  let pubKey = "";
   const inputs = psbt.data.inputs;
   // Find signatures in the PSBT
   if (numSigners >= 1) {
     // return array of arrays of signatures
     for (let i = 0; i < inputs.length; i++) {
       for (let j = 0; j < numSigners; j++) {
-        pubKey = toHexString(Array.prototype.slice.call(inputs[i].partialSig[j].pubkey));
+        pubKey = toHexString(
+          Array.prototype.slice.call(inputs[i].partialSig[j].pubkey)
+        );
         if (pubKey in signatureSet) {
-          signatureSet[pubKey].push(inputs[i].partialSig[j].signature.toString("hex"));
+          signatureSet[pubKey].push(
+            inputs[i].partialSig[j].signature.toString("hex")
+          );
         } else {
-          signatureSet[pubKey] = [inputs[i].partialSig[j].signature.toString("hex")];
+          signatureSet[pubKey] = [
+            inputs[i].partialSig[j].signature.toString("hex"),
+          ];
         }
       }
     }
@@ -476,11 +510,10 @@ export function parseSignaturesFromPSBT(psbtFromFile) {
   return signatureSet;
 }
 
-
 /**
  * Extracts signatures in order of inputs and returns as array (or array of arrays if multiple signature sets)
  *
-  * @param {String} psbtFromFile -  base64 or hex
+ * @param {String} psbtFromFile -  base64 or hex
  * @returns {Object} returns an array of arrays of ordered signatures or an array of signatures if only 1 signer
  *
  */
@@ -490,15 +523,19 @@ export function parseSignatureArrayFromPSBT(psbtFromFile) {
 
   const numSigners = getNumSigners(psbt);
 
-  const signatureArrays = Array.from(Array(numSigners).fill().map(() => []));
+  const signatureArrays = Array.from(
+    Array(numSigners)
+      .fill()
+      .map(() => [])
+  );
 
-  const {inputs} = psbt.data;
+  const { inputs } = psbt.data;
 
   if (numSigners >= 1) {
     for (let i = 0; i < inputs.length; i += 1) {
       for (let j = 0; j < numSigners; j += 1) {
         let signature = inputs[i].partialSig[j].signature.toString("hex");
-        signatureArrays[j].push(signature)
+        signatureArrays[j].push(signature);
       }
     }
   } else {
