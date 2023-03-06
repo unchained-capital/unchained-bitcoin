@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+
 /**
  * The PsbtV2 class is intended to represent an easily modifiable and
  * serializable psbt of version 2 conforming to BIP0174. Getters exist for all
@@ -85,9 +87,16 @@ enum KeyType {
 // Provided to friendly-format the PSBT_GLOBAL_TX_MODIFIABLE bitmask from
 // PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE which returns PsbtGlobalTxModifiableBits[].
 enum PsbtGlobalTxModifiableBits {
-  INPUTS = "INPUTS", // 0b000000001
-  OUTPUTS = "OUTPUTS", // 0b000000010
-  SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b000000100
+  INPUTS = "INPUTS", // 0b00000001
+  OUTPUTS = "OUTPUTS", // 0b00000010
+  SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b00000100
+}
+
+enum SighashType {
+  SIGHASH_ALL = 0x01,
+  SIGHASH_NONE = 0x02,
+  SIGHASH_SINGLE = 0x03,
+  SIGHASH_ANYONECANPAY = 0x80,
 }
 
 /*
@@ -252,7 +261,8 @@ export abstract class PsbtV2Maps {
     }
     // Build globalMap
     readAndSetKeyPairs(this.globalMap, br);
-    if ( // Assuming that psbt being passed in is a valid psbtv2
+    if (
+      // Assuming that psbt being passed in is a valid psbtv2
       !this.globalMap.has(KeyType.PSBT_GLOBAL_VERSION) ||
       !this.globalMap.has(KeyType.PSBT_GLOBAL_TX_VERSION) ||
       !this.globalMap.has(KeyType.PSBT_GLOBAL_INPUT_COUNT) ||
@@ -316,7 +326,7 @@ export abstract class PsbtV2Maps {
     to: Map<string, Buffer>[]
   ) {
     from.forEach((m, index) => {
-      const to_index = new Map();
+      const to_index = new Map<Key, Value>();
       this.copyMap(m, to_index);
       to[index] = to_index;
     });
@@ -363,7 +373,9 @@ export class PsbtV2 extends PsbtV2Maps {
       // a txn version < 2. The Creator role is responsible for setting this
       // value and BIP0370 specifies that it cannot be less than 2.
       // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#cite_note-3
-      throw Error(`PsbtV2 cannot have a global tx version less than 2. Version ${version} specified.`);
+      throw Error(
+        `PsbtV2 cannot have a global tx version less than 2. Version ${version} specified.`
+      );
     }
 
     const bw = new BufferWriter();
@@ -426,7 +438,7 @@ export class PsbtV2 extends PsbtV2Maps {
       this.globalMap.get(KeyType.PSBT_GLOBAL_TX_MODIFIABLE)?.readUInt8(0) || 0;
     let modifiable: PsbtGlobalTxModifiableBits[] = [];
 
-    if (val & 0b000000001) {
+    if (val & 0b00000001) {
       modifiable.push(PsbtGlobalTxModifiableBits.INPUTS);
     }
     if (val & 0b00000010) {
@@ -439,10 +451,30 @@ export class PsbtV2 extends PsbtV2Maps {
     return modifiable;
   }
 
+  set PSBT_GLOBAL_TX_MODIFIABLE(modifiable: PsbtGlobalTxModifiableBits[]) {
+    let val = 0b00000000;
+
+    if (modifiable.includes(PsbtGlobalTxModifiableBits.INPUTS)) {
+      val |= 0b00000001;
+    }
+    if (modifiable.includes(PsbtGlobalTxModifiableBits.OUTPUTS)) {
+      val |= 0b00000010;
+    }
+    if (modifiable.includes(PsbtGlobalTxModifiableBits.SIGHASH_SINGLE)) {
+      val |= 0b00000100;
+    }
+
+    const br = new BufferWriter();
+    br.writeU8(val);
+    this.globalMap.set(KeyType.PSBT_GLOBAL_TX_MODIFIABLE, br.render());
+  }
+
   get PSBT_GLOBAL_VERSION() {
-    const version = 
-      this.globalMap.get(KeyType.PSBT_GLOBAL_VERSION)?.readUInt32LE(0);
-    if (version === undefined) { // This should never happen.
+    const version = this.globalMap
+      .get(KeyType.PSBT_GLOBAL_VERSION)
+      ?.readUInt32LE(0);
+    if (version === undefined) {
+      // This should never happen.
       console.warn("PSBT_GLOBAL_VERSION key is missing! Setting to version 2.");
       this.PSBT_GLOBAL_VERSION = 2;
     }
@@ -452,7 +484,9 @@ export class PsbtV2 extends PsbtV2Maps {
   set PSBT_GLOBAL_VERSION(version: number) {
     let workingVersion = version;
     if (workingVersion < 2) {
-      console.warn(`PsbtV2 cannot have a global version less than 2. Version ${workingVersion} specified. Setting to version 2.`);
+      console.warn(
+        `PsbtV2 cannot have a global version less than 2. Version ${workingVersion} specified. Setting to version 2.`
+      );
       workingVersion = 2;
     }
 
@@ -694,7 +728,8 @@ export class PsbtV2 extends PsbtV2Maps {
     const indices: string[] = [];
     for (const map of this.outputMaps) {
       const value = map.get(KeyType.PSBT_OUT_SCRIPT);
-      if (!value) { // This should never happen, but it can't be gracefully handled.
+      if (!value) {
+        // This should never happen, but it can't be gracefully handled.
         throw Error("PSBT_OUT_SCRIPT not set for an output");
       }
       indices.push(value.toString("hex"));
@@ -794,7 +829,7 @@ export class PsbtV2 extends PsbtV2Maps {
 
   // This method ensures that global fields have initial values required by a
   // PsbtV2 Creator. It is called by the constructor if constructed without a
-  // psbt. 
+  // psbt.
   private create() {
     this.PSBT_GLOBAL_VERSION = 2;
     this.PSBT_GLOBAL_TX_VERSION = 2;
@@ -808,45 +843,41 @@ export class PsbtV2 extends PsbtV2Maps {
   // created. If constructed with a psbt, this method acts outside of the
   // Creator role to validate the current state of the psbt.
   private validate() {
-    if (this.PSBT_GLOBAL_VERSION < 2)  {
+    if (this.PSBT_GLOBAL_VERSION < 2) {
       throw Error("PsbtV2 has a version field set less than 2");
     }
-    if (this.PSBT_GLOBAL_TX_VERSION < 2)  {
+    if (this.PSBT_GLOBAL_TX_VERSION < 2) {
       throw Error("PsbtV2 has a tx version field set less than 2");
     }
 
     for (const prevInTxid of this.PSBT_IN_PREVIOUS_TXID) {
       if (!prevInTxid) {
-        throw Error("PsbtV2 input is missing PSBT_IN_PREVIOUS_TXID")
+        throw Error("PsbtV2 input is missing PSBT_IN_PREVIOUS_TXID");
       }
     }
     for (const prevInVOut of this.PSBT_IN_OUTPUT_INDEX) {
       if (prevInVOut === undefined) {
-        throw Error("PsbtV2 input is missing PSBT_IN_OUTPUT_INDEX")
+        throw Error("PsbtV2 input is missing PSBT_IN_OUTPUT_INDEX");
       }
     }
     for (const amount of this.PSBT_OUT_AMOUNT) {
       if (!amount) {
-        throw Error("PsbtV2 input is missing PSBT_OUT_AMOUNT")
+        throw Error("PsbtV2 input is missing PSBT_OUT_AMOUNT");
       }
     }
     for (const script of this.PSBT_OUT_SCRIPT) {
       if (!script) {
-        throw Error("PsbtV2 input is missing PSBT_OUT_SCRIPT")
+        throw Error("PsbtV2 input is missing PSBT_OUT_SCRIPT");
       }
     }
     for (const locktime of this.PSBT_IN_REQUIRED_TIME_LOCKTIME) {
       if (locktime && locktime < 500000000) {
-        throw Error(
-          "PsbtV2 input time locktime is less than 500000000."
-        );
+        throw Error("PsbtV2 input time locktime is less than 500000000.");
       }
     }
     for (const locktime of this.PSBT_IN_REQUIRED_HEIGHT_LOCKTIME) {
       if (locktime && locktime >= 500000000) {
-        throw Error(
-          "PsbtV2 input hight locktime is gte 500000000."
-        );
+        throw Error("PsbtV2 input hight locktime is gte 500000000.");
       }
     }
   }
@@ -861,7 +892,7 @@ export class PsbtV2 extends PsbtV2Maps {
   // provides a way to override validation logic for the txn version and roles
   // lifecycle defined for PsbtV2.
   public dangerouslySetGlobalTxVersion1() {
-    console.warn('Dangerously setting PsbtV2.PSBT_GLOBAL_TX_VERSION to 1!');
+    console.warn("Dangerously setting PsbtV2.PSBT_GLOBAL_TX_VERSION to 1!");
     const bw = new BufferWriter();
     bw.writeI32(1);
     this.globalMap.set(KeyType.PSBT_GLOBAL_TX_VERSION, bw.render());
@@ -909,7 +940,7 @@ export class PsbtV2 extends PsbtV2Maps {
     // TODO: This must accept and add appropriate locktime fields. There is
     // significant validation concerning this step detailed in the BIP0370
     // Constructor role:
-    // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#constructor 
+    // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#constructor
     const map = new Map<Key, Value>();
     const bw = new BufferWriter();
     const prevTxIdBuf = bufferize(previousTxId);
@@ -1026,19 +1057,93 @@ export class PsbtV2 extends PsbtV2Maps {
     this.PSBT_GLOBAL_OUTPUT_COUNT = this.outputMaps.length;
   }
 
+  // The Signer, when it creates a signature, must add the partial sig keypair
+  // to the psbt for the input which it is signing. In the case that a
+  // particular signer does not, this method can be used to add a signature to
+  // the psbt. This method assumes the Signer did the validation outlined in
+  // BIP0174 before creating a signature.
+  // https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki#signer
+  public addPartialSig(inputIndex: number, pubkey: Buffer, sig: Buffer) {
+    if (!this.inputMaps[inputIndex]) {
+      throw Error(`PsbtV2 has no input at ${inputIndex}`);
+    }
+
+    if (!pubkey || !sig) {
+      throw Error(
+        `PsbtV2.addPartialSig() missing argument ${
+          (!pubkey && "pubkey") || (!sig && "sig")
+        }`
+      );
+    }
+
+    const key = `${KeyType.PSBT_IN_PARTIAL_SIG}${pubkey.toString("hex")}`;
+    if (this.inputMaps[inputIndex].has(key)) {
+      throw Error(
+        "PsbtV2 already has a signature for this input with this pubkey"
+      );
+    }
+
+    const modBackup = this.PSBT_GLOBAL_TX_MODIFIABLE;
+    try {
+      this.inputMaps[inputIndex].set(key, sig);
+      this.handleSighashType(sig);
+    } catch (err) {
+      console.error(err);
+      // To remain atomic, attempt to reset everything to the way it was.
+      this.inputMaps[inputIndex].delete(key);
+      this.PSBT_GLOBAL_TX_MODIFIABLE = modBackup;
+    }
+  }
+
+  // Used to ensure the PSBT is in the proper state when adding a partial sig
+  // keypair.
+  // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#signer
+  private handleSighashType(sig: Buffer) {
+    const br = new BufferReader(sig.slice(-1));
+    let sighashVal = br.readU8();
+    let modifiable = this.PSBT_GLOBAL_TX_MODIFIABLE;
+
+    if (!(sighashVal & SighashType.SIGHASH_ANYONECANPAY)) {
+      modifiable = modifiable.filter(
+        (val) => val !== PsbtGlobalTxModifiableBits.INPUTS
+      );
+    } else {
+      // Remove SIGHASH_ANYONECANPAY bit for simpler comparisons
+      sighashVal ^= SighashType.SIGHASH_ANYONECANPAY;
+    }
+
+    // Can't use bitwise the whole way because SIGHASH_SINGLE is a 3.
+    if (sighashVal !== SighashType.SIGHASH_NONE) {
+      modifiable = modifiable.filter(
+        (val) => val !== PsbtGlobalTxModifiableBits.OUTPUTS
+      );
+    }
+    if (
+      sighashVal === SighashType.SIGHASH_SINGLE &&
+      !modifiable.includes(PsbtGlobalTxModifiableBits.SIGHASH_SINGLE)
+    ) {
+      console.log("inside");
+      modifiable.push(PsbtGlobalTxModifiableBits.SIGHASH_SINGLE);
+    }
+
+    this.PSBT_GLOBAL_TX_MODIFIABLE = modifiable;
+  }
+
   // Attempt to return a PsbtV2 by converting from a PsbtV0 string or Buffer
   static FromV0(psbt: string | Buffer, allowTxnVersion1 = false): PsbtV2 {
     const psbtv0Buf = bufferize(psbt);
     const psbtv0 = Psbt.fromBuffer(psbtv0Buf);
     const psbtv0GlobalMap = psbtv0.data.globalMap;
-    
+
     // Creator Role
     const psbtv2 = new PsbtV2();
     const txVersion = psbtv0.data.getTransaction().readInt32LE(0);
     if (txVersion === 1 && allowTxnVersion1) {
       psbtv2.dangerouslySetGlobalTxVersion1();
     } else {
-      psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data.getTransaction().readInt32LE(0);
+      psbtv2.PSBT_GLOBAL_TX_VERSION = psbtv0.data
+        .getTransaction()
+        .readInt32LE(0);
     }
 
     // Is this also a Creator role step? Unknown.
@@ -1063,9 +1168,9 @@ export class PsbtV2 extends PsbtV2Maps {
         outputIndex: txInput.index,
         sequence: txInput.sequence,
         nonWitnessUtxo: input.nonWitnessUtxo,
-        witnessUtxo: input.witnessUtxo && { 
-          amount: input.witnessUtxo.value, 
-          script: input.witnessUtxo.script 
+        witnessUtxo: input.witnessUtxo && {
+          amount: input.witnessUtxo.value,
+          script: input.witnessUtxo.script,
         },
         redeemScript: input.redeemScript,
         witnessScript: input.witnessScript,
