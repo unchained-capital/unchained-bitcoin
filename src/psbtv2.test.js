@@ -921,10 +921,11 @@ describe("PsbtV2.FromV0", () => {
   );
 
   it("Throws with valid psbtv0 with PSBT_GLOBAL_TX_VERSION=1 when disallowing txnv1", () => {
-    const t = () => PsbtV2.FromV0(
-      "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", 
-      false
-    );
+    const t = () =>
+      PsbtV2.FromV0(
+        "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",
+        false
+      );
     expect(t).toThrow();
   });
 
@@ -985,6 +986,110 @@ describe("getPsbtVersionNumber", () => {
     (vect) => {
       const version = getPsbtVersionNumber(vect.psbt);
       expect(version).toEqual(vect.expected);
+    }
+  );
+});
+
+describe("PsbtV2.addPartialSig", () => {
+  let psbt;
+
+  beforeEach(() => {
+    psbt = new PsbtV2();
+    psbt.handleSighashType = jest.fn();
+  });
+
+  it("Throws on validation failures", () => {
+    const addSig = (index, pub, sig) => psbt.addPartialSig(index, pub, sig);
+    expect(() => addSig(0)).toThrow("PsbtV2 has no input at 0");
+
+    psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
+    expect(() => addSig(0)).toThrow(
+      "PsbtV2.addPartialSig() missing argument pubkey"
+    );
+    expect(() => addSig(0, Buffer.from([0x00]))).toThrow(
+      "PsbtV2.addPartialSig() missing argument sig"
+    );
+    addSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
+    expect(() => addSig(0, Buffer.from([0x00]), Buffer.from([0x00]))).toThrow(
+      "PsbtV2 already has a signature for this input with this pubkey"
+    );
+  });
+
+  it("Rolls back on handleSigHashType failure", () => {
+    psbt.handleSighashType.mockImplementation(() => {
+      throw new Error();
+    });
+    psbt.PSBT_GLOBAL_TX_MODIFIABLE = ["INPUTS", "OUTPUTS"];
+    psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
+
+    psbt.addPartialSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
+    expect(psbt.PSBT_GLOBAL_TX_MODIFIABLE).toEqual(["INPUTS", "OUTPUTS"]);
+    expect(psbt.PSBT_IN_PARTIAL_SIG[0].length).toBe(0);
+  });
+
+  it("Can add successfully", () => {
+    psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
+    psbt.addInput({ previousTxId: Buffer.from([0x01]), outputIndex: 1 });
+    psbt.addPartialSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
+    psbt.addPartialSig(0, Buffer.from([0x01]), Buffer.from([0x01]));
+    psbt.addPartialSig(1, Buffer.from([0x02]), Buffer.from([0x02]));
+    console.log(psbt.PSBT_IN_PARTIAL_SIG);
+    expect(psbt.PSBT_IN_PARTIAL_SIG[0]).toEqual(
+      [
+        { key: "0200", value: "00" },
+        { key: "0201", value: "01" },
+      ],
+      [{ key: "0202", value: "02" }]
+    );
+  });
+});
+
+describe("PsbtV2.handleSighashType (private)", () => {
+  const SIGHASH_TYPE_MOCK_SIGS = [
+    {
+      case: "SIGHASH_ALL",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x01]),
+      expectedModifiable: [],
+    },
+    {
+      case: "SIGHASH_ALL_SIGHASH_ANYONECANPAY",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x81]),
+      expectedModifiable: ["INPUTS"],
+    },
+    {
+      case: "SIGHASH_NONE",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x02]),
+      expectedModifiable: ["OUTPUTS"],
+    },
+    {
+      case: "SIGHASH_NONE_SIGHASH_ANYONECANPAY",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x82]),
+      expectedModifiable: ["INPUTS", "OUTPUTS"],
+    },
+    {
+      case: "SIGHASH_SINGLE",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x03]),
+      expectedModifiable: ["SIGHASH_SINGLE"],
+    },
+    {
+      case: "SIGHASH_SINGLE_SIGHASH_ANYONECANPAY",
+      value: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x83]),
+      expectedModifiable: ["INPUTS", "SIGHASH_SINGLE"],
+    },
+  ];
+
+  let psbt;
+
+  beforeEach(() => {
+    psbt = new PsbtV2();
+    psbt.PSBT_GLOBAL_TX_MODIFIABLE = ["INPUTS", "OUTPUTS"];
+  });
+
+  test.each(SIGHASH_TYPE_MOCK_SIGS)(
+    "Properly sets PSBT_GLOBAL_TX_MODIFIABLE from $case",
+    (vect) => {
+      psbt.handleSighashType(vect.value);
+      expect(psbt.PSBT_GLOBAL_TX_MODIFIABLE).toEqual(vect.expectedModifiable);
     }
   );
 });
