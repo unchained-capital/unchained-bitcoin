@@ -965,7 +965,6 @@ describe("PsbtV2.FromV0", () => {
   )("Sets partialSigs when they are present. $case", (vect) => {
     const psbt = PsbtV2.FromV0(vect.hex, true);
     const partialSigs = psbt.PSBT_IN_PARTIAL_SIG;
-    console.log(partialSigs);
     for (let i = 0; i < partialSigs.length; i++) {
       expect(partialSigs[i]).toEqual(vect.partialSigs[i]);
     }
