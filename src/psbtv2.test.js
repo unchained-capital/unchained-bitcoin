@@ -1033,7 +1033,6 @@ describe("PsbtV2.addPartialSig", () => {
     psbt.addPartialSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
     psbt.addPartialSig(0, Buffer.from([0x01]), Buffer.from([0x01]));
     psbt.addPartialSig(1, Buffer.from([0x02]), Buffer.from([0x02]));
-    console.log(psbt.PSBT_IN_PARTIAL_SIG);
     expect(psbt.PSBT_IN_PARTIAL_SIG[0]).toEqual(
       [
         { key: "0200", value: "00" },

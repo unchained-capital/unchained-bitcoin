@@ -1122,7 +1122,6 @@ export class PsbtV2 extends PsbtV2Maps {
       sighashVal === SighashType.SIGHASH_SINGLE &&
       !modifiable.includes(PsbtGlobalTxModifiableBits.SIGHASH_SINGLE)
     ) {
-      console.log("inside");
       modifiable.push(PsbtGlobalTxModifiableBits.SIGHASH_SINGLE);
     }
 
