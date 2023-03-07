@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-
 /**
  * The PsbtV2 class is intended to represent an easily modifiable and
  * serializable psbt of version 2 conforming to BIP0174. Getters exist for all
@@ -36,6 +34,7 @@ type NonUniqueKeyTypeValue = { key: string; value: string | null };
 
 // These keytypes are hex bytes, but here they are used as string enums to
 // assist in Map lookups. See type Key above for more info.
+// eslint-disable-next-line no-shadow
 enum KeyType {
   PSBT_GLOBAL_XPUB = "01",
   PSBT_GLOBAL_TX_VERSION = "02",
@@ -86,12 +85,14 @@ enum KeyType {
 
 // Provided to friendly-format the PSBT_GLOBAL_TX_MODIFIABLE bitmask from
 // PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE which returns PsbtGlobalTxModifiableBits[].
+// eslint-disable-next-line no-shadow
 enum PsbtGlobalTxModifiableBits {
   INPUTS = "INPUTS", // 0b00000001
   OUTPUTS = "OUTPUTS", // 0b00000010
   SIGHASH_SINGLE = "SIGHASH_SINGLE", // 0b00000100
 }
 
+// eslint-disable-next-line no-shadow
 enum SighashType {
   SIGHASH_ALL = 0x01,
   SIGHASH_NONE = 0x02,
@@ -930,9 +931,9 @@ export class PsbtV2 extends PsbtV2Maps {
     redeemScript?: Buffer;
     witnessScript?: Buffer;
     bip32Derivation?: {
-      pubkey;
-      masterFingerprint;
-      path;
+      pubkey: Buffer;
+      masterFingerprint: Buffer;
+      path: string;
     }[];
   }) {
     // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
@@ -982,8 +983,7 @@ export class PsbtV2 extends PsbtV2Maps {
       }
     }
 
-    this.inputMaps.push(map);
-    this.PSBT_GLOBAL_INPUT_COUNT = this.inputMaps.length;
+    this.PSBT_GLOBAL_INPUT_COUNT = this.inputMaps.push(map);
   }
 
   public addOutput({
@@ -1175,6 +1175,16 @@ export class PsbtV2 extends PsbtV2Maps {
         witnessScript: input.witnessScript,
         bip32Derivation: input.bip32Derivation,
       });
+
+      for (const sig of input.partialSig || []) {
+        psbtv2.addPartialSig(
+          // addInput pushes an input, so it may be safe to assume the sig
+          // belongs to the last input.
+          psbtv2.PSBT_GLOBAL_INPUT_COUNT - 1,
+          sig.pubkey,
+          sig.signature
+        );
+      }
     }
 
     let txOutputs: any = [];
