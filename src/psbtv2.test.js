@@ -1015,6 +1015,9 @@ describe("PsbtV2.addPartialSig", () => {
   beforeEach(() => {
     psbt = new PsbtV2();
     psbt.handleSighashType = jest.fn();
+    // This has to be added so inputs can be added else addSig will fail since
+    // the input at the index does not exist.
+    psbt.PSBT_GLOBAL_TX_MODIFIABLE = ["INPUTS"];
   });
 
   it("Throws on validation failures", () => {
@@ -1052,13 +1055,72 @@ describe("PsbtV2.addPartialSig", () => {
     psbt.addPartialSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
     psbt.addPartialSig(0, Buffer.from([0x01]), Buffer.from([0x01]));
     psbt.addPartialSig(1, Buffer.from([0x02]), Buffer.from([0x02]));
-    expect(psbt.PSBT_IN_PARTIAL_SIG[0]).toEqual(
+    expect(psbt.PSBT_IN_PARTIAL_SIG).toEqual([
       [
         { key: "0200", value: "00" },
         { key: "0201", value: "01" },
       ],
-      [{ key: "0202", value: "02" }]
+      [{ key: "0202", value: "02" }],
+    ]);
+  });
+});
+
+describe("PsbtV2.removePartialSig", () => {
+  let psbt;
+
+  beforeEach(() => {
+    psbt = new PsbtV2();
+    psbt.handleSighashType = jest.fn();
+    // This has to be added so inputs can be added else removeSig will fail
+    // since the input at the index does not exist.
+    psbt.PSBT_GLOBAL_TX_MODIFIABLE = ["INPUTS"];
+  });
+
+  it("Throws on validation failures", () => {
+    const removeSig = (index, pub, sig) =>
+      psbt.removePartialSig(index, pub, sig);
+    expect(() => removeSig(0)).toThrow("PsbtV2 has no input at 0");
+
+    psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
+    expect(() => removeSig(0, Buffer.from([0x00]))).toThrow(
+      "PsbtV2 input has no signature from pubkey 00"
     );
+  });
+
+  it("Can remove successfully", () => {
+    psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
+    psbt.addInput({ previousTxId: Buffer.from([0x01]), outputIndex: 1 });
+    psbt.addPartialSig(0, Buffer.from([0x00]), Buffer.from([0x00]));
+    psbt.addPartialSig(0, Buffer.from([0x01]), Buffer.from([0x01]));
+    psbt.addPartialSig(1, Buffer.from([0x02]), Buffer.from([0x02]));
+    psbt.addPartialSig(1, Buffer.from([0x03]), Buffer.from([0x03]));
+
+    // psbt.PSBT_IN_PARTIAL_SIG will return:
+    // [
+    //   { key: "0200", value: "00" },
+    //   { key: "0201", value: "01" },
+    // ],
+    // [
+    //   { key: "0202", value: "02" },
+    //   { key: "0203", value: "03" }
+    // ]
+
+    // It will remove all when pubkey not specified
+    psbt.removePartialSig(0);
+    expect(psbt.PSBT_IN_PARTIAL_SIG).toEqual([
+      [],
+      [
+        { key: "0202", value: "02" },
+        { key: "0203", value: "03" },
+      ],
+    ]);
+
+    // It can remove by pubkey
+    psbt.removePartialSig(1, Buffer.from([0x03]));
+    expect(psbt.PSBT_IN_PARTIAL_SIG).toEqual([
+      [],
+      [{ key: "0202", value: "02" }],
+    ]);
   });
 });
 
@@ -1108,6 +1170,70 @@ describe("PsbtV2.handleSighashType (private)", () => {
     (vect) => {
       psbt.handleSighashType(vect.value);
       expect(psbt.PSBT_GLOBAL_TX_MODIFIABLE).toEqual(vect.expectedModifiable);
+    }
+  );
+});
+
+describe("PsbtV2.isModifiable (private)", () => {
+  const MODIFIABLE_TYPES = [
+    {
+      case: "None",
+      modifiable: [],
+      inputsExpected: false,
+      outputsExpected: false,
+      bothExpected: false,
+      sighashSingleExpected: false,
+    },
+    {
+      case: "Inputs",
+      modifiable: ["INPUTS"],
+      inputsExpected: true,
+      outputsExpected: false,
+      bothExpected: false,
+      sighashSingleExpected: false,
+    },
+    {
+      case: "Outputs",
+      modifiable: ["OUTPUTS"],
+      inputsExpected: false,
+      outputsExpected: true,
+      bothExpected: false,
+      sighashSingleExpected: false,
+    },
+    {
+      case: "Inputs and outputs",
+      modifiable: ["INPUTS", "OUTPUTS"],
+      inputsExpected: true,
+      outputsExpected: true,
+      bothExpected: true,
+      sighashSingleExpected: false,
+    },
+    {
+      case: "Sighash_single",
+      modifiable: ["SIGHASH_SINGLE"],
+      inputsExpected: false,
+      outputsExpected: false,
+      bothExpected: false,
+      sighashSingleExpected: true,
+    },
+  ];
+
+  let psbt;
+
+  beforeEach(() => {
+    psbt = new PsbtV2();
+  });
+
+  test.each(MODIFIABLE_TYPES)(
+    "Returns correct boolean for each modifiable check on: $case",
+    (vect) => {
+      psbt.PSBT_GLOBAL_TX_MODIFIABLE = vect.modifiable;
+      expect(psbt.isModifiable(["INPUTS"])).toBe(vect.inputsExpected);
+      expect(psbt.isModifiable(["OUTPUTS"])).toBe(vect.outputsExpected);
+      expect(psbt.isModifiable(["OUTPUTS", "INPUTS"])).toBe(vect.bothExpected);
+      expect(psbt.isModifiable(["SIGHASH_SINGLE"])).toBe(
+        vect.sighashSingleExpected
+      );
     }
   );
 });

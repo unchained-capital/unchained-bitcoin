@@ -521,11 +521,11 @@ export class PsbtV2 extends PsbtV2Maps {
     );
   }
 
-  get PSBT_IN_PARTIAL_SIG() {
+  get PSBT_IN_PARTIAL_SIG(): NonUniqueKeyTypeValue[][] {
     return getNonUniqueKeyTypeValues(
       this.inputMaps,
       KeyType.PSBT_IN_PARTIAL_SIG
-    );
+    ) as NonUniqueKeyTypeValue[][];
   }
 
   get PSBT_IN_SIGHASH_TYPE() {
@@ -936,12 +936,15 @@ export class PsbtV2 extends PsbtV2Maps {
       path: string;
     }[];
   }) {
-    // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
-    // performing the operation.
     // TODO: This must accept and add appropriate locktime fields. There is
     // significant validation concerning this step detailed in the BIP0370
     // Constructor role:
     // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#constructor
+    if (!this.isModifiable([PsbtGlobalTxModifiableBits.INPUTS])) {
+      throw Error(
+        "PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE inputs cannot be modified."
+      );
+    }
     const map = new Map<Key, Value>();
     const bw = new BufferWriter();
     const prevTxIdBuf = bufferize(previousTxId);
@@ -1003,8 +1006,11 @@ export class PsbtV2 extends PsbtV2Maps {
       path: string;
     }[];
   }) {
-    // TODO: Maybe this needs to check PSBT_GLOBAL_TX_MODIFIABLE before
-    // performing the operation.
+    if (!this.isModifiable([PsbtGlobalTxModifiableBits.OUTPUTS])) {
+      throw Error(
+        "PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE outputs cannot be modified."
+      );
+    }
     const map = new Map<Key, Value>();
     const bw = new BufferWriter();
     bw.writeI64(amount);
@@ -1041,8 +1047,11 @@ export class PsbtV2 extends PsbtV2Maps {
 
   // Removes an input-map from inputMaps
   public deleteInput(index: number) {
-    // TODO: This needs to check PSBT_GLOBAL_TX_MODIFIABLE before performing the
-    // operation.
+    if (!this.isModifiable([PsbtGlobalTxModifiableBits.INPUTS])) {
+      throw Error(
+        "PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE inputs cannot be modified."
+      );
+    }
     const newInputs = this.inputMaps.filter((_, i) => i !== index);
     this.inputMaps = newInputs;
     this.PSBT_GLOBAL_INPUT_COUNT = this.inputMaps.length;
@@ -1050,11 +1059,35 @@ export class PsbtV2 extends PsbtV2Maps {
 
   // Removes an output-map from outputMaps
   public deleteOutput(index: number) {
-    // TODO: This needs to check PSBT_GLOBAL_TX_MODIFIABLE before performing the
-    // operation.
+    if (!this.isModifiable([PsbtGlobalTxModifiableBits.OUTPUTS])) {
+      throw Error(
+        "PsbtV2.PSBT_GLOBAL_TX_MODIFIABLE outputs cannot be modified."
+      );
+      // Alternatively, an output could be removed, but depending on the sighash
+      // flags for each signature, it might prompt removing all sigs.
+    }
+
     const newOutputs = this.outputMaps.filter((_, i) => i !== index);
+
+    if (this.isModifiable([PsbtGlobalTxModifiableBits.SIGHASH_SINGLE])) {
+      // SIGHASH_SINGLE ties the input to the output, so remove input sig since
+      // it is no longer valid.
+      this.removePartialSig(index);
+    }
+
     this.outputMaps = newOutputs;
     this.PSBT_GLOBAL_OUTPUT_COUNT = this.outputMaps.length;
+  }
+
+  // Checks that provided flags are present in PSBT_GLOBAL_TX_MODIFIABLE.
+  private isModifiable(flags: PsbtGlobalTxModifiableBits[]) {
+    for (const flag of flags) {
+      if (!this.PSBT_GLOBAL_TX_MODIFIABLE.includes(flag)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // The Signer, when it creates a signature, must add the partial sig keypair
@@ -1095,6 +1128,37 @@ export class PsbtV2 extends PsbtV2Maps {
     }
   }
 
+  // Removes all sigs for an input unless a pubkey is specified.
+  public removePartialSig(inputIndex: number, pubkey?: Buffer) {
+    const input = this.inputMaps[inputIndex];
+
+    if (!input) {
+      throw Error(`PsbtV2 has no input at ${inputIndex}`);
+    }
+
+    if (pubkey) {
+      // Pubkey has been provided to remove a specific sig on the input.
+      const key = `${KeyType.PSBT_IN_PARTIAL_SIG}${pubkey.toString("hex")}`;
+      const sig = this.PSBT_IN_PARTIAL_SIG[inputIndex].find(
+        (el) => el.key === key
+      );
+
+      if (!sig) {
+        throw Error(
+          `PsbtV2 input has no signature from pubkey ${pubkey.toString("hex")}`
+        );
+      }
+
+      input.delete(key);
+    } else {
+      // Remove all sigs on an input.
+      const sigs = this.PSBT_IN_PARTIAL_SIG[inputIndex];
+      for (const sig of sigs) {
+        input.delete(sig.key);
+      }
+    }
+  }
+
   // Used to ensure the PSBT is in the proper state when adding a partial sig
   // keypair.
   // https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#signer
@@ -1108,7 +1172,7 @@ export class PsbtV2 extends PsbtV2Maps {
         (val) => val !== PsbtGlobalTxModifiableBits.INPUTS
       );
     } else {
-      // Remove SIGHASH_ANYONECANPAY bit for simpler comparisons
+      // Unset SIGHASH_ANYONECANPAY bit for simpler comparisons
       sighashVal ^= SighashType.SIGHASH_ANYONECANPAY;
     }
 
@@ -1136,6 +1200,11 @@ export class PsbtV2 extends PsbtV2Maps {
 
     // Creator Role
     const psbtv2 = new PsbtV2();
+    // Set it fully modifiable so that we can add the v0 inputs and outputs.
+    psbtv2.PSBT_GLOBAL_TX_MODIFIABLE = [
+      PsbtGlobalTxModifiableBits.INPUTS,
+      PsbtGlobalTxModifiableBits.OUTPUTS,
+    ];
     const txVersion = psbtv0.data.getTransaction().readInt32LE(0);
     if (txVersion === 1 && allowTxnVersion1) {
       psbtv2.dangerouslySetGlobalTxVersion1();
@@ -1175,16 +1244,6 @@ export class PsbtV2 extends PsbtV2Maps {
         witnessScript: input.witnessScript,
         bip32Derivation: input.bip32Derivation,
       });
-
-      for (const sig of input.partialSig || []) {
-        psbtv2.addPartialSig(
-          // addInput pushes an input, so it may be safe to assume the sig
-          // belongs to the last input.
-          psbtv2.PSBT_GLOBAL_INPUT_COUNT - 1,
-          sig.pubkey,
-          sig.signature
-        );
-      }
     }
 
     let txOutputs: any = [];
@@ -1201,6 +1260,15 @@ export class PsbtV2 extends PsbtV2Maps {
         witnessScript: output.witnessScript,
         bip32Derivation: output.bip32Derivation,
       });
+    }
+
+    // Finally, add partialSigs to inputs. This has to be performed last since
+    // it may change PSBT_GLOBAL_TX_MODIFIABLE preventing inputs or outputs from
+    // being added.
+    for (const [index, input] of psbtv0.data.inputs.entries()) {
+      for (const sig of input.partialSig || []) {
+        psbtv2.addPartialSig(index, sig.pubkey, sig.signature);
+      }
     }
 
     return psbtv2;
