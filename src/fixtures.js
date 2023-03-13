@@ -221,6 +221,11 @@ const NODES = {
     rootFingerprint: ROOT_FINGERPRINT,
   },
 
+  "m/45'/1'/4'/99'/2147483647/3/1": {
+    tpub: "tpubDLaKPLMBXicb8HnBkcwxCxYNqnypFd4PFhRaF1DMQu3t1qh9zscD4F7rPhkGqWJkaB4zG1gVZ4pFP14qRiEajwUPjnRg873gaPvvZYnnTnt",
+    rootFingerprint: ROOT_FINGERPRINT,
+  },
+
   // P2SH-TESTNET
   "m/45'/1'/100'": {
     xpub: "tpubDDQubdBx9cbwQtdcRTisKF7wVCwHgHewhU7wh77VzCi62Q9q81qyQeLoZjKWZ62FnQbWU8k7CuKo2A21pAWaFtPGDHP9WuhtAx4smcCxqn1",
