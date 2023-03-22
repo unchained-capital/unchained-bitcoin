@@ -945,6 +945,8 @@ const MULTISIGS_BASE = [
     network: MAINNET,
     type: P2SH,
     bip32Path: "m/45'/0'/100'/0/0",
+    policyHmac:
+      "ebe7154ae75d4117d9da0525a6e134881f4b171671724a24ce00d7569be9a16c",
     publicKey:
       "02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79",
     publicKeys: [
@@ -1051,6 +1053,8 @@ const MULTISIGS_BASE = [
     network: MAINNET,
     type: P2SH_P2WSH,
     bip32Path: "m/48'/0'/100'/1'/0/0",
+    policyHmac:
+      "d7461610bc48a84f199e1c9a081227d8f36a0c32e8adb141f4bc410aa999375f",
     publicKey:
       "0342997f6fcd7fa4a3c7e290c8867148992e6194742120985c664d9e214461af7c",
     publicKeys: [
@@ -1165,6 +1169,8 @@ const MULTISIGS_BASE = [
     network: MAINNET,
     type: P2WSH,
     bip32Path: "m/48'/0'/100'/2'/0/0",
+    policyHmac:
+      "c18feb515eb8a44070450c38f93aeab036a86192fa6133dcbe55645f89de278a",
     publicKey:
       "0369e74fc954355b6f7acf9bbec5b861c186852b759a85f92558e420a0202047f4",
     publicKeys: [
