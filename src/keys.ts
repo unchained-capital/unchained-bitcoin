@@ -13,7 +13,7 @@ import { Struct, BufferWriter, BufferReader } from "bufio";
 import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
-import { TESTNET, networkData, MAINNET, NETWORKS, REGTEST } from "./networks";
+import { TESTNET, networkData, MAINNET, REGTEST } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
 import { BitcoinNetwork, KeyPrefix, KeyVersion } from "./types";
@@ -306,15 +306,14 @@ export function validateExtendedPublicKeyForNetwork(
   network: string
 ): string {
   let requiredPrefix = "'xpub'";
-  if (network === TESTNET) {
+  const requiresTpub = network === TESTNET || network === REGTEST;
+  if (requiresTpub) {
     requiredPrefix += " or 'tpub'";
   }
   const prefix = extendedPublicKey.slice(0, 4);
   if (
-    !(
-      (network === MAINNET && prefix === "xpub") ||
-      (network === TESTNET && prefix === "tpub")
-    )
+    (network === MAINNET && prefix !== "xpub") ||
+    (requiresTpub && prefix !== "tpub")
   ) {
     return `Extended public key must begin with ${requiredPrefix}.`;
   }
@@ -347,17 +346,12 @@ export function validateExtendedPublicKey(
     return "Extended public key cannot be blank.";
   }
 
-  const requiredPrefix = network === TESTNET ? "tpub" : "xpub";
-  const notXpubError = `Extended public key must begin with '${requiredPrefix}'.`;
-
   if (xpubString.length < 4) {
-    return notXpubError;
+    return `Invalid extended public key. Value ${xpubString} is too short`;
   }
 
-  const prefix = xpubString.slice(0, 4);
-  if (prefix !== requiredPrefix) {
-    return notXpubError;
-  }
+  const prefixError = validateExtendedPublicKeyForNetwork(xpubString, network);
+  if (prefixError) return prefixError;
 
   if (xpubString.length < 111) {
     return "Extended public key is too short.";

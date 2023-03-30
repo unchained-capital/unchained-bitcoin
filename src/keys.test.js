@@ -20,7 +20,7 @@ import {
   getMaskedDerivation,
 } from "./keys";
 
-import { TESTNET, MAINNET } from "./networks";
+import { TESTNET, MAINNET, REGTEST } from "./networks";
 
 import { TEST_FIXTURES } from "./fixtures";
 
@@ -39,7 +39,7 @@ describe("keys", () => {
       "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px";
 
     it("returns an error message when the prefix does not match the network", () => {
-      expect(validateExtendedPublicKeyForNetwork("foo", TESTNET)).toMatch(
+      expect(validateExtendedPublicKeyForNetwork("foobar", TESTNET)).toMatch(
         /must begin with/i
       );
       expect(validateExtendedPublicKeyForNetwork("tpub", MAINNET)).toMatch(
@@ -51,10 +51,14 @@ describe("keys", () => {
       expect(validateExtendedPublicKeyForNetwork(validXpub, TESTNET)).toMatch(
         /must begin with/i
       );
+      expect(validateExtendedPublicKeyForNetwork(validXpub, REGTEST)).toMatch(
+        /must begin with/i
+      );
     });
 
     it("returns an empty string when the value is valid", () => {
       expect(validateExtendedPublicKeyForNetwork(validTpub, TESTNET)).toBe("");
+      expect(validateExtendedPublicKeyForNetwork(validTpub, REGTEST)).toBe("");
       expect(validateExtendedPublicKeyForNetwork(validXpub, MAINNET)).toBe("");
     });
   });
@@ -78,7 +82,7 @@ describe("keys", () => {
     });
 
     it("returns an error message when the prefix does not match the network", () => {
-      expect(validateExtendedPublicKey("foo", TESTNET)).toMatch(
+      expect(validateExtendedPublicKey("foobar", TESTNET)).toMatch(
         /must begin with/i
       );
       expect(validateExtendedPublicKey("tpub", MAINNET)).toMatch(
