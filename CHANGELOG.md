@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.4.0...unchained-bitcoin-v0.4.1) (2023-03-31)
+
+
+### Bug Fixes
+
+* **keys:** include regtest for tpub validation ([a298eb8](https://github.com/unchained-capital/unchained-bitcoin/commit/a298eb8a618dddd2823b30f5c6e933db1dff1b5e))
+
+## Changelog
+
 ## Version 0.0.12
 
 ### Added
