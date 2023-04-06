@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.4.1...unchained-bitcoin-v0.5.0) (2023-04-06)
+
+
+### Features
+
+* add minSats to the validateOutputAmount function. Fix missing package ([52b3c60](https://github.com/unchained-capital/unchained-bitcoin/commit/52b3c6091b9656fbd1ae86587a054b1551d6c621))
+
+
+### Bug Fixes
+
+* add test ([31ab2de](https://github.com/unchained-capital/unchained-bitcoin/commit/31ab2de309360fa5824b1cddeba8e2910838767b))
+
 ## [0.4.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.4.0...unchained-bitcoin-v0.4.1) (2023-03-31)
 
 
