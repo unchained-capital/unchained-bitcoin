@@ -55,6 +55,7 @@ export const SIGNET = "signet";
 export const NETWORKS = {
   MAINNET,
   TESTNET,
+  REGTEST,
 } as const;
 
 /**
