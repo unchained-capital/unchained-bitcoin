@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.5.0...unchained-bitcoin-v0.5.1) (2023-05-30)
+
+
+### Bug Fixes
+
+* **braid:** allow for regtest braids ([06b05fb](https://github.com/unchained-capital/unchained-bitcoin/commit/06b05fb8b70feed7f6ecc1b9bf333746f9f9cf9d))
+
 ## [0.5.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.4.1...unchained-bitcoin-v0.5.0) (2023-04-06)
 
 
