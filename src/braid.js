@@ -55,7 +55,7 @@ export class Braid extends Struct {
     this.addressType = options.addressType;
     assert(
       Object.values(NETWORKS).includes(options.network),
-      `Expected network to be one of:  ${NETWORKS}.`
+      `Expected network to be one of:  ${Object.values(NETWORKS)}.`
     );
     this.network = options.network;
 
