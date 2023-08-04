@@ -1,33 +1,39 @@
 /**
  * This module provides conversion and validation functions for units
  * (Satoshis, BTC) and hex strings.
- * 
+ *
  * @module utils
  */
 
 import BigNumber from "bignumber.js";
 import { crypto } from "bitcoinjs-lib";
 
-const VALID_BASE64_REGEX = 
+// Without this, BigNumber will report strings as exponentials. 16 places covers
+// all possible values in satoshis.
+BigNumber.config({ EXPONENTIAL_AT: 16 });
+
+const VALID_BASE64_REGEX =
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
 const VALID_HEX_REGEX = /^[0-9A-Fa-f]*$/;
 
 /**
  * Converts a byte array to its hex representation.
- * 
+ *
  * @param {number[] | Buffer} byteArray - input byte array
  * @returns {string} hex representation of input array
- * 
+ *
  * @example
  * import {toHexString} from "unchained-bitcoin";
  * const hex = toHexString([255, 0, 15, 16, 31, 32]);
  * console.log(hex) // ff000f101f20
- * 
+ *
  */
-export function toHexString(byteArray) {
-  return Array.prototype.map.call(byteArray, function (byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-  }).join('');
+export function toHexString(byteArray: number[] | Buffer) {
+  return Array.prototype.map
+    .call(byteArray, function (byte) {
+      return ("0" + (byte & 0xff).toString(16)).slice(-2);
+    })
+    .join("");
 }
 
 /**
@@ -36,12 +42,12 @@ export function toHexString(byteArray) {
  * - Valid base64 consists of whole groups of 4 characters containing `a-z`, `A-Z`, 0-9,
  *   `+`, or `/`. The end of the string may be padded with `==` or `=` to
  *   complete the four character group.
- * 
+ *
  * @param {string} inputString - string to validate
  * @returns {boolean} true if base64, false otherwise.
  */
-export function validBase64(inputString) {
-  return (VALID_BASE64_REGEX).test(inputString);
+export function validBase64(inputString: string) {
+  return VALID_BASE64_REGEX.test(inputString);
 }
 
 /**
@@ -52,26 +58,26 @@ export function validBase64(inputString) {
  *
  * - The presence of the common prefix `0x` will make the input be
  *   considered invalid (because of the` `x`).
- * 
+ *
  * @param {string} inputString - string to validate
  * @returns {string} empty if valid or corresponding validation message if not
- * 
+ *
  * @example
  * import {validateHex} from "unchained-bitcoin";
  * console.log(validateHex('00112233gg')) // "Invalid hex: ..."
  * console.log(validateHex('0xdeadbeef')) // "Invalid hex: ..."
  * console.log(validateHex('deadbeef')) // ""
  * console.log(validateHex('DEADbeef')) // ""
- * 
+ *
  */
-export function validateHex(inputString) {
+export function validateHex(inputString: string) {
   if (inputString.length % 2) {
-    return 'Invalid hex: odd-length string.';
+    return "Invalid hex: odd-length string.";
   }
   if (!VALID_HEX_REGEX.test(inputString)) {
-    return 'Invalid hex: only characters a-f, A-F and 0-9 allowed.';
+    return "Invalid hex: only characters a-f, A-F and 0-9 allowed.";
   }
-  return '';
+  return "";
 }
 
 /**
@@ -79,21 +85,21 @@ export function validateHex(inputString) {
  *
  * - Accepts both positive and negative input values.
  * - Rounds down (towards zero) input value to the nearest Satoshi.
- * 
- * @param {BigNumber|string|number} satoshis - value in Satoshis
- * @returns {BigNumber} value in BTC
- * 
+ *
+ * @param {string|number} satoshis - value in Satoshis
+ * @returns {string} value in BTC
+ *
  * @example
  * import {satoshisToBitcoins} from "unchained-bitcoin";
- * console.log(satoshisToBitcoins(123450000)); // 1.2345
- * console.log(satoshisToBitcoins('0.5')); // 0
- * console.log(satoshisToBitcoins('-100000000.5')); // -1.0
- * 
+ * console.log(satoshisToBitcoins(123450000)); // "1.2345"
+ * console.log(satoshisToBitcoins('0.5')); // "0"
+ * console.log(satoshisToBitcoins('-100000000.5')); // "-1.0"
+ *
  */
-export function satoshisToBitcoins(satoshis) {
-  const originalValue = BigNumber(satoshis);
+export function satoshisToBitcoins(satoshis: string | number) {
+  const originalValue = new BigNumber(satoshis);
   const roundedValue = originalValue.integerValue(BigNumber.ROUND_DOWN);
-  return roundedValue.shiftedBy(-8);
+  return roundedValue.shiftedBy(-8).toString();
 }
 
 /**
@@ -101,20 +107,23 @@ export function satoshisToBitcoins(satoshis) {
  *
  * - Accepts both positive and negative input values.
  * - Rounds down output value to the nearest Satoshi.
- * 
- * @param {BigNumber|string|number} btc - value in BTC
- * @returns {BigNumber} value in satoshis
- * 
+ *
+ * @param {string|number} btc - value in BTC
+ * @returns {string} value in satoshis
+ *
  * @example
  * import {bitcoinsToSatoshis} from "unchained-bitcoin";
- * console.log(bitcoinsToSatoshis(1.2345)); // 123450000
- * console.log(bitcoinsToSatoshis(-1.2345)); // -123450000
+ * console.log(bitcoinsToSatoshis(1.2345)); // "123450000"
+ * console.log(bitcoinsToSatoshis(-1.2345)); // "-123450000"
  */
-export function bitcoinsToSatoshis(btc) {
-  return BigNumber(btc).shiftedBy(8).integerValue(BigNumber.ROUND_DOWN);
+export function bitcoinsToSatoshis(btc: string | number) {
+  return new BigNumber(btc)
+    .shiftedBy(8)
+    .integerValue(BigNumber.ROUND_DOWN)
+    .toString();
 }
 
-export const ZERO = BigNumber(0);
+export const ZERO = new BigNumber(0);
 
 /**
  * Given a buffer as a digest, pass through sha256 and ripemd160
@@ -122,6 +131,6 @@ export const ZERO = BigNumber(0);
  * @param {Buffer} buf - buffer to get hash160 of
  * @returns {Buffer} hash160 of the given buffer
  */
-export function hash160(buf) {
+export function hash160(buf: Buffer) {
   return crypto.ripemd160(crypto.sha256(buf));
 }

@@ -34,6 +34,10 @@ import { P2WSH } from "./p2wsh";
 import { TESTNET, MAINNET } from "./networks";
 import { braidConfig } from "./braid";
 
+// Without this, BigNumber will report strings as exponentials. 16 places covers
+// all possible values in satoshis.
+BigNumber.config({ EXPONENTIAL_AT: 16 });
+
 const RECEIVING_ADDRESSES = {
   [TESTNET]: {
     [P2SH]: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
@@ -1292,7 +1296,7 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
       utxos: test.utxos.map((utxo) => ({
         ...utxo,
         ...{
-          amountSats: BigNumber(utxo.amountSats),
+          amountSats: BigNumber(utxo.amountSats).toString(),
           multisig,
         },
         bip32Path: test.bip32Path, // this only works because all of these fixtures are single address.
@@ -1302,7 +1306,7 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
         ...{
           outputs: test.transaction.outputs.map((output) => ({
             ...output,
-            ...{ amountSats: BigNumber(output.amountSats) },
+            ...{ amountSats: BigNumber(output.amountSats).toString() },
           })),
         },
       },

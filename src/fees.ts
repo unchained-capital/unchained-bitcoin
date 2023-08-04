@@ -1,25 +1,23 @@
-/** 
+/**
  * This module provides functions for calculating & validating
  * transaction fees.
- * 
+ *
  * @module fees
  */
 
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 
-import {
-  P2SH,
-  estimateMultisigP2SHTransactionVSize,
-} from "./p2sh";
+import { P2SH, estimateMultisigP2SHTransactionVSize } from "./p2sh";
 import {
   P2SH_P2WSH,
   estimateMultisigP2SH_P2WSHTransactionVSize,
 } from "./p2sh_p2wsh";
-import {
-  P2WSH,
-  estimateMultisigP2WSHTransactionVSize,
-} from "./p2wsh";
-import {ZERO} from "./utils";
+import { P2WSH, estimateMultisigP2WSHTransactionVSize } from "./p2wsh";
+import { ZERO } from "./utils";
+
+// Without this, BigNumber will report strings as exponentials. 16 places covers
+// all possible values in satoshis.
+BigNumber.config({ EXPONENTIAL_AT: 16 });
 
 /**
  * Maxmium acceptable transaction fee rate in Satoshis/vbyte.
@@ -27,9 +25,9 @@ import {ZERO} from "./utils";
  * @constant
  * @type {BigNumber}
  * @default 1000 Satoshis/vbyte
- * 
+ *
  */
-const MAX_FEE_RATE_SATS_PER_VBYTE = BigNumber(1000);   // 1000 Sats/vbyte
+const MAX_FEE_RATE_SATS_PER_VBYTE = new BigNumber(1000); // 1000 Sats/vbyte
 
 /**
  * Maxmium acceptable transaction fee in Satoshis.
@@ -38,7 +36,7 @@ const MAX_FEE_RATE_SATS_PER_VBYTE = BigNumber(1000);   // 1000 Sats/vbyte
  * @type {BigNumber}
  * @default 2500000 Satoshis (=0.025 BTC)
  */
-const MAX_FEE_SATS = BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
+const MAX_FEE_SATS = new BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
 
 /**
  * Validate the given transaction fee rate (in Satoshis/vbyte).
@@ -46,10 +44,10 @@ const MAX_FEE_SATS = BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
  * - Must be a parseable as a number.
  *
  * - Cannot be negative (zero is OK).
- * 
+ *
  * - Cannot be greater than the limit set by
  *   `MAX_FEE_RATE_SATS_PER_VBYTE`.
- * 
+ *
  * @param {string|number|BigNumber} feeRateSatsPerVbyte - the fee rate in Satoshis/vbyte
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
@@ -61,8 +59,8 @@ const MAX_FEE_SATS = BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
 export function validateFeeRate(feeRateSatsPerVbyte) {
   let fr;
   try {
-    fr = BigNumber(feeRateSatsPerVbyte);
-  } catch(e) {
+    fr = new BigNumber(feeRateSatsPerVbyte);
+  } catch (e) {
     return "Invalid fee rate.";
   }
   if (!fr.isFinite()) {
@@ -74,7 +72,7 @@ export function validateFeeRate(feeRateSatsPerVbyte) {
   if (fr.isGreaterThan(MAX_FEE_RATE_SATS_PER_VBYTE)) {
     return "Fee rate is too high.";
   }
-  return '';
+  return "";
 }
 
 /**
@@ -87,7 +85,7 @@ export function validateFeeRate(feeRateSatsPerVbyte) {
  * - Cannot exceed the total input amount.
  *
  * - Cannot be higher than the limit set by `MAX_FEE_SATS`.
- * 
+ *
  * @param {string|number|BigNumber} feeSats - fee in Satoshis
  * @param {string|number|BigNumber} inputsTotalSats - total input amount in Satoshis
  * @returns {string} empty if valid or corresponding validation message if not
@@ -101,16 +99,16 @@ export function validateFeeRate(feeRateSatsPerVbyte) {
 export function validateFee(feeSats, inputsTotalSats) {
   let fs, its;
   try {
-    fs = BigNumber(feeSats);
-  } catch(e) {
+    fs = new BigNumber(feeSats);
+  } catch (e) {
     return "Invalid fee.";
   }
   if (!fs.isFinite()) {
     return "Invalid fee.";
   }
   try {
-    its = BigNumber(inputsTotalSats);
-  } catch(e) {
+    its = new BigNumber(inputsTotalSats);
+  } catch (e) {
     return "Invalid total input amount.";
   }
   if (!its.isFinite()) {
@@ -128,13 +126,12 @@ export function validateFee(feeSats, inputsTotalSats) {
   if (fs.isGreaterThan(MAX_FEE_SATS)) {
     return "Fee is too high.";
   }
-  return '';
+  return "";
 }
-
 
 /**
  * Estimate transaction fee rate based on actual fee and address type, number of inputs and number of outputs.
- * 
+ *
  * @param {Object} config - configuration for the calculation
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} config.addressType - address type used for estimation
  * @param {number} config.numInputs - number of inputs used in calculation
@@ -142,25 +139,29 @@ export function validateFee(feeSats, inputsTotalSats) {
  * @param {number} config.m - number of required signers for the quorum
  * @param {number} config.n - number of total signers for the quorum
  * @param {BigNumber} config.feesInSatoshis - total transaction fee in satoshis
- * @example 
+ * @example
  * import {estimateMultisigP2WSHTransactionFeeRate} from "unchained-bitcoin";
  * // get the fee rate a P2WSH multisig transaction with 2 inputs and 3 outputs with a known fee of 7060
  * const feerate = estimateMultisigTransactionFeeRate({
- *   addressType: P2WSH, 
- *   numInputs: 2, 
- *   numOutputs: 3, 
+ *   addressType: P2WSH,
+ *   numInputs: 2,
+ *   numOutputs: 3,
  *   m: 2,
  *   n: 3,
  *   feesInSatoshis: 7060
  * });
- * 
- * 
- * @returns {string} estimated fee rate
+ *
+ *
+ * @returns {string|null} estimated fee rate or null if vSize is null
  */
 export function estimateMultisigTransactionFeeRate(config) {
-  return (BigNumber(config.feesInSatoshis)).dividedBy(
-    estimateMultisigTransactionVSize(config)
-  );
+  const vSize = estimateMultisigTransactionVSize(config);
+
+  if (vSize === null) {
+    return null;
+  }
+
+  return new BigNumber(config.feesInSatoshis).dividedBy(vSize).toString();
 }
 
 /**
@@ -176,29 +177,41 @@ export function estimateMultisigTransactionFeeRate(config) {
  * // get fee for P2SH multisig transaction with 2 inputs and 3 outputs at 10 satoshis per byte
  * import {estimateMultisigP2WSHTransactionFee} from "unchained-bitcoin";
  * const fee = estimateMultisigTransactionFee({
- *   addressType: P2SH, 
- *   numInputs: 2, 
- *   numOutputs: 3, 
+ *   addressType: P2SH,
+ *   numInputs: 2,
+ *   numOutputs: 3,
  *   m: 2,
  *   n: 3,
  *   feesPerByteInSatoshis: 10
  * });
- * @returns {number} estimated transaction fee
+ * @returns {string|null} estimated transaction fee in satoshis or null if vSize is null
  */
 export function estimateMultisigTransactionFee(config) {
-  return (BigNumber(config.feesPerByteInSatoshis)).multipliedBy(
-    estimateMultisigTransactionVSize(config));
+  const vSize = estimateMultisigTransactionVSize(config);
+
+  if (vSize === null) {
+    return null;
+  }
+
+  const feeAsNumber = new BigNumber(config.feesPerByteInSatoshis)
+    .multipliedBy(vSize)
+    .toNumber();
+
+  // In the case that feesPerByteInSatoshis is a float, feeAsNumber might be a
+  // float. A fraction of a satoshi is not possible on-chain. Estimate worse
+  // case fee and calculate ceil.
+  return Math.ceil(feeAsNumber).toString();
 }
 
 function estimateMultisigTransactionVSize(config) {
   switch (config.addressType) {
-  case P2SH:
-    return estimateMultisigP2SHTransactionVSize(config);
-  case P2SH_P2WSH:
-    return estimateMultisigP2SH_P2WSHTransactionVSize(config);
-  case P2WSH:
-    return estimateMultisigP2WSHTransactionVSize(config);
-  default:
-    return null;
+    case P2SH:
+      return estimateMultisigP2SHTransactionVSize(config);
+    case P2SH_P2WSH:
+      return estimateMultisigP2SH_P2WSHTransactionVSize(config);
+    case P2WSH:
+      return estimateMultisigP2WSHTransactionVSize(config);
+    default:
+      return null;
   }
 }
