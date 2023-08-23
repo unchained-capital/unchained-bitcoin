@@ -21,3 +21,4 @@ lib/
 # misc
 .DS_Store
 .vscode
+.npmrc
