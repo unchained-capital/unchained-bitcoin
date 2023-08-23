@@ -27,6 +27,7 @@ import { TEST_FIXTURES } from "./fixtures";
 import { P2SH } from "./p2sh";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
+import { KeyPrefix } from "./types";
 
 const NODES = TEST_FIXTURES.keys.open_source.nodes;
 const extendedPubKeyNode = NODES["m/45'/0'/0'"];
@@ -336,10 +337,11 @@ describe("keys", () => {
   describe("validatePrefix", () => {
     it("should return null if valid or throw otherwise", () => {
       Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((prefix) => {
-        expect(validatePrefix(prefix)).toBe(null);
+        expect(validatePrefix(prefix as KeyPrefix)).toBe(null);
       });
 
       function invalidPrefix() {
+        // @ts-expect-error expected to be invalid for the test
         validatePrefix("jpub");
       }
 
@@ -354,7 +356,8 @@ describe("keys", () => {
       );
     });
 
-    Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertTo) => {
+    Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((_convertTo) => {
+      const convertTo = _convertTo as KeyPrefix;
       describe(`Test converting to ${convertTo}`, () => {
         Object.keys(EXTENDED_PUBLIC_KEY_VERSIONS).forEach((convertFrom) => {
           if (
@@ -504,7 +507,11 @@ describe("keys", () => {
 
   describe("ExtendedPublicKey", () => {
     it("encodes and decodes an extended public key", () => {
-      const paths = ["m/45'/0'/0'", "m/45'/0'/0'/0", null];
+      const paths: [string, string, undefined] = [
+        "m/45'/0'/0'",
+        "m/45'/0'/0'/0",
+        undefined,
+      ];
       for (const path of paths) {
         const {
           parentFingerprint,

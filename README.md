@@ -229,7 +229,7 @@ Developers who want to work on this library should clone the source
 code and install dependencies:
 
 ```
-$ git clone https://github.com/unchained-capital/unchained-bitcoin`
+$ git clone https://github.com/unchained-capital/unchained-bitcoin
 ...
 $ cd unchained-bitcoin
 $ npm install

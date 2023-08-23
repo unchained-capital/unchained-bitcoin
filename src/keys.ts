@@ -339,7 +339,7 @@ export function validateExtendedPublicKeyForNetwork(
  * console.log(validateExtendedPublicKey("xpub123...", MAINNET)); // ""
  */
 export function validateExtendedPublicKey(
-  xpubString: string,
+  xpubString: string | null | undefined,
   network: BitcoinNetwork
 ): string {
   if (xpubString === null || xpubString === undefined || xpubString === "") {
@@ -386,7 +386,7 @@ export function validateExtendedPublicKey(
  * console.log(validatePublicKey("04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53", "P2WSH")); // "P2WSH does not support uncompressed public keys."
  */
 export function validatePublicKey(
-  pubkeyHex: string,
+  pubkeyHex: string | null | undefined,
   addressType?: string
 ): string {
   if (pubkeyHex === null || pubkeyHex === undefined || pubkeyHex === "") {
