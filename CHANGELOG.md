@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.5.1...unchained-bitcoin-v0.6.0) (2023-08-31)
+
+
+### Features
+
+* ensure BigNumber classes are not returned ([#89](https://github.com/unchained-capital/unchained-bitcoin/issues/89)) ([e60da88](https://github.com/unchained-capital/unchained-bitcoin/commit/e60da88b39ceae378ee20df2798c8ad9ed71d976))
+
+
+### Bug Fixes
+
+* restore exporting of type modules for commonjs compatibility ([#94](https://github.com/unchained-capital/unchained-bitcoin/issues/94)) ([9ffccdb](https://github.com/unchained-capital/unchained-bitcoin/commit/9ffccdb76a85d845749d94beaf042f0991ef208b))
+
 ## [0.5.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.5.0...unchained-bitcoin-v0.5.1) (2023-05-30)
 
 
