@@ -49,7 +49,7 @@ export function hardenedBIP32Index(index) {
 export function bip32PathToSequence(pathString): number[] {
   const pathSegments: string[] = pathString.split("/").splice(1);
   return pathSegments.map((pathSegment) => {
-    if (pathSegment.substring(-1) === "'") {
+    if (pathSegment.substr(-1) === "'") {
       return parseInt(pathSegment.slice(0, -1), 10) + HARDENING_OFFSET;
     } else {
       return parseInt(pathSegment, 10);
