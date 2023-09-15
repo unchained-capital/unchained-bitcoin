@@ -8,26 +8,21 @@ import {
   multisigBIP32Path,
   getParentBIP32Path,
   getRelativeBIP32Path,
-} from './paths';
-import {P2SH} from "./p2sh";
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
-import {
-  TESTNET,
-  MAINNET,
-} from "./networks";
+} from "./paths";
+import { P2SH } from "./p2sh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
+import { TESTNET, MAINNET } from "./networks";
 
-describe('paths', () => {
-
-  describe('hardenedBIP32Index', () => {
+describe("paths", () => {
+  describe("hardenedBIP32Index", () => {
     it("returns the hardened version of the given index", () => {
-      expect(hardenedBIP32Index('0')).toEqual(2147483648);
-      expect(hardenedBIP32Index('44')).toEqual(2147483692);
+      expect(hardenedBIP32Index("0")).toEqual(2147483648);
+      expect(hardenedBIP32Index("44")).toEqual(2147483692);
     });
   });
 
-  describe('bip32PathToSequence', () => {
-
+  describe("bip32PathToSequence", () => {
     it("converts a path to a sequence, including hardening", () => {
       expect(bip32PathToSequence("m/45'/1/99")).toEqual([2147483693, 1, 99]);
     });
@@ -40,11 +35,9 @@ describe('paths', () => {
       expect(bip32PathToSequence("")).toEqual([]);
       expect(bip32PathToSequence("m")).toEqual([]);
     });
-
   });
 
-  describe('bip32SequenceToPath', () => {
-
+  describe("bip32SequenceToPath", () => {
     it("converts a sequence to a path, including hardening", () => {
       expect(bip32SequenceToPath([2147483693, 1, 99])).toBe("m/45'/1/99");
     });
@@ -52,11 +45,9 @@ describe('paths', () => {
     it("returns an empty path on empty input", () => {
       expect(bip32SequenceToPath([])).toBe("m/");
     });
-
   });
 
-  describe('validateBIP32Path', () => {
-
+  describe("validateBIP32Path", () => {
     it("returns an error message on invalid paths", () => {
       expect(validateBIP32Path("")).toMatch(/cannot be blank/i);
       expect(validateBIP32Path("foo")).toMatch(/is invalid/i);
@@ -70,7 +61,9 @@ describe('paths', () => {
 
     it("returns an error message when a derivation index is too high", () => {
       expect(validateBIP32Path("m/4294967296")).toMatch(/index is too high/i);
-      expect(validateBIP32Path("m/45'/2147483648'/0")).toMatch(/index is too high/i);
+      expect(validateBIP32Path("m/45'/2147483648'/0")).toMatch(
+        /index is too high/i
+      );
     });
 
     it("returns an empty string on valid paths", () => {
@@ -85,20 +78,22 @@ describe('paths', () => {
     it("enforces mode=hardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
       expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
-      expect(validateBIP32Path("m/45'/0", { mode: "hardened" })).toMatch(/fully-hardened/i);
+      expect(validateBIP32Path("m/45'/0", { mode: "hardened" })).toMatch(
+        /fully-hardened/i
+      );
       expect(validateBIP32Path("m/45'/0'", { mode: "hardened" })).toEqual("");
     });
 
     it("enforces mode=unhardened if asked", () => {
       expect(validateBIP32Path("m/45'/0")).toEqual("");
       expect(validateBIP32Path("m/45/0", { mode: "unhardened" })).toEqual("");
-      expect(validateBIP32Path("m/45'/0", { mode: "unhardened" })).toMatch(/cannot include hardened/i);
+      expect(validateBIP32Path("m/45'/0", { mode: "unhardened" })).toMatch(
+        /cannot include hardened/i
+      );
     });
-
   });
 
-  describe('validateBIP32Index', () => {
-
+  describe("validateBIP32Index", () => {
     it("returns an error message on invalid indices", () => {
       expect(validateBIP32Index("")).toMatch(/cannot be blank/i);
       expect(validateBIP32Index("foo")).toMatch(/is invalid/i);
@@ -115,7 +110,9 @@ describe('paths', () => {
     });
 
     it("returns an error message when the index is too high", () => {
-      expect(validateBIP32Index("85899345929999999999999999999999999999")).toMatch(/Invalid BIP32 index/i);
+      expect(
+        validateBIP32Index("85899345929999999999999999999999999999")
+      ).toMatch(/Invalid BIP32 index/i);
       expect(validateBIP32Index("4294967296")).toMatch(/index is too high/i);
       expect(validateBIP32Index("2147483648'")).toMatch(/index is too high/i);
     });
@@ -133,25 +130,30 @@ describe('paths', () => {
     it("enforces mode=hardened if asked", () => {
       expect(validateBIP32Index("45'")).toEqual("");
       expect(validateBIP32Index("45")).toEqual("");
-      expect(validateBIP32Index("45'", { mode: "hardened" })).toEqual("");            
-      
-      expect(validateBIP32Index("2147483648", { mode: "hardened" })).toEqual("");            
-      expect(validateBIP32Index("45", { mode: "hardened" })).toMatch(/must be hardened/i);
+      expect(validateBIP32Index("45'", { mode: "hardened" })).toEqual("");
+
+      expect(validateBIP32Index("2147483648", { mode: "hardened" })).toEqual(
+        ""
+      );
+      expect(validateBIP32Index("45", { mode: "hardened" })).toMatch(
+        /must be hardened/i
+      );
     });
 
     it("enforces mode=unhardened if asked", () => {
       expect(validateBIP32Index("45'")).toEqual("");
       expect(validateBIP32Index("45")).toEqual("");
       expect(validateBIP32Index("45", { mode: "unhardened" })).toEqual("");
-      expect(validateBIP32Index("45'", { mode: "unhardened" })).toMatch(/cannot be hardened/i);
-      expect(validateBIP32Index("2147483648", {mode: "unhardened"})).toMatch(/cannot be hardened/i);      
+      expect(validateBIP32Index("45'", { mode: "unhardened" })).toMatch(
+        /cannot be hardened/i
+      );
+      expect(validateBIP32Index("2147483648", { mode: "unhardened" })).toMatch(
+        /cannot be hardened/i
+      );
     });
-
   });
 
-  
-  describe('multisigBIP32Root', () => {
-
+  describe("multisigBIP32Root", () => {
     it("returns the correct root BIP32 path for each combination of address type and network", () => {
       expect(multisigBIP32Root(P2SH, MAINNET)).toEqual("m/45'/0'/0'");
       expect(multisigBIP32Root(P2SH, TESTNET)).toEqual("m/45'/1'/0'");
@@ -171,44 +173,53 @@ describe('paths', () => {
       expect(multisigBIP32Root("foobar", MAINNET)).toBeNull();
       expect(multisigBIP32Root("foobar", TESTNET)).toBeNull();
     });
-
   });
 
-  describe('multisigBIP32Path', () => {
-
+  describe("multisigBIP32Path", () => {
     it("fails with invalid path", () => {
-      expect(multisigBIP32Path('foo', MAINNET, "1")).toBe(null);
+      expect(multisigBIP32Path("foo", MAINNET, "1")).toBe(null);
     });
 
     it("returns a BIP32 path with the correct root for each combination of address type, network, and relative path", () => {
       expect(multisigBIP32Path(P2SH, MAINNET, "1")).toEqual("m/45'/0'/0'/1");
-      expect(multisigBIP32Path(P2SH, TESTNET, "1'/2'")).toEqual("m/45'/1'/0'/1'/2'");
-      expect(multisigBIP32Path(P2SH_P2WSH, MAINNET, 0)).toEqual("m/48'/0'/0'/1'/0");
-      expect(multisigBIP32Path(P2WSH, TESTNET, 3)).toEqual("m/48'/1'/0'/2'/3");
+      expect(multisigBIP32Path(P2SH, TESTNET, "1'/2'")).toEqual(
+        "m/45'/1'/0'/1'/2'"
+      );
+      expect(multisigBIP32Path(P2SH_P2WSH, MAINNET, "0")).toEqual(
+        "m/48'/0'/0'/1'/0"
+      );
+      expect(multisigBIP32Path(P2WSH, TESTNET, "3")).toEqual(
+        "m/48'/1'/0'/2'/3"
+      );
     });
 
     it("defaults to the relative path 0", () => {
       expect(multisigBIP32Path(P2SH, MAINNET)).toEqual("m/45'/0'/0'/0");
       expect(multisigBIP32Path(P2SH, TESTNET)).toEqual("m/45'/1'/0'/0");
     });
-
   });
 
-  describe('getParentBIP32Path', () => {
+  describe("getParentBIP32Path", () => {
     it("validates and returns the correct BIP32 parent path for each given path", () => {
       expect(getParentBIP32Path("")).toMatch(/cannot be blank/i);
       expect(getParentBIP32Path("foo")).toMatch(/is invalid/i);
       expect(getParentBIP32Path("/45")).toMatch(/is invalid/i);
-      const validPaths = ["m/45'", "m/45'/0'", "m/45'/0'/0'", "m/45'/0'/0'/0", "m/45'/0'/0'/0/0"]
+      const validPaths = [
+        "m/45'",
+        "m/45'/0'",
+        "m/45'/0'/0'",
+        "m/45'/0'/0'/0",
+        "m/45'/0'/0'/0/0",
+      ];
       for (let i = validPaths.length - 1; i > 0; i--) {
-        const expected = validPaths[i - 1]
-        const actual = getParentBIP32Path(validPaths[i])
-        expect(actual).toMatch(expected)
+        const expected = validPaths[i - 1];
+        const actual = getParentBIP32Path(validPaths[i]);
+        expect(actual).toMatch(expected);
       }
-    })
-  })
+    });
+  });
 
-  describe('getRelativeBIP32Path', () => {
+  describe("getRelativeBIP32Path", () => {
     it("validates and returns the correct BIP32 parent path for each given path/index combo", () => {
       expect(getRelativeBIP32Path("", "m/45'")).toMatch(/cannot be blank/i);
       expect(getRelativeBIP32Path("foo", "m/45'")).toMatch(/is invalid/i);
@@ -216,16 +227,23 @@ describe('paths', () => {
       expect(getRelativeBIP32Path("m/45'", "")).toMatch(/cannot be blank/i);
       expect(getRelativeBIP32Path("m/45'", "foo")).toMatch(/is invalid/i);
       expect(getRelativeBIP32Path("m/45'", "/45")).toMatch(/is invalid/i);
-      expect(getRelativeBIP32Path("m/44'", "m/45'")).toMatch(/bip32Path does not start with the chroot/i);
-      const validPaths = ["m/45'", "m/45'/0'", "m/45'/0'/0'", "m/45'/0'/0'/0", "m/45'/0'/0'/0/0"]
+      expect(getRelativeBIP32Path("m/44'", "m/45'")).toMatch(
+        /bip32Path does not start with the chroot/i
+      );
+      const validPaths = [
+        "m/45'",
+        "m/45'/0'",
+        "m/45'/0'/0'",
+        "m/45'/0'/0'/0",
+        "m/45'/0'/0'/0/0",
+      ];
       const expectedRelativePaths = ["", "0'", "0'/0'", "0'/0'/0", "0'/0'/0/0"];
       const chroot = "m/45'";
-      for (let i =0; i < validPaths.length; i++) {
-        const expected = expectedRelativePaths[i]
-        const actual = getRelativeBIP32Path(chroot, validPaths[i])
-        expect(actual).toMatch(expected)
+      for (let i = 0; i < validPaths.length; i++) {
+        const expected = expectedRelativePaths[i];
+        const actual = getRelativeBIP32Path(chroot, validPaths[i]);
+        expect(actual).toMatch(expected);
       }
     });
-
-  })
+  });
 });
