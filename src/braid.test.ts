@@ -140,7 +140,8 @@ describe("braids", () => {
       expect(() => generatePublicKeysAtPath(defaultBraid, "1/0")).toThrow(
         /Cannot derive paths outside of the braid's index/i
       );
-      expect(() => generatePublicKeysAtPath(defaultBraid, "48349/0/0/0")
+      expect(() =>
+        generatePublicKeysAtPath(defaultBraid, "48349/0/0/0")
       ).toThrow(/Cannot derive paths outside of the braid's index/i);
     });
 
@@ -166,7 +167,8 @@ describe("braids", () => {
       expect(() => generateBip32DerivationByPath(defaultBraid, "1/0")).toThrow(
         /Cannot derive paths outside of the braid's index/i
       );
-      expect(() => generateBip32DerivationByPath(defaultBraid, "48349/0/0/0")
+      expect(() =>
+        generateBip32DerivationByPath(defaultBraid, "48349/0/0/0")
       ).toThrow(/Cannot derive paths outside of the braid's index/i);
     });
 

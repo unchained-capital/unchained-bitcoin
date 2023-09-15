@@ -4,22 +4,22 @@
  *
  * This module does NOT provide implementations of HTTP requests which
  * fetch data from these URLs.
- * 
+ *
  * @module block_explorer
  */
 
-import {TESTNET} from "./networks";
+import { TESTNET } from "./networks";
 
-const BASE_URL_MAINNET = 'https://blockstream.info';
-const BASE_URL_TESTNET = 'https://blockstream.info/testnet';
+const BASE_URL_MAINNET = "https://blockstream.info";
+const BASE_URL_TESTNET = "https://blockstream.info/testnet";
 
 function blockExplorerBaseURL(network) {
-  return (network === TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET);
+  return network === TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET;
 }
 
 /**
  * Returns the block explorer URL for the given path and network.
- * 
+ *
  * @param {string} path - the explorer path
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the block explorer url
@@ -35,7 +35,7 @@ export function blockExplorerURL(path, network) {
 
 /**
  * Returns the block explorer API URL for the given path and network.
- * 
+ *
  * @param {string} path - the API path
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the full block explorer url
@@ -51,7 +51,7 @@ export function blockExplorerAPIURL(path, network) {
 
 /**
  * Return the block explorer URL for the given transaction ID and network.
- * 
+ *
  * @param {string} txid - the transaction id
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} the full transaction URL
@@ -67,7 +67,7 @@ export function blockExplorerTransactionURL(txid, network) {
 
 /**
  * Return the block explorer URL for the given address and network.
- * 
+ *
  * @param {string} address - the address
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @returns {string} full URL for address lookup

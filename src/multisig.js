@@ -167,7 +167,7 @@ export function generateMultisigFromHex(
  *
  * @param {module:multisig.MULTISIG_ADDRESS_TYPES} addressType - address type
  * @param {object} multisig - P2MS multisig object
- * @returns {Multisig} object for further parsing
+ * @returns {any} object for further parsing
  * @ignore
  *
  */

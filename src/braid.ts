@@ -40,7 +40,14 @@ const FAKE_ROOT_FINGERPRINT = "00000000";
  * @param {string} options.index - One value, relative, to add on to all xpub absolute bip32paths (usually 0=deposit, 1=change)
  */
 export class Braid extends Struct {
-  constructor(options) {
+  public addressType;
+  public network;
+  public extendedPublicKeys;
+  public requiredSigners;
+  public index;
+  public sequence;
+
+  constructor(options?) {
     super();
     if (!options || !Object.keys(options).length) {
       return this;
@@ -304,16 +311,20 @@ function generateBraidAwareMultisigFromPublicKeys(
   braid,
   pubkeys,
   bip32Derivation
-) {
+): any {
+  let braidAwareMultisig = {};
   const multisig = generateMultisigFromPublicKeys(
     braidNetwork(braid),
     braidAddressType(braid),
     braidRequiredSigners(braid),
     ...pubkeys
   );
-  multisig.braidDetails = braidConfig(braid);
-  multisig.bip32Derivation = bip32Derivation;
-  return multisig;
+  braidAwareMultisig = {
+    ...multisig,
+    braidDetails: braidConfig(braid),
+    bip32Derivation: bip32Derivation,
+  };
+  return braidAwareMultisig;
 }
 
 /**

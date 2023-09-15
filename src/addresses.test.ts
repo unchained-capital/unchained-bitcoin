@@ -17,12 +17,14 @@ ADDRESSES[NETWORKS.MAINNET][(multisig as any).P2WSH] = [
 
 ADDRESSES[NETWORKS.TESTNET] = {};
 ADDRESSES[NETWORKS.TESTNET][P2PKH] = ["mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r"];
-ADDRESSES[NETWORKS.TESTNET][P2SH] = ["2NByiBUaEXrhmqAsg7BbLpcQSAQs1EDwt5w"];
-ADDRESSES[NETWORKS.TESTNET][P2WSH] = [
+ADDRESSES[NETWORKS.TESTNET][(multisig as any).P2SH] = [
+  "2NByiBUaEXrhmqAsg7BbLpcQSAQs1EDwt5w",
+];
+ADDRESSES[NETWORKS.TESTNET][(multisig as any).P2WSH] = [
   "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7",
 ];
 
-const ADDRESS_TYPES = [P2PKH, P2SH, P2WSH];
+const ADDRESS_TYPES = [P2PKH, (multisig as any).P2SH, (multisig as any).P2WSH];
 
 describe("addresses", () => {
   describe("validateAddress", () => {
