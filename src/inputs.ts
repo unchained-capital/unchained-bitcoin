@@ -1,8 +1,6 @@
 /**
  * This module provides functions for sorting & validating multisig
  * transaction inputs.
- *
- * @module inputs
  */
 
 import { validateHex } from "./utils";
@@ -13,20 +11,10 @@ import { multisigBraidDetails } from "./multisig";
  *
  * The [`Multisig`]{@link module:multisig.MULTISIG} object represents
  * the address the corresponding UTXO belongs to.
- *
- * @typedef MultisigTransactionInput
- * @type {Object}
- * @property {string} txid - The transaction ID where funds were received
- * @property {number} index - The index in the transaction referred to by {txid}
- * @property {module:multisig.Multisig} multisig - The multisig object encumbering this UTXO
- *
  */
 
 /**
  * Sorts the given inputs according to the [BIP69 standard]{@link https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki#transaction-inputs}: ascending lexicographic order.
- *
- * @param {module:inputs.MultisigTransactionInput[]} inputs - inputs to sort
- * @returns {module:inputs.MultisigTransactionInput[]} inputs sorted according to BIP69
  */
 export function sortInputs(inputs) {
   return inputs.sort((input1, input2) => {
@@ -46,14 +34,6 @@ export function sortInputs(inputs) {
  * Validates the given transaction inputs.
  *
  * Returns an error message if there are no inputs.  Passes each output to [`validateMultisigInput`]{@link module:transactions.validateOutput}.
- *
- * If the function is called with braidRequired, an additional check is performed
- * on each input's multisig to make sure that it is braid-aware. In other words,
- * does the input know the set of ExtendedPublicKeys it came from?
- *
- * @param {module:inputs.MultisigTransactionInput[]} inputs - inputs to validate
- * @param {boolean} [braidRequired] - inputs need to have braid details attached to them
- * @returns {string} empty if valid or corresponding validation message if not
  */
 export function validateMultisigInputs(inputs, braidRequired = false) {
   if (!inputs || inputs.length === 0) {
@@ -90,10 +70,6 @@ export function validateMultisigInputs(inputs, braidRequired = false) {
  * - Validates the presence and value of the transaction index (`index`) property.
  *
  * - Validates the presence of the `multisig` property.
- *
- * @param {module:inputs.MultisigTransactionInput} input - input to validate
- * @returns {string} empty if valid or corresponding validation message if not
- *
  */
 export function validateMultisigInput(input) {
   if (!input.txid) {
@@ -120,10 +96,6 @@ const TXID_LENGTH = 64;
 
 /**
  * Validates the given transaction ID.
- *
- * @param {string} txid - transaction ID to validate
- * @returns {string} empty if valid or corresponding validation message if not
- *
  */
 export function validateTransactionID(txid?) {
   if (txid === null || txid === undefined || txid === "") {
@@ -141,10 +113,6 @@ export function validateTransactionID(txid?) {
 
 /**
  * Validates the given transaction index.
- *
- * @param {string|number} indexString - transaction index to validate
- * @returns {string} empty if valid or corresponding validation message if not
- *
  */
 export function validateTransactionIndex(indexString?) {
   if (indexString === null || indexString === undefined || indexString === "") {

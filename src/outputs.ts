@@ -1,8 +1,6 @@
 /**
  * This module provides functions for validating transaction
  * output and amounts.
- *
- * @module outputs
  */
 
 import BigNumber from "bignumber.js";
@@ -12,25 +10,12 @@ import { validateAddress } from "./addresses";
 
 /**
  * Represents an output in a transaction.
- *
- * @typedef module:outputs.TransactionOutput
- * @type {Object}
- * @property {string} address - the output address
- * @property {string|number|BigNumber} amountSats - output amount in Satoshis
- * @property {Multisig} [multisig] - output multisig for a change address
- *
  */
 
 /**
  * Validates the given transaction outputs.
  *
  * Returns an error message if there are no outputs.  Passes each output to [`validateOutput`]{@link module:transactions.validateOutput}.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:outputs.TransactionOutput[]} outputs - outputs to validate
- * @param {string|number|BigNumber} [inputsTotalSats] - (optional) the total input amount in Satoshis
- * @returns {string} empty if valid or corresponding validation message if not
- *
  */
 export function validateOutputs(network, outputs, inputsTotalSats?) {
   if (!outputs || outputs.length === 0) {
@@ -54,16 +39,6 @@ export function validateOutputs(network, outputs, inputsTotalSats?) {
  * - Validates the presence and value of `amountSats`.  If `inputsTotalSats`
  *   is also passed, this will be taken into account when validating the
  *   amount.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:outputs.TransactionOutput} output - output to validate
- * @param {string|number|BigNumber} inputsTotalSats - (optional) the total input amount in Satoshis
- * @returns {string} empty if valid or corresponding validation message if not
- * @example
- * import {validateOutput} from "unchained-bitcoin";
- * console.log(validateOutput(MAINNET, {amountSats: 100000, address: "2..."})); // "...address is invalid..."
- * console.log(validateOutput(MAINNET, {amountSats: 100000, address: "3..."})); // ""
- * console.log(validateOutput(MAINNET, {amountSats: 100000, address: "3..."}, 10000)); // "Amount is too large."
  */
 export function validateOutput(network, output, inputsTotalSats?) {
   if (output.amountSats !== 0 && !output.amountSats) {
@@ -85,11 +60,6 @@ export function validateOutput(network, output, inputsTotalSats?) {
 
 /**
  * Lowest acceptable output amount in Satoshis.
- *
- * @constant
- * @type {BigNumber}
- * @default 546 Satoshis
- *
  */
 const DUST_LIMIT_SATS = new BigNumber(546);
 
@@ -102,21 +72,8 @@ const DUST_LIMIT_SATS = new BigNumber(546);
  *
  * - Cannot be smaller than the limit set by `DUST_LIMIT_SATS`.
  *
- * - Cannot exceed the total input amount (this check is only run if `inputsTotalSats` is passed.
- *
- * @param {string|number|BigNumber} amountSats - output amount in Satoshis
- * @param {string|number|BigNumber} maxSats - (optional) maximum amount in Satoshis
- * @param {string|number|BigNumber} minSats - (optional) minimum acceptable
- * amount in Satoshis
- * @returns {string} empty if valid or corresponding validation message if not
- * @example
- * import {validateOutputAmount} from "unchained-bitcoin";
- * console.log(validateOutputAmount(-100, 1000000) // "Output amount must be positive."
- * console.log(validateOutputAmount(0, 1000000) // "Output amount must be positive."
- * console.log(validateOutputAmount(10, 1000000) // "Output amount is too small."
- * * console.log(validateOutputAmount(800, 1000000, 1000) // "Output amount is too small."
- * console.log(validateOutputAmount(1000000, 100000) // "Output amount is too large."
- * console.log(validateOutputAmount(100000, 1000000) // ""
+ * - Cannot exceed the total input amount (this check is only run if
+ *   `inputsTotalSats` is passed.
  */
 export function validateOutputAmount(
   amountSats,

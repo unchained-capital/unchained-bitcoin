@@ -1,8 +1,6 @@
 /**
  * This module provides functions for constructing and validating
  * multisig transactions.
- *
- * @module transactions
  */
 
 import BigNumber from "bignumber.js";
@@ -41,34 +39,6 @@ import { ExtendedPublicKey } from "./keys";
  * and outputs.
  *
  * Returns a [`Transaction`]{@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object from bitcoinjs-lib.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs
- * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
- * @returns {Transaction} an unsigned bitcoinjs-lib Transaction object
- * @example
- * import {
- *   generateMultisigFromPublicKeys, TESTNET, P2SH,
- *   unsignedMultisigTransaction,
- * } from "unchained-bitcoin";
- * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, "03a...", "03b...");
- * const inputs = [
- *   {
- *     txid: "ae...",
- *     index: 0,
- *     multisig,
- *   },
- *   // other inputs...
- * ];
- * const outputs = [
- *   {
- *     address: "2N...",
- *     amountSats: 90000,
- *   },
- *   // other outputs...
- * ];
- * const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
- *
  */
 export function unsignedMultisigTransaction(network, inputs, outputs) {
   const multisigInputError = validateMultisigInputs(inputs);
@@ -98,12 +68,6 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * and outputs stored as a PSBT object
  *
  * Returns a [`PSBT`]{@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/psbt.d.ts|PSBT} object from bitcoinjs-lib.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:inputs.MultisigTransactionInput[]} inputs - transaction inputs : NOTE - must be braid-aware
- * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
- * @param {Boolean} includeGlobalXpubs - include global xpub objects in the PSBT?
- * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
 export function unsignedMultisigPSBT(
   network,
@@ -169,9 +133,6 @@ export function unsignedMultisigPSBT(
  *
  * FIXME: try squat out old implementation with the new PSBT one and see if
  *   everything works (the tx is the same)
- *
- * @param {Object} psbt - the PSBT object which has your transaction inside
- * @returns {Transaction} an unsigned {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object (unsigned)
  */
 export function unsignedTransactionObjectFromPSBT(psbt) {
   return Transaction.fromHex(psbt.txn);
@@ -180,48 +141,6 @@ export function unsignedTransactionObjectFromPSBT(psbt) {
 /**
  * Create a fully signed multisig transaction based on the unsigned
  * transaction, inputs, and their signatures.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
- * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
- * @param {Object[]} transactionSignatures - array of transaction signatures, each an array of input signatures (1 per input)
- * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts|Transaction} object
- * @example
- * import {
- *   generateMultisigFromPublicKeys, TESTNET, P2SH,
- *   signedMultisigTransaction,
- * } from "unchained-bitcoin";
- * const pubkey1 = "03a...";
- * const pubkey2 = "03b...";
- * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
- * const inputs = [
- *   {
- *     txid: "ae...",
- *     index: 0,
- *     multisig,
- *   },
- *   // other inputs...
- * ];
- * const outputs = [
- *   {
- *     address: "2N...",
- *     amountSats: 90000,
- *   },
- *   // other outputs...
- * ];
- * const transactionSignatures = [
- *   // Each element is an array of signatures from a given key, one per input.
- *   [
- *     "301a...",
- *     // more, 1 per input
- *   ],
- *   [
- *     "301b...",
- *     // more, 1 per input
- *   ],
- *   // More transaction signatures if required, based on inputs
- * ];
- * const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, transactionSignatures)
  */
 export function signedMultisigTransaction(
   network: any,

@@ -13,7 +13,7 @@ import { Struct, BufferWriter, BufferReader } from "bufio";
 import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
-import { TESTNET, networkData, MAINNET, REGTEST } from "./networks";
+import { Networks, networkData } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
 import { BitcoinNetwork, KeyPrefix, KeyVersion } from "./types";
@@ -130,15 +130,15 @@ export class ExtendedPublicKey extends Struct {
 
     if (options.network) {
       assert(
-        [MAINNET, TESTNET].includes(options.network),
-        `Expected network to be one of ${MAINNET} or ${TESTNET}.`
+        [Networks.MAINNET, Networks.TESTNET].includes(options.network),
+        `Expected network to be one of ${Networks.MAINNET} or ${Networks.TESTNET}.`
       );
       this.network = options.network;
     } else {
-      this.network = MAINNET;
+      this.network = Networks.MAINNET;
     }
     this.version =
-      this.network === MAINNET
+      this.network === Networks.MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
 
@@ -173,12 +173,12 @@ export class ExtendedPublicKey extends Struct {
    */
   setNetwork(network: BitcoinNetwork): void {
     assert(
-      [MAINNET, TESTNET, REGTEST].includes(network),
-      `Expected network to be one of ${MAINNET}, ${TESTNET}, or ${REGTEST}.`
+      [Networks.MAINNET, Networks.TESTNET, Networks.REGTEST].includes(network),
+      `Expected network to be one of ${Networks.MAINNET}, ${Networks.TESTNET}, or ${Networks.REGTEST}.`
     );
     this.network = network;
     this.version =
-      this.network === MAINNET
+      this.network === Networks.MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
   }
@@ -306,13 +306,14 @@ export function validateExtendedPublicKeyForNetwork(
   network: string
 ): string {
   let requiredPrefix = "'xpub'";
-  const requiresTpub = network === TESTNET || network === REGTEST;
+  const requiresTpub =
+    network === Networks.TESTNET || network === Networks.REGTEST;
   if (requiresTpub) {
     requiredPrefix += " or 'tpub'";
   }
   const prefix = extendedPublicKey.slice(0, 4);
   if (
-    (network === MAINNET && prefix !== "xpub") ||
+    (network === Networks.MAINNET && prefix !== "xpub") ||
     (requiresTpub && prefix !== "tpub")
   ) {
     return `Extended public key must begin with ${requiredPrefix}.`;
@@ -327,7 +328,7 @@ export function validateExtendedPublicKeyForNetwork(
  * - Must be a valid BIP32 extended public key
  *
  * @param {string} xpubString - base58 encoded extended public key (`xpub...`)
- * @param {module:networks.NETWORKS} network  - bitcoin network
+ * @param {module:networks.Networks} network  - bitcoin network
  * @returns {string} empty if valid or corresponding validation message if not
  * @example
  * import {validateExtendedPublicKey} from "unchained-bitcoin";
@@ -444,7 +445,7 @@ export function compressPublicKey(publicKey: string): string {
  *
  * @param {string} extendedPublicKey - base58 encoded extended public key (`xpub...`)
  * @param {string} bip32Path - BIP32 derivation path string (with or without initial `m/`)
- * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:networks.Networks} network - bitcoin network
  * @returns {string} (compressed) child public key in hex
  * @example
  * import {deriveChildPublicKey, MAINNET} from "unchained-bitcoin";
@@ -474,7 +475,7 @@ export function deriveChildPublicKey(
  *
  * @param {string} extendedPublicKey - base58 encoded extended public key (`xpub...`)
  * @param {string} bip32Path - BIP32 derivation path string (with or without initial `m/`)
- * @param {module:networks.NETWORKS} network - bitcoin network
+ * @param {module:networks.Networks} network - bitcoin network
  * @returns {string} child extended public key in base58
  * @example
  * import {deriveChildExtendedPublicKey, MAINNET} from "unchained-bitcoin";
@@ -565,17 +566,6 @@ export function fingerprintToFixedLengthHex(xfp: number): string {
 
 /**
  * Returns the root fingerprint of the extendedPublicKey
- *
- * @param {Struct} extendedPublicKey the extendedPublicKey Struct
- * @returns {string|null} zero-padded, fixed-length hex xfp
- *
- * @example
- * import {extendedPublicKeyRootFingerprint} from "unchained-bitcoin"
- * console.log(extendedPublicKeyRootFingerprint({})) // null
- * import { ExtendedPublicKey } from "unchained-bitcoin"
- * const xpub = ExtendedPublicKey.fromBase58("xpub6CCHViYn5VzKSmKD9cK9LBDPz9wBLV7owXJcNDioETNvhqhVtj3ABnVUERN9aV1RGTX9YpyPHnC4Ekzjnr7TZthsJRBiXA4QCeXNHEwxLab")
- * xpub.setRootFingerprint('12341234');
- * console.log(extendedPublicKeyRootFingerprint(xpub)) // 12341234
  */
 export function extendedPublicKeyRootFingerprint(
   extendedPublicKey: Struct
@@ -588,19 +578,13 @@ export function extendedPublicKeyRootFingerprint(
 /**
  * Derive base58 encoded xpub given known information about
  * BIP32 Wallet Node.
- * @param {string} bip32Path e.g. m/45'/0'/0
- * @param {string} pubkey pubkey to derive from
- * @param {string} chaincode chaincode corresponding to pubkey and path
- * @param {number} parentFingerprint - fingerprint of parent public key
- * @param {string} network - mainnet or testnet
- * @returns {string} base58 encoded extended public key (xpub or tpub)
  */
 export function deriveExtendedPublicKey(
   bip32Path: string,
   pubkey: string,
   chaincode: string,
   parentFingerprint: number,
-  network: BitcoinNetwork = MAINNET
+  network: BitcoinNetwork = Networks.MAINNET
 ): string {
   const xpub = new ExtendedPublicKey({
     path: bip32Path,
@@ -613,13 +597,6 @@ export function deriveExtendedPublicKey(
   return xpub.toBase58();
 }
 
-/**
- *
- * @param {string} options.xpub - base58 encoded xpub string
- * @param {string} options.bip32Path - path to check if requires masking
- * @param {string} toMask - string to match if it requires masking
- * @returns {string} masked bip32Path
- */
 export function getMaskedDerivation(
   { xpub, bip32Path }: { xpub: string; bip32Path: string },
   toMask = "unknown"

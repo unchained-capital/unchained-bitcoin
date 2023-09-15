@@ -1,8 +1,6 @@
 /**
  * This module provides functions for validating and handling
  * multisig transaction signatures.
- *
- * @module signatures
  */
 
 import BigNumber from "bignumber.js";
@@ -22,52 +20,6 @@ import { unsignedMultisigTransaction } from "./transactions";
 
 /**
  * Validate a multisig signature for given input and public key.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
- * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
- * @param {number} inputIndex - the index where the input appears in the transaction
- * @param {string} inputSignature - signature to validate
- * @returns {string|boolean} false if invalid or corresponding public key
- * @example
- * import {
- *   generateMultisigFromPublicKeys, TESTNET, P2SH,
- *   unsignedMultisigTransaction,
- *   validateMultisigSignature,
- * } from "unchained-bitcoin";
- * const pubkey1 = "03a...";
- * const pubkey2 = "03b...";
- * const multisig = generateMultisigFromPublicKeys(TESTNET, P2SH, 2, pubkey1, pubkey2);
- * const inputs = [
- *   {
- *     txid: "ae...",
- *     index: 0,
- *     multisig,
- *   },
- *   // other inputs...
- * ];
- * const outputs = [
- *   {
- *     address: "2N...",
- *     amountSats: 90000,
- *   },
- *   // other outputs...
- * ];
- * const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
- * // Use unsignedTransaction to obtain a signature.
- * const transactionSignature = ["304...", // other input signatures...];
- * // Validate signature for input 0
- * const result = validateMultisigSignature(TESTNET, inputs, outputs, 0, transactionSignature[0]);
- * switch (result) {
- *   case false:
- *     // signature was invalid
- *   case pubkey1:
- *     // signature was valid for pubkey1
- *   case pubkey2:
- *     // signature was valid for pubkey2
- *   default:
- *     // ...
- * }
  */
 export function validateMultisigSignature(
   network,
@@ -99,8 +51,6 @@ export function validateMultisigSignature(
 
 /**
  * This function takes a DER encoded signature and returns it without the SIGHASH_BYTE
- * @param {string} signature inputSignature which includes DER encoding bytes and may include SIGHASH byte
- * @return {string} signature_no_sighash with sighash_byte removed
  */
 export function signatureNoSighashType(signature) {
   const len = parseInt(signature.slice(2, 4), 16);
@@ -110,11 +60,6 @@ export function signatureNoSighashType(signature) {
 
 /**
  * Returns the multisig Signature Hash for an input at inputIndex
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
- * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
- * @param {number} inputIndex - the index where the input appears in the transaction
- * @return {Buffer} unsignedTransaction hash in a Buffer for consumption by ECPair.verify
  */
 function multisigSignatureHash(network, inputs, outputs, inputIndex) {
   const unsignedTransaction = unsignedMultisigTransaction(
@@ -144,8 +89,6 @@ function multisigSignatureHash(network, inputs, outputs, inputIndex) {
 
 /**
  * Create a signature buffer that can be passed to ECPair.verify
- * @param {string} signature - a DER encoded signature string
- * @return {Buffer} signatureBuffer - correctly allocated buffer with relevant r, S information from the encoded signature
  */
 function multisigSignatureBuffer(signature) {
   const encodedSignerInputSignatureBuffer = Buffer.from(signature, "hex");

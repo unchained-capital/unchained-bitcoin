@@ -1,6 +1,5 @@
 import {
-  TESTNET,
-  MAINNET,
+  Networks,
   networkLabel,
   networkData,
   getNetworkFromPrefix,
@@ -11,16 +10,16 @@ import { networks } from "bitcoinjs-lib";
 describe("networks", () => {
   describe("networkLabel", () => {
     it("returns a human-readable network name", () => {
-      expect(networkLabel(MAINNET)).toBe("Mainnet");
-      expect(networkLabel(TESTNET)).toBe("Testnet");
+      expect(networkLabel(Networks.MAINNET)).toBe("Mainnet");
+      expect(networkLabel(Networks.TESTNET)).toBe("Testnet");
       expect(networkLabel("foobar")).toBe("Testnet");
     });
   });
 
   describe("networkLabel", () => {
     it("returns a human-readable network name", () => {
-      expect(networkData(MAINNET)).toBe(networks.bitcoin);
-      expect(networkData(TESTNET)).toBe(networks.testnet);
+      expect(networkData(Networks.MAINNET)).toBe(networks.bitcoin);
+      expect(networkData(Networks.TESTNET)).toBe(networks.testnet);
       expect(networkData("foobar")).toBe(networks.testnet);
     });
   });
@@ -35,20 +34,20 @@ describe("networks", () => {
       );
     });
     it("returns testnet for testnet prefixes, case insensitive", () => {
-      expect(getNetworkFromPrefix("tpub")).toBe(TESTNET);
-      expect(getNetworkFromPrefix("upub")).toBe(TESTNET);
-      expect(getNetworkFromPrefix("vpub")).toBe(TESTNET);
-      expect(getNetworkFromPrefix("Tpub")).toBe(TESTNET);
-      expect(getNetworkFromPrefix("UPub")).toBe(TESTNET);
-      expect(getNetworkFromPrefix("VPUB")).toBe(TESTNET);
+      expect(getNetworkFromPrefix("tpub")).toBe(Networks.TESTNET);
+      expect(getNetworkFromPrefix("upub")).toBe(Networks.TESTNET);
+      expect(getNetworkFromPrefix("vpub")).toBe(Networks.TESTNET);
+      expect(getNetworkFromPrefix("Tpub")).toBe(Networks.TESTNET);
+      expect(getNetworkFromPrefix("UPub")).toBe(Networks.TESTNET);
+      expect(getNetworkFromPrefix("VPUB")).toBe(Networks.TESTNET);
     });
     it("returns mainnet for mainnet prefixes, case insensitive", () => {
-      expect(getNetworkFromPrefix("xpub")).toBe(MAINNET);
-      expect(getNetworkFromPrefix("ypub")).toBe(MAINNET);
-      expect(getNetworkFromPrefix("zpub")).toBe(MAINNET);
-      expect(getNetworkFromPrefix("Xpub")).toBe(MAINNET);
-      expect(getNetworkFromPrefix("YPub")).toBe(MAINNET);
-      expect(getNetworkFromPrefix("ZPUB")).toBe(MAINNET);
+      expect(getNetworkFromPrefix("xpub")).toBe(Networks.MAINNET);
+      expect(getNetworkFromPrefix("ypub")).toBe(Networks.MAINNET);
+      expect(getNetworkFromPrefix("zpub")).toBe(Networks.MAINNET);
+      expect(getNetworkFromPrefix("Xpub")).toBe(Networks.MAINNET);
+      expect(getNetworkFromPrefix("YPub")).toBe(Networks.MAINNET);
+      expect(getNetworkFromPrefix("ZPUB")).toBe(Networks.MAINNET);
     });
   });
 });
