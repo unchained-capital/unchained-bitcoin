@@ -1,4 +1,5 @@
 import { PsbtV2, getPsbtVersionNumber } from "./psbtv2";
+import { test } from "@jest/globals";
 
 const BIP_370_VECTORS_INVALID_PSBT = [
   // Case: PSBTv0 but with PSBT_GLOBAL_VERSION set to 2.
@@ -966,7 +967,7 @@ describe("PsbtV2.FromV0", () => {
     const psbt = PsbtV2.FromV0(vect.hex, true);
     const partialSigs = psbt.PSBT_IN_PARTIAL_SIG;
     for (let i = 0; i < partialSigs.length; i++) {
-      expect(partialSigs[i]).toEqual(vect.partialSigs[i]);
+      expect(partialSigs[i]).toEqual(vect?.partialSigs?.[i]);
     }
   });
 });
@@ -1021,7 +1022,8 @@ describe("PsbtV2.addPartialSig", () => {
   });
 
   it("Throws on validation failures", () => {
-    const addSig = (index, pub, sig) => psbt.addPartialSig(index, pub, sig);
+    const addSig = (index: number, pub?: any, sig?: any) =>
+      psbt.addPartialSig(index, pub, sig);
     expect(() => addSig(0)).toThrow("PsbtV2 has no input at 0");
 
     psbt.addInput({ previousTxId: Buffer.from([0x00]), outputIndex: 0 });
@@ -1077,7 +1079,7 @@ describe("PsbtV2.removePartialSig", () => {
   });
 
   it("Throws on validation failures", () => {
-    const removeSig = (index, pub, sig) =>
+    const removeSig = (index: number, pub?: any, sig?: any) =>
       psbt.removePartialSig(index, pub, sig);
     expect(() => removeSig(0)).toThrow("PsbtV2 has no input at 0");
 
