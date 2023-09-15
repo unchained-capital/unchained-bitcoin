@@ -18,4 +18,3 @@ export * from "./script";
 export * from "./signatures";
 export * from "./transactions";
 export * from "./utils";
-export * from "./types";
