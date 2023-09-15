@@ -1301,6 +1301,7 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
         ...utxo,
         ...{
           amountSats: new BigNumber(utxo.amountSats).toString(),
+          multisig: braidAwareMultisig,
           braidAwareMultisig,
         },
         bip32Path: test.bip32Path, // this only works because all of these fixtures are single address.
@@ -1314,6 +1315,7 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
           })),
         },
       },
+      multisig: braidAwareMultisig,
       braidAwareMultisig,
       multisigScript:
         test.type === P2SH

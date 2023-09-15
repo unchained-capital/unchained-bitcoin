@@ -155,9 +155,7 @@ describe("multisig", () => {
 
   describe("multisigBraidDetails", () => {
     it(`fails to return the braidDetails for a braid-unaware multisig`, () => {
-      const badone = JSON.parse(
-        JSON.stringify(MULTISIGS[0])
-      ).braidAwareMultisig;
+      const badone = JSON.parse(JSON.stringify(MULTISIGS[0])).multisig;
       badone.braidDetails = null;
       expect(multisigBraidDetails(badone)).toBe(null);
     });
