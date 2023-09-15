@@ -1,16 +1,16 @@
 /**
  * This module provides functions for validating and handling
  * multisig transaction signatures.
- * 
+ *
  * @module signatures
  */
 
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 import bip66 from "bip66";
-import {ECPair, Transaction} from "bitcoinjs-lib";
+import { ECPair, Transaction } from "bitcoinjs-lib";
 
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
 import {
   multisigAddressType,
   multisigRedeemScript,
@@ -18,13 +18,11 @@ import {
   multisigPublicKeys,
   multisigTotalSigners,
 } from "./multisig";
-import {
-  unsignedMultisigTransaction,
-} from "./transactions";
+import { unsignedMultisigTransaction } from "./transactions";
 
 /**
  * Validate a multisig signature for given input and public key.
- * 
+ *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
@@ -71,14 +69,26 @@ import {
  *     // ...
  * }
  */
-export function validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature) {
+export function validateMultisigSignature(
+  network,
+  inputs,
+  outputs,
+  inputIndex,
+  inputSignature
+) {
   const hash = multisigSignatureHash(network, inputs, outputs, inputIndex);
-  const signatureBuffer = multisigSignatureBuffer(signatureNoSighashType(inputSignature));
+  const signatureBuffer = multisigSignatureBuffer(
+    signatureNoSighashType(inputSignature)
+  );
   const input = inputs[inputIndex];
   const publicKeys = multisigPublicKeys(input.multisig);
-  for (let publicKeyIndex=0; publicKeyIndex < multisigTotalSigners(input.multisig); publicKeyIndex++) {
+  for (
+    let publicKeyIndex = 0;
+    publicKeyIndex < multisigTotalSigners(input.multisig);
+    publicKeyIndex++
+  ) {
     const publicKey = publicKeys[publicKeyIndex];
-    const publicKeyBuffer = Buffer.from(publicKey, 'hex');
+    const publicKeyBuffer = Buffer.from(publicKey, "hex");
     const keyPair = ECPair.fromPublicKey(publicKeyBuffer);
     if (keyPair.verify(hash, signatureBuffer)) {
       return publicKey;
@@ -93,7 +103,7 @@ export function validateMultisigSignature(network, inputs, outputs, inputIndex, 
  * @return {string} signature_no_sighash with sighash_byte removed
  */
 export function signatureNoSighashType(signature) {
-  const len = parseInt(signature.slice(2,4), 16);
+  const len = parseInt(signature.slice(2, 4), 16);
   if (len === (signature.length - 4) / 2) return signature;
   else return signature.slice(0, -2);
 }
@@ -107,12 +117,28 @@ export function signatureNoSighashType(signature) {
  * @return {Buffer} unsignedTransaction hash in a Buffer for consumption by ECPair.verify
  */
 function multisigSignatureHash(network, inputs, outputs, inputIndex) {
-  const unsignedTransaction = unsignedMultisigTransaction(network, inputs, outputs);
+  const unsignedTransaction = unsignedMultisigTransaction(
+    network,
+    inputs,
+    outputs
+  );
   const input = inputs[inputIndex];
-  if (multisigAddressType(input.multisig) === P2WSH || multisigAddressType(input.multisig) === P2SH_P2WSH) {
-    return unsignedTransaction.hashForWitnessV0(inputIndex, multisigWitnessScript(input.multisig).output, BigNumber(input.amountSats).toNumber(), Transaction.SIGHASH_ALL);
+  if (
+    multisigAddressType(input.multisig) === P2WSH ||
+    multisigAddressType(input.multisig) === P2SH_P2WSH
+  ) {
+    return unsignedTransaction.hashForWitnessV0(
+      inputIndex,
+      multisigWitnessScript(input.multisig).output,
+      new BigNumber(input.amountSats).toNumber(),
+      Transaction.SIGHASH_ALL
+    );
   } else {
-    return unsignedTransaction.hashForSignature(inputIndex, multisigRedeemScript(input.multisig).output, Transaction.SIGHASH_ALL);
+    return unsignedTransaction.hashForSignature(
+      inputIndex,
+      multisigRedeemScript(input.multisig).output,
+      Transaction.SIGHASH_ALL
+    );
   }
 }
 
@@ -122,9 +148,11 @@ function multisigSignatureHash(network, inputs, outputs, inputIndex) {
  * @return {Buffer} signatureBuffer - correctly allocated buffer with relevant r, S information from the encoded signature
  */
 function multisigSignatureBuffer(signature) {
-  const encodedSignerInputSignatureBuffer = Buffer.from(signature, 'hex');
-  const decodedSignerInputSignatureBuffer = bip66.decode(encodedSignerInputSignatureBuffer);
-  const {r, s} = decodedSignerInputSignatureBuffer;
+  const encodedSignerInputSignatureBuffer = Buffer.from(signature, "hex");
+  const decodedSignerInputSignatureBuffer = bip66.decode(
+    encodedSignerInputSignatureBuffer
+  );
+  const { r, s } = decodedSignerInputSignatureBuffer;
   // The value returned from the decodedSignerInputSignatureBuffer has
   // a few edge cases that need to be handled properly. There exists a mismatch between the
   // DER serialization and the ECDSA requirements, namely:

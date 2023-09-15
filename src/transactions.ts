@@ -224,10 +224,10 @@ export function unsignedTransactionObjectFromPSBT(psbt) {
  * const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, transactionSignatures)
  */
 export function signedMultisigTransaction(
-  network,
-  inputs,
-  outputs,
-  transactionSignatures
+  network: any,
+  inputs: any[],
+  outputs: any[],
+  transactionSignatures?: string[][]
 ) {
   const unsignedTransaction = unsignedMultisigTransaction(
     network,

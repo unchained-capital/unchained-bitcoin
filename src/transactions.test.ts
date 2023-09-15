@@ -128,7 +128,7 @@ describe("transactions", () => {
             fixture.inputs,
             fixture.outputs
           );
-          expect(fixture.psbt).toEqual(psbt.toBase64());
+          expect(fixture.psbt).toEqual(psbt.data.toBase64());
         }
       });
     });
@@ -143,8 +143,8 @@ describe("transactions", () => {
             true
           );
 
-          expect(fixture.psbt).not.toEqual(psbt.toBase64());
-          expect(fixture.psbtWithGlobalXpub).toEqual(psbt.toBase64());
+          expect(fixture.psbt).not.toEqual(psbt.data.toBase64());
+          expect(fixture.psbtWithGlobalXpub).toEqual(psbt.data.toBase64());
         }
       });
     });
