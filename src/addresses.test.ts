@@ -31,14 +31,14 @@ describe("addresses", () => {
     const invalidAddress = /must start with.+followed by letters or digits/i;
 
     it("returns an error message on blank addresses", () => {
-      Object.values(Networks).forEach((network) => {
+      Object.values(Network).forEach((network) => {
         expect(validateAddress("", network)).toMatch(/cannot be blank/i);
         expect(validateAddress(" ", network)).toMatch(/cannot be blank/i);
       });
     });
 
     it("returns an error message on an invalid address", () => {
-      Object.values(Networks).forEach((network) => {
+      Object.values(Network).forEach((network) => {
         expect(validateAddress("f", network)).toMatch(invalidAddress);
         expect(validateAddress("--", network)).toMatch(invalidAddress);
       });
