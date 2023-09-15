@@ -1,16 +1,22 @@
-/** 
+/**
  * This module provides functions for constructing and validating
  * multisig transactions.
- * 
+ *
  * @module transactions
  */
 
-import BigNumber from 'bignumber.js';
-import assert from "assert"
-import {TransactionBuilder, Psbt, Transaction, script, payments} from "bitcoinjs-lib";
-import {networkData} from  "./networks";
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
+import BigNumber from "bignumber.js";
+import assert from "assert";
+import {
+  TransactionBuilder,
+  Psbt,
+  Transaction,
+  script,
+  payments,
+} from "bitcoinjs-lib";
+import { networkData } from "./networks";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
 import {
   multisigRequiredSigners,
   multisigPublicKeys,
@@ -23,15 +29,12 @@ import {
   validateMultisigSignature,
   signatureNoSighashType,
 } from "./signatures";
-import {
-  validateMultisigInputs,
-} from "./inputs";
-import {validateOutputs} from "./outputs";
-import {scriptToHex} from './script';
-import {psbtInputFormatter, psbtOutputFormatter} from './psbt';
-import {Braid} from "./braid";
-import {ExtendedPublicKey} from "./keys";
-
+import { validateMultisigInputs } from "./inputs";
+import { validateOutputs } from "./outputs";
+import { scriptToHex } from "./script";
+import { psbtInputFormatter, psbtOutputFormatter } from "./psbt";
+import { Braid } from "./braid";
+import { ExtendedPublicKey } from "./keys";
 
 /**
  * Create an unsigned bitcoin transaction based on the network, inputs
@@ -65,7 +68,7 @@ import {ExtendedPublicKey} from "./keys";
  *   // other outputs...
  * ];
  * const unsignedTransaction = unsignedMultisigTransaction(TESTNET, inputs, outputs);
- * 
+ *
  */
 export function unsignedMultisigTransaction(network, inputs, outputs) {
   const multisigInputError = validateMultisigInputs(inputs);
@@ -82,7 +85,10 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
   }
   for (let outputIndex = 0; outputIndex < outputs.length; outputIndex += 1) {
     const output = outputs[outputIndex];
-    transactionBuilder.addOutput(output.address, BigNumber(output.amountSats).toNumber());
+    transactionBuilder.addOutput(
+      output.address,
+      new BigNumber(output.amountSats).toNumber()
+    );
   }
   return transactionBuilder.buildIncomplete();
 }
@@ -99,7 +105,12 @@ export function unsignedMultisigTransaction(network, inputs, outputs) {
  * @param {Boolean} includeGlobalXpubs - include global xpub objects in the PSBT?
  * @returns {Psbt} an unsigned bitcoinjs-lib Psbt object
  */
-export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpubs=false) {
+export function unsignedMultisigPSBT(
+  network,
+  inputs,
+  outputs,
+  includeGlobalXpubs = false
+) {
   const multisigInputError = validateMultisigInputs(inputs, true);
   assert(!multisigInputError.length, multisigInputError);
   const multisigOutputError = validateOutputs(network, outputs);
@@ -108,19 +119,21 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   const psbt = new Psbt({ network: networkData(network) });
   // FIXME: update fixtures with unsigned tx version 02000000 and proper signatures
   psbt.setVersion(1); // Our fixtures currently sign transactions with version 0x01000000
-  const globalExtendedPublicKeys = [];
+  const globalExtendedPublicKeys: ExtendedPublicKey[] = [];
 
   inputs.forEach((input) => {
-    const formattedInput = psbtInputFormatter({...input});
+    const formattedInput = psbtInputFormatter({ ...input });
     psbt.addInput(formattedInput);
     const braidDetails = input.multisig.braidDetails;
     if (braidDetails && includeGlobalXpubs) {
       const braid = Braid.fromData(JSON.parse(braidDetails));
-      braid.extendedPublicKeys.forEach(extendedPublicKeyData => {
+      braid.extendedPublicKeys.forEach((extendedPublicKeyData) => {
         const extendedPublicKey = new ExtendedPublicKey(extendedPublicKeyData);
 
         const alreadyFound = globalExtendedPublicKeys.find(
-          (existingExtendedPublicKey) => existingExtendedPublicKey.toBase58() === extendedPublicKey.toBase58()
+          (existingExtendedPublicKey: any) =>
+            existingExtendedPublicKey.toBase58() ===
+            extendedPublicKey.toBase58()
         );
 
         if (!alreadyFound) {
@@ -131,21 +144,23 @@ export function unsignedMultisigPSBT(network, inputs, outputs, includeGlobalXpub
   });
 
   if (includeGlobalXpubs && globalExtendedPublicKeys.length > 0) {
-    const globalXpubs = globalExtendedPublicKeys.map(extendedPublicKey => ({
-        extendedPubkey: extendedPublicKey.encode(),
-        masterFingerprint: Buffer.from(extendedPublicKey.rootFingerprint, 'hex'),
-        path: extendedPublicKey.path,
-      })
-    );
-    psbt.updateGlobal({globalXpub: globalXpubs});
+    const globalXpubs = globalExtendedPublicKeys.map((extendedPublicKey) => ({
+      extendedPubkey: extendedPublicKey.encode(),
+      masterFingerprint: extendedPublicKey.rootFingerprint
+        ? Buffer.from(extendedPublicKey.rootFingerprint, "hex")
+        : Buffer.alloc(0),
+      path: extendedPublicKey.path || "",
+    }));
+    psbt.updateGlobal({ globalXpub: globalXpubs });
   }
 
-
-  const psbtOutputs = outputs.map((output) => psbtOutputFormatter({...output}));
+  const psbtOutputs = outputs.map((output) =>
+    psbtOutputFormatter({ ...output })
+  );
   psbt.addOutputs(psbtOutputs);
-  psbt.txn = psbt.data.globalMap.unsignedTx.tx.toHex();
-  
-  return psbt;
+  const txn = psbt.data.globalMap.unsignedTx.toBuffer().toString("hex");
+
+  return { ...psbt, txn };
 }
 
 /**
@@ -165,7 +180,7 @@ export function unsignedTransactionObjectFromPSBT(psbt) {
 /**
  * Create a fully signed multisig transaction based on the unsigned
  * transaction, inputs, and their signatures.
- * 
+ *
  * @param {module:networks.NETWORKS} network - bitcoin network
  * @param {module:inputs.MultisigTransactionInput[]} inputs - multisig transaction inputs
  * @param {module:outputs.TransactionOutput[]} outputs - transaction outputs
@@ -208,49 +223,84 @@ export function unsignedTransactionObjectFromPSBT(psbt) {
  * ];
  * const signedTransaction = signedMultisigTransaction(TESTNET, inputs, outputs, transactionSignatures)
  */
-export function signedMultisigTransaction(network, inputs, outputs, transactionSignatures) {
-  const unsignedTransaction = unsignedMultisigTransaction(network, inputs, outputs); // validates inputs & outputs
-  if (!transactionSignatures || transactionSignatures.length === 0) { throw new Error("At least one transaction signature is required."); }
+export function signedMultisigTransaction(
+  network,
+  inputs,
+  outputs,
+  transactionSignatures
+) {
+  const unsignedTransaction = unsignedMultisigTransaction(
+    network,
+    inputs,
+    outputs
+  ); // validates inputs & outputs
+  if (!transactionSignatures || transactionSignatures.length === 0) {
+    throw new Error("At least one transaction signature is required.");
+  }
 
-  transactionSignatures.forEach((transactionSignature, transactionSignatureIndex) => {
-    if (transactionSignature.length < inputs.length) {
-      throw new Error(`Insufficient input signatures for transaction signature ${transactionSignatureIndex + 1}: require ${inputs.length}, received ${transactionSignature.length}.`);
+  transactionSignatures.forEach(
+    (transactionSignature, transactionSignatureIndex) => {
+      if (transactionSignature.length < inputs.length) {
+        throw new Error(
+          `Insufficient input signatures for transaction signature ${
+            transactionSignatureIndex + 1
+          }: require ${inputs.length}, received ${transactionSignature.length}.`
+        );
+      }
     }
-  });
+  );
 
   const signedTransaction = Transaction.fromHex(unsignedTransaction.toHex()); // FIXME inefficient?
-  for (let inputIndex=0; inputIndex < inputs.length; inputIndex++) {
+  for (let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
     const input = inputs[inputIndex];
 
     const inputSignatures = transactionSignatures
-          .map((transactionSignature) => transactionSignature[inputIndex])
-          .filter((inputSignature) => Boolean(inputSignature));
+      .map((transactionSignature) => transactionSignature[inputIndex])
+      .filter((inputSignature) => Boolean(inputSignature));
     const requiredSignatures = multisigRequiredSigners(input.multisig);
 
     if (inputSignatures.length < requiredSignatures) {
-      throw new Error(`Insufficient signatures for input  ${inputIndex + 1}: require ${requiredSignatures},  received ${inputSignatures.length}.`);
+      throw new Error(
+        `Insufficient signatures for input  ${
+          inputIndex + 1
+        }: require ${requiredSignatures},  received ${inputSignatures.length}.`
+      );
     }
-    
+
     const inputSignaturesByPublicKey = {};
     inputSignatures.forEach((inputSignature) => {
       let publicKey;
       try {
-        publicKey = validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature);
-      } catch(e) {
-        throw new Error(`Invalid signature for input ${inputIndex + 1}: ${inputSignature} (${e})`);
+        publicKey = validateMultisigSignature(
+          network,
+          inputs,
+          outputs,
+          inputIndex,
+          inputSignature
+        );
+      } catch (e) {
+        throw new Error(
+          `Invalid signature for input ${
+            inputIndex + 1
+          }: ${inputSignature} (${e})`
+        );
       }
       if (inputSignaturesByPublicKey[publicKey]) {
-        throw new Error(`Duplicate signature for input ${inputIndex + 1}: ${inputSignature}`);
+        throw new Error(
+          `Duplicate signature for input ${inputIndex + 1}: ${inputSignature}`
+        );
       }
       inputSignaturesByPublicKey[publicKey] = inputSignature;
     });
-    
+
     // Sort the signatures for this input by the index of their
     // corresponding public key within this input's redeem script.
     const publicKeys = multisigPublicKeys(input.multisig);
     const sortedSignatures = publicKeys
-          .map((publicKey) => (inputSignaturesByPublicKey[publicKey]))
-          .filter((signature) => signature ? signatureNoSighashType(signature) : signature); // FIXME why not filter out the empty sigs?
+      .map((publicKey) => inputSignaturesByPublicKey[publicKey])
+      .filter((signature) =>
+        signature ? signatureNoSighashType(signature) : signature
+      ); // FIXME why not filter out the empty sigs?
 
     if (multisigAddressType(input.multisig) === P2WSH) {
       const witness = multisigWitnessField(input.multisig, sortedSignatures);
@@ -259,10 +309,14 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
       const witness = multisigWitnessField(input.multisig, sortedSignatures);
       signedTransaction.setWitness(inputIndex, witness);
       const scriptSig = multisigRedeemScript(input.multisig);
-      signedTransaction.ins[inputIndex].script = Buffer.from([scriptSig.output.length, ...scriptSig.output]);
+      signedTransaction.ins[inputIndex].script = Buffer.from([
+        scriptSig.output.length,
+        ...scriptSig.output,
+      ]);
     } else {
       const scriptSig = multisigScriptSig(input.multisig, sortedSignatures);
-      signedTransaction.ins[inputIndex].script = scriptSig.input;
+      signedTransaction.ins[inputIndex].script =
+        scriptSig?.input ?? Buffer.alloc(0);
     }
   }
 
@@ -280,39 +334,43 @@ export function signedMultisigTransaction(network, inputs, outputs, transactionS
 //  * @param {Object[]} transactionSignatures - array of transaction signatures, each an array of input signatures (1 per input)
 //  * @returns {Transaction} a signed {@link https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/types/transaction.d.ts} Transaction object
 //  */
- // export function signedMultisigPSBT(network, inputs, outputs, transactionSignatures) {
- //   const psbt = unsignedMultisigPSBT(network, inputs, outputs);
- //  const unsignedTransaction = unsignedTransactionObjectFromPSBT(psbt); // validates inputs & outputs
- //  if (!transactionSignatures || transactionSignatures.length === 0) { throw new Error("At least one transaction signature is required."); }
- //
- //  transactionSignatures.forEach((transactionSignature, transactionSignatureIndex) => {
- //    if (transactionSignature.length < inputs.length) {
- //      throw new Error(`Insufficient input signatures for transaction signature ${transactionSignatureIndex + 1}: require ${inputs.length}, received ${transactionSignature.length}.`);
- //    }d
- //  });
- //  console.log(unsignedTransaction);
+// export function signedMultisigPSBT(network, inputs, outputs, transactionSignatures) {
+//   const psbt = unsignedMultisigPSBT(network, inputs, outputs);
+//  const unsignedTransaction = unsignedTransactionObjectFromPSBT(psbt); // validates inputs & outputs
+//  if (!transactionSignatures || transactionSignatures.length === 0) { throw new Error("At least one transaction signature is required."); }
+//
+//  transactionSignatures.forEach((transactionSignature, transactionSignatureIndex) => {
+//    if (transactionSignature.length < inputs.length) {
+//      throw new Error(`Insufficient input signatures for transaction signature ${transactionSignatureIndex + 1}: require ${inputs.length}, received ${transactionSignature.length}.`);
+//    }d
+//  });
+//  console.log(unsignedTransaction);
 
-  // FIXME - add each signature to the PSBT
-  //   then finalizeAllInputs()
-  //   then extractTransaction()
-  //
-  // return signedTransaction;
+// FIXME - add each signature to the PSBT
+//   then finalizeAllInputs()
+//   then extractTransaction()
+//
+// return signedTransaction;
 // }
 
 function multisigWitnessField(multisig, sortedSignatures) {
-  const witness = [""].concat(sortedSignatures.map(s => signatureNoSighashType(s) +'01'));
+  const witness = [""].concat(
+    sortedSignatures.map((s) => signatureNoSighashType(s) + "01")
+  );
   const witnessScript = multisigWitnessScript(multisig);
   witness.push(scriptToHex(witnessScript));
-  return witness.map(wit => Buffer.from(wit, 'hex'));
+  return witness.map((wit) => Buffer.from(wit, "hex"));
 }
 
 function multisigScriptSig(multisig, signersInputSignatures) {
-  const signatureOps = signersInputSignatures.map((signature) => (`${signatureNoSighashType(signature)}01`)).join(' '); // 01 => SIGHASH_ALL
+  const signatureOps = signersInputSignatures
+    .map((signature) => `${signatureNoSighashType(signature)}01`)
+    .join(" "); // 01 => SIGHASH_ALL
   const inputScript = `OP_0 ${signatureOps}`;
   const inputScriptBuffer = script.fromASM(inputScript);
   const rawMultisig = payments.p2ms({
     network: multisig.network,
-    output: Buffer.from(multisigRedeemScript(multisig).output, 'hex'),
+    output: Buffer.from(multisigRedeemScript(multisig).output, "hex"),
     input: inputScriptBuffer,
   });
   return generateMultisigFromRaw(multisigAddressType(multisig), rawMultisig);
