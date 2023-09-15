@@ -1,5 +1,5 @@
 import { validateAddress } from "./addresses";
-import { P2SH, P2WSH } from "./multisig";
+import * as multisig from "./multisig";
 import { NETWORKS } from "./networks";
 
 const P2PKH = "P2PKH";
@@ -7,8 +7,10 @@ const P2PKH = "P2PKH";
 let ADDRESSES = {};
 ADDRESSES[NETWORKS.MAINNET] = {};
 ADDRESSES[NETWORKS.MAINNET][P2PKH] = ["1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"];
-ADDRESSES[NETWORKS.MAINNET][P2SH] = ["3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr"];
-ADDRESSES[NETWORKS.MAINNET][P2WSH] = [
+ADDRESSES[NETWORKS.MAINNET][(multisig as any).P2SH] = [
+  "3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr",
+];
+ADDRESSES[NETWORKS.MAINNET][(multisig as any).P2WSH] = [
   "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
   "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx",
 ];
