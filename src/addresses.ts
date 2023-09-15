@@ -4,7 +4,7 @@
 
 import bitcoinAddressValidation from "bitcoin-address-validation";
 
-import { Networks } from "./networks";
+import { Network } from "./networks";
 
 const MAINNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(bc1|[13])";
 const TESTNET_ADDRESS_MAGIC_BYTE_PATTERN = "^(tb1|bcrt1|[mn2])";
@@ -23,7 +23,7 @@ export function validateAddress(address: string, network) {
   }
 
   const magic_byte_regex =
-    network === Networks.TESTNET
+    network === Network.TESTNET
       ? TESTNET_ADDRESS_MAGIC_BYTE_PATTERN
       : MAINNET_ADDRESS_MAGIC_BYTE_PATTERN;
   const isBech32 = address.match(BECH32_ADDRESS_MAGIC_BYTE_REGEX);
@@ -33,7 +33,7 @@ export function validateAddress(address: string, network) {
   const address_regex = magic_byte_regex + address_body_regex;
   // This tests whether you've got the network lined up with address type or not
   if (!address.match(address_regex)) {
-    if (network === Networks.TESTNET) {
+    if (network === Network.TESTNET) {
       return "Address must start with one of 'tb1', 'm', 'n', or '2' followed by letters or digits.";
     } else {
       return "Address must start with either of 'bc1', '1' or '3' followed by letters or digits.";

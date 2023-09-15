@@ -1,26 +1,26 @@
 import { validateAddress } from "./addresses";
 import * as multisig from "./multisig";
-import { Networks } from "./networks";
+import { Network } from "./networks";
 
 const P2PKH = "P2PKH";
 
 let ADDRESSES = {};
-ADDRESSES[Networks.MAINNET] = {};
-ADDRESSES[Networks.MAINNET][P2PKH] = ["1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"];
-ADDRESSES[Networks.MAINNET][(multisig as any).P2SH] = [
+ADDRESSES[Network.MAINNET] = {};
+ADDRESSES[Network.MAINNET][P2PKH] = ["1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"];
+ADDRESSES[Network.MAINNET][(multisig as any).P2SH] = [
   "3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr",
 ];
-ADDRESSES[Networks.MAINNET][(multisig as any).P2WSH] = [
+ADDRESSES[Network.MAINNET][(multisig as any).P2WSH] = [
   "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
   "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx",
 ];
 
-ADDRESSES[Networks.TESTNET] = {};
-ADDRESSES[Networks.TESTNET][P2PKH] = ["mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r"];
-ADDRESSES[Networks.TESTNET][(multisig as any).P2SH] = [
+ADDRESSES[Network.TESTNET] = {};
+ADDRESSES[Network.TESTNET][P2PKH] = ["mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r"];
+ADDRESSES[Network.TESTNET][(multisig as any).P2SH] = [
   "2NByiBUaEXrhmqAsg7BbLpcQSAQs1EDwt5w",
 ];
-ADDRESSES[Networks.TESTNET][(multisig as any).P2WSH] = [
+ADDRESSES[Network.TESTNET][(multisig as any).P2WSH] = [
   "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7",
 ];
 
@@ -43,23 +43,23 @@ describe("addresses", () => {
         expect(validateAddress("--", network)).toMatch(invalidAddress);
       });
 
-      expect(validateAddress("1asdf", Networks.MAINNET)).toMatch(
+      expect(validateAddress("1asdf", Network.MAINNET)).toMatch(
         /address is invalid/i
       );
-      expect(validateAddress("masdf", Networks.TESTNET)).toMatch(
+      expect(validateAddress("masdf", Network.TESTNET)).toMatch(
         /address is invalid/i
       );
     });
 
     it("returns an error message when an address doesn't match the network", () => {
       ADDRESS_TYPES.forEach((addressType) => {
-        ADDRESSES[Networks.MAINNET][addressType].forEach((address) => {
-          expect(validateAddress(address, Networks.TESTNET)).toMatch(
+        ADDRESSES[Network.MAINNET][addressType].forEach((address) => {
+          expect(validateAddress(address, Network.TESTNET)).toMatch(
             invalidAddress
           );
         });
-        ADDRESSES[Networks.TESTNET][addressType].forEach((address) => {
-          expect(validateAddress(address, Networks.MAINNET)).toMatch(
+        ADDRESSES[Network.TESTNET][addressType].forEach((address) => {
+          expect(validateAddress(address, Network.MAINNET)).toMatch(
             invalidAddress
           );
         });
@@ -67,7 +67,7 @@ describe("addresses", () => {
     });
 
     it("returns an empty string when the address is valid", () => {
-      [Networks.MAINNET, Networks.TESTNET].forEach((network) => {
+      [Network.MAINNET, Network.TESTNET].forEach((network) => {
         ADDRESS_TYPES.forEach((addressType) => {
           ADDRESSES[network][addressType].forEach((address) => {
             expect(validateAddress(address, network)).toEqual("");

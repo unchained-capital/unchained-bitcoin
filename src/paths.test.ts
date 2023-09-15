@@ -12,7 +12,7 @@ import {
 import { P2SH } from "./p2sh";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
-import { Networks } from "./networks";
+import { Network } from "./networks";
 
 describe("paths", () => {
   describe("hardenedBIP32Index", () => {
@@ -155,18 +155,18 @@ describe("paths", () => {
 
   describe("multisigBIP32Root", () => {
     it("returns the correct root BIP32 path for each combination of address type and network", () => {
-      expect(multisigBIP32Root(P2SH, Networks.MAINNET)).toEqual("m/45'/0'/0'");
-      expect(multisigBIP32Root(P2SH, Networks.TESTNET)).toEqual("m/45'/1'/0'");
-      expect(multisigBIP32Root(P2SH_P2WSH, Networks.MAINNET)).toEqual(
+      expect(multisigBIP32Root(P2SH, Network.MAINNET)).toEqual("m/45'/0'/0'");
+      expect(multisigBIP32Root(P2SH, Network.TESTNET)).toEqual("m/45'/1'/0'");
+      expect(multisigBIP32Root(P2SH_P2WSH, Network.MAINNET)).toEqual(
         "m/48'/0'/0'/1'"
       );
-      expect(multisigBIP32Root(P2SH_P2WSH, Networks.TESTNET)).toEqual(
+      expect(multisigBIP32Root(P2SH_P2WSH, Network.TESTNET)).toEqual(
         "m/48'/1'/0'/1'"
       );
-      expect(multisigBIP32Root(P2WSH, Networks.MAINNET)).toEqual(
+      expect(multisigBIP32Root(P2WSH, Network.MAINNET)).toEqual(
         "m/48'/0'/0'/2'"
       );
-      expect(multisigBIP32Root(P2WSH, Networks.TESTNET)).toEqual(
+      expect(multisigBIP32Root(P2WSH, Network.TESTNET)).toEqual(
         "m/48'/1'/0'/2'"
       );
     });
@@ -178,38 +178,34 @@ describe("paths", () => {
     });
 
     it("returns null for invalid address types", () => {
-      expect(multisigBIP32Root("foobar", Networks.MAINNET)).toBeNull();
-      expect(multisigBIP32Root("foobar", Networks.TESTNET)).toBeNull();
+      expect(multisigBIP32Root("foobar", Network.MAINNET)).toBeNull();
+      expect(multisigBIP32Root("foobar", Network.TESTNET)).toBeNull();
     });
   });
 
   describe("multisigBIP32Path", () => {
     it("fails with invalid path", () => {
-      expect(multisigBIP32Path("foo", Networks.MAINNET, "1")).toBe(null);
+      expect(multisigBIP32Path("foo", Network.MAINNET, "1")).toBe(null);
     });
 
     it("returns a BIP32 path with the correct root for each combination of address type, network, and relative path", () => {
-      expect(multisigBIP32Path(P2SH, Networks.MAINNET, "1")).toEqual(
+      expect(multisigBIP32Path(P2SH, Network.MAINNET, "1")).toEqual(
         "m/45'/0'/0'/1"
       );
-      expect(multisigBIP32Path(P2SH, Networks.TESTNET, "1'/2'")).toEqual(
+      expect(multisigBIP32Path(P2SH, Network.TESTNET, "1'/2'")).toEqual(
         "m/45'/1'/0'/1'/2'"
       );
-      expect(multisigBIP32Path(P2SH_P2WSH, Networks.MAINNET, "0")).toEqual(
+      expect(multisigBIP32Path(P2SH_P2WSH, Network.MAINNET, "0")).toEqual(
         "m/48'/0'/0'/1'/0"
       );
-      expect(multisigBIP32Path(P2WSH, Networks.TESTNET, "3")).toEqual(
+      expect(multisigBIP32Path(P2WSH, Network.TESTNET, "3")).toEqual(
         "m/48'/1'/0'/2'/3"
       );
     });
 
     it("defaults to the relative path 0", () => {
-      expect(multisigBIP32Path(P2SH, Networks.MAINNET)).toEqual(
-        "m/45'/0'/0'/0"
-      );
-      expect(multisigBIP32Path(P2SH, Networks.TESTNET)).toEqual(
-        "m/45'/1'/0'/0"
-      );
+      expect(multisigBIP32Path(P2SH, Network.MAINNET)).toEqual("m/45'/0'/0'/0");
+      expect(multisigBIP32Path(P2SH, Network.TESTNET)).toEqual("m/45'/1'/0'/0");
     });
   });
 

@@ -5,7 +5,7 @@
  * @module paths
  */
 
-import { Networks } from "./networks";
+import { Network } from "./networks";
 import { P2SH } from "./p2sh";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
@@ -264,7 +264,7 @@ export function validateBIP32Index(indexString, options?) {
  * console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'
  */
 export function multisigBIP32Root(addressType, network) {
-  const coinPath = network === Networks.MAINNET ? "0'" : "1'";
+  const coinPath = network === Network.MAINNET ? "0'" : "1'";
   switch (addressType) {
     case P2SH:
       return `m/45'/${coinPath}/0'`;

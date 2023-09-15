@@ -3,7 +3,7 @@ import {
   validateOutput,
   validateOutputAmount,
 } from "./outputs";
-import { Networks } from "./networks";
+import { Network } from "./networks";
 import BigNumber from "bignumber.js";
 
 describe("outputs", () => {
@@ -11,14 +11,14 @@ describe("outputs", () => {
 
   describe("validateOutputs", () => {
     it("should return an error message if no outputs", () => {
-      expect(validateOutputs(Networks.TESTNET, [])).toMatch(
+      expect(validateOutputs(Network.TESTNET, [])).toMatch(
         /At least one output is required/i
       );
     });
 
     it("should return an error message if one of the outputs is invalid", () => {
       expect(
-        validateOutputs(Networks.TESTNET, [
+        validateOutputs(Network.TESTNET, [
           { address: validAddress, amountSats: 1000 },
           { address: "foo", amountSats: 1000 },
         ])
@@ -27,7 +27,7 @@ describe("outputs", () => {
 
     it("should return an empty string if all outputs are valid", () => {
       expect(
-        validateOutputs(Networks.TESTNET, [
+        validateOutputs(Network.TESTNET, [
           { address: validAddress, amountSats: 1000 },
         ])
       ).toEqual("");
@@ -37,14 +37,14 @@ describe("outputs", () => {
   describe("validateOutput", () => {
     it("should return an error message for a missing amount", () => {
       expect(
-        validateOutput(Networks.TESTNET, { address: validAddress })
+        validateOutput(Network.TESTNET, { address: validAddress })
       ).toMatch(/does not have.+amountSats/i);
     });
 
     it("should return an error message for an invalid amount", () => {
       BigNumber.DEBUG = true;
       expect(
-        validateOutput(Networks.TESTNET, {
+        validateOutput(Network.TESTNET, {
           address: validAddress,
           amountSats: "foo",
         })
@@ -54,7 +54,7 @@ describe("outputs", () => {
 
     it("should return an error message for an invalid amount", () => {
       expect(
-        validateOutput(Networks.TESTNET, {
+        validateOutput(Network.TESTNET, {
           address: validAddress,
           amountSats: "foo",
         })
@@ -62,20 +62,20 @@ describe("outputs", () => {
     });
 
     it("should return an error message for a missing address", () => {
-      expect(validateOutput(Networks.TESTNET, { amountSats: 10000 })).toMatch(
+      expect(validateOutput(Network.TESTNET, { amountSats: 10000 })).toMatch(
         /does not have.+address/i
       );
     });
 
     it("should return an error message for an invalid address", () => {
       expect(
-        validateOutput(Networks.TESTNET, { amountSats: 10000, address: "foo" })
+        validateOutput(Network.TESTNET, { amountSats: 10000, address: "foo" })
       ).toMatch(/invalid.+address/i);
     });
 
     it("returns an empty string on a valid output", () => {
       expect(
-        validateOutput(Networks.TESTNET, {
+        validateOutput(Network.TESTNET, {
           amountSats: 10000,
           address: validAddress,
         })

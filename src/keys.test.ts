@@ -20,7 +20,7 @@ import {
   getMaskedDerivation,
 } from "./keys";
 
-import { Networks } from "./networks";
+import { Network } from "./networks";
 
 import { TEST_FIXTURES } from "./fixtures";
 
@@ -41,31 +41,31 @@ describe("keys", () => {
 
     it("returns an error message when the prefix does not match the network", () => {
       expect(
-        validateExtendedPublicKeyForNetwork("foobar", Networks.TESTNET)
+        validateExtendedPublicKeyForNetwork("foobar", Network.TESTNET)
       ).toMatch(/must begin with/i);
       expect(
-        validateExtendedPublicKeyForNetwork("tpub", Networks.MAINNET)
+        validateExtendedPublicKeyForNetwork("tpub", Network.MAINNET)
       ).toMatch(/must begin with/i);
       expect(
-        validateExtendedPublicKeyForNetwork(validTpub, Networks.MAINNET)
+        validateExtendedPublicKeyForNetwork(validTpub, Network.MAINNET)
       ).toMatch(/must begin with/i);
       expect(
-        validateExtendedPublicKeyForNetwork(validXpub, Networks.TESTNET)
+        validateExtendedPublicKeyForNetwork(validXpub, Network.TESTNET)
       ).toMatch(/must begin with/i);
       expect(
-        validateExtendedPublicKeyForNetwork(validXpub, Networks.REGTEST)
+        validateExtendedPublicKeyForNetwork(validXpub, Network.REGTEST)
       ).toMatch(/must begin with/i);
     });
 
     it("returns an empty string when the value is valid", () => {
       expect(
-        validateExtendedPublicKeyForNetwork(validTpub, Networks.TESTNET)
+        validateExtendedPublicKeyForNetwork(validTpub, Network.TESTNET)
       ).toBe("");
       expect(
-        validateExtendedPublicKeyForNetwork(validTpub, Networks.REGTEST)
+        validateExtendedPublicKeyForNetwork(validTpub, Network.REGTEST)
       ).toBe("");
       expect(
-        validateExtendedPublicKeyForNetwork(validXpub, Networks.MAINNET)
+        validateExtendedPublicKeyForNetwork(validXpub, Network.MAINNET)
       ).toBe("");
     });
   });
@@ -77,46 +77,46 @@ describe("keys", () => {
       "tpubDCZv1xNTnmwmXe3BBMyXekiVreY853jFeC8k9AaEAqCDYi1ZTSTLH3uQonwCTRk9jL1SFu1cLNbDY76YtcDR8n2inSMwBEAdZs37EpYS9px";
 
     it("returns an error message on an empty value", () => {
-      expect(validateExtendedPublicKey(undefined, Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey(undefined, Network.TESTNET)).toMatch(
         /cannot be blank/i
       );
-      expect(validateExtendedPublicKey("", Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey("", Network.TESTNET)).toMatch(
         /cannot be blank/i
       );
-      expect(validateExtendedPublicKey(null, Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey(null, Network.TESTNET)).toMatch(
         /cannot be blank/i
       );
     });
 
     it("returns an error message when the prefix does not match the network", () => {
-      expect(validateExtendedPublicKey("foobar", Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey("foobar", Network.TESTNET)).toMatch(
         /must begin with/i
       );
-      expect(validateExtendedPublicKey("tpub", Networks.MAINNET)).toMatch(
+      expect(validateExtendedPublicKey("tpub", Network.MAINNET)).toMatch(
         /must begin with/i
       );
-      expect(validateExtendedPublicKey(validTpub, Networks.MAINNET)).toMatch(
+      expect(validateExtendedPublicKey(validTpub, Network.MAINNET)).toMatch(
         /must begin with/i
       );
-      expect(validateExtendedPublicKey(validXpub, Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey(validXpub, Network.TESTNET)).toMatch(
         /must begin with/i
       );
     });
 
     it("returns an error message when the value is too short", () => {
-      expect(validateExtendedPublicKey("tpub123", Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey("tpub123", Network.TESTNET)).toMatch(
         /is too short/i
       );
-      expect(validateExtendedPublicKey("xpub123", Networks.MAINNET)).toMatch(
+      expect(validateExtendedPublicKey("xpub123", Network.MAINNET)).toMatch(
         /is too short/i
       );
     });
 
     it("returns an error message when the value is too short", () => {
-      expect(validateExtendedPublicKey("tpub123", Networks.TESTNET)).toMatch(
+      expect(validateExtendedPublicKey("tpub123", Network.TESTNET)).toMatch(
         /is too short/i
       );
-      expect(validateExtendedPublicKey("xpub123", Networks.MAINNET)).toMatch(
+      expect(validateExtendedPublicKey("xpub123", Network.MAINNET)).toMatch(
         /is too short/i
       );
     });
@@ -124,16 +124,16 @@ describe("keys", () => {
     it("returns an error message when the value is not valid", () => {
       // they both have 'n' in them
       expect(
-        validateExtendedPublicKey(validTpub.replace("n", "p"), Networks.TESTNET)
+        validateExtendedPublicKey(validTpub.replace("n", "p"), Network.TESTNET)
       ).toMatch(/invalid/i);
       expect(
-        validateExtendedPublicKey(validXpub.replace("n", "p"), Networks.MAINNET)
+        validateExtendedPublicKey(validXpub.replace("n", "p"), Network.MAINNET)
       ).toMatch(/invalid/i);
     });
 
     it("returns an empty string when the value is valid", () => {
-      expect(validateExtendedPublicKey(validTpub, Networks.TESTNET)).toBe("");
-      expect(validateExtendedPublicKey(validXpub, Networks.MAINNET)).toBe("");
+      expect(validateExtendedPublicKey(validTpub, Network.TESTNET)).toBe("");
+      expect(validateExtendedPublicKey(validXpub, Network.MAINNET)).toBe("");
     });
   });
   describe("validatePublicKey", () => {
@@ -246,11 +246,11 @@ describe("keys", () => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
       expect(
-        deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "0/0", Networks.MAINNET)
+        deriveChildPublicKey(NODES["m/45'/0'/0'"].xpub, "0/0", Network.MAINNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
     });
 
@@ -259,11 +259,11 @@ describe("keys", () => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].tpub,
           "m/0/0",
-          Networks.TESTNET
+          Network.TESTNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
       expect(
-        deriveChildPublicKey(NODES["m/45'/0'/0'"].tpub, "0/0", Networks.TESTNET)
+        deriveChildPublicKey(NODES["m/45'/0'/0'"].tpub, "0/0", Network.TESTNET)
       ).toBe(NODES["m/45'/0'/0'/0/0"].pub);
     });
 
@@ -272,14 +272,14 @@ describe("keys", () => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/99'",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/missing private key/i);
       expect(() => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/99'/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/missing private key/i);
     });
@@ -289,14 +289,14 @@ describe("keys", () => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/0/0",
-          Networks.TESTNET
+          Network.TESTNET
         );
       }).toThrow(/invalid network/i);
       expect(() => {
         deriveChildPublicKey(
           NODES["m/45'/0'/0'"].tpub,
           "m/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/invalid network/i);
     });
@@ -308,14 +308,14 @@ describe("keys", () => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].xpub);
       expect(
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "0/0",
-          Networks.MAINNET
+          Network.MAINNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].xpub);
     });
@@ -325,14 +325,14 @@ describe("keys", () => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].tpub,
           "m/0/0",
-          Networks.TESTNET
+          Network.TESTNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].tpub);
       expect(
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].tpub,
           "0/0",
-          Networks.TESTNET
+          Network.TESTNET
         )
       ).toBe(NODES["m/45'/0'/0'/0/0"].tpub);
     });
@@ -342,14 +342,14 @@ describe("keys", () => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/99'",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/missing private key/i);
       expect(() => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/99'/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/missing private key/i);
     });
@@ -359,14 +359,14 @@ describe("keys", () => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].xpub,
           "m/0/0",
-          Networks.TESTNET
+          Network.TESTNET
         );
       }).toThrow(/invalid network/i);
       expect(() => {
         deriveChildExtendedPublicKey(
           NODES["m/45'/0'/0'"].tpub,
           "m/0/0",
-          Networks.MAINNET
+          Network.MAINNET
         );
       }).toThrow(/invalid network/i);
     });
@@ -485,7 +485,7 @@ describe("keys", () => {
             pubToUse,
             chaincode,
             parentFingerprint,
-            Networks.TESTNET
+            Network.TESTNET
           )
         );
         expect(extendedPublicKeyRootFingerprint(derivedXpub)).toEqual(
@@ -528,14 +528,14 @@ describe("keys", () => {
           pub,
           chaincode,
           parentFingerprint,
-          Networks.MAINNET
+          Network.MAINNET
         );
         const derivedTpub = deriveExtendedPublicKey(
           path,
           pub,
           chaincode,
           parentFingerprint,
-          Networks.TESTNET
+          Network.TESTNET
         );
         expect(derivedXpub).toEqual(xpub);
         expect(derivedTpub).toEqual(tpub);
@@ -581,11 +581,11 @@ describe("keys", () => {
         expect(extendedPubkey.path).toEqual("0/0");
 
         expect(extendedPubkey.toBase58()).toEqual(xpub);
-        extendedPubkey.setNetwork(Networks.TESTNET);
+        extendedPubkey.setNetwork(Network.TESTNET);
         extendedPubkey.addBase58String();
         expect(extendedPubkey.toBase58()).toEqual(tpub);
         expect(extendedPubkey.base58String).toEqual(tpub);
-        extendedPubkey.setNetwork(Networks.MAINNET);
+        extendedPubkey.setNetwork(Network.MAINNET);
         extendedPubkey.addBase58String();
         expect(extendedPubkey.toBase58()).toEqual(xpub);
         expect(extendedPubkey.base58String).toEqual(xpub);

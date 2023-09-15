@@ -1,4 +1,4 @@
-import { Networks } from "../networks";
+import { Network } from "../networks";
 
-type NETWORKS_KEYS = keyof typeof Networks;
-export type BitcoinNetwork = (typeof Networks)[NETWORKS_KEYS];
+type NETWORKS_KEYS = keyof typeof Network;
+export type BitcoinNetwork = (typeof Network)[NETWORKS_KEYS];

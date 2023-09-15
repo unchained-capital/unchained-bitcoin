@@ -12,7 +12,7 @@ import {
   validateBIP32Index,
   validateBIP32Path,
 } from "./paths";
-import { Networks } from "./networks";
+import { Network } from "./networks";
 import {
   MULTISIG_ADDRESS_TYPES,
   generateMultisigFromPublicKeys,
@@ -53,8 +53,8 @@ export class Braid extends Struct {
     );
     this.addressType = options.addressType;
     assert(
-      Object.values(Networks).includes(options.network),
-      `Expected network to be one of:  ${Object.values(Networks)}.`
+      Object.values(Network).includes(options.network),
+      `Expected network to be one of:  ${Object.values(Network)}.`
     );
     this.network = options.network;
 

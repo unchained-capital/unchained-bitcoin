@@ -6,13 +6,13 @@
  * fetch data from these URLs.
  */
 
-import { Networks } from "./networks";
+import { Network } from "./networks";
 
 const BASE_URL_MAINNET = "https://blockstream.info";
 const BASE_URL_TESTNET = "https://blockstream.info/testnet";
 
 function blockExplorerBaseURL(network) {
-  return network === Networks.TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET;
+  return network === Network.TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET;
 }
 
 /**

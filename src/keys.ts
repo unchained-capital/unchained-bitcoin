@@ -13,7 +13,7 @@ import { Struct, BufferWriter, BufferReader } from "bufio";
 import assert from "assert";
 import { validateHex, toHexString, hash160 } from "./utils";
 import { bip32PathToSequence, validateBIP32Path } from "./paths";
-import { Networks, networkData } from "./networks";
+import { Network, networkData } from "./networks";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
 import { BitcoinNetwork, KeyPrefix, KeyVersion } from "./types";
@@ -130,15 +130,15 @@ export class ExtendedPublicKey extends Struct {
 
     if (options.network) {
       assert(
-        [Networks.MAINNET, Networks.TESTNET].includes(options.network),
-        `Expected network to be one of ${Networks.MAINNET} or ${Networks.TESTNET}.`
+        [Network.MAINNET, Network.TESTNET].includes(options.network),
+        `Expected network to be one of ${Network.MAINNET} or ${Network.TESTNET}.`
       );
       this.network = options.network;
     } else {
-      this.network = Networks.MAINNET;
+      this.network = Network.MAINNET;
     }
     this.version =
-      this.network === Networks.MAINNET
+      this.network === Network.MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
 
@@ -173,12 +173,12 @@ export class ExtendedPublicKey extends Struct {
    */
   setNetwork(network: BitcoinNetwork): void {
     assert(
-      [Networks.MAINNET, Networks.TESTNET, Networks.REGTEST].includes(network),
-      `Expected network to be one of ${Networks.MAINNET}, ${Networks.TESTNET}, or ${Networks.REGTEST}.`
+      [Network.MAINNET, Network.TESTNET, Network.REGTEST].includes(network),
+      `Expected network to be one of ${Network.MAINNET}, ${Network.TESTNET}, or ${Network.REGTEST}.`
     );
     this.network = network;
     this.version =
-      this.network === Networks.MAINNET
+      this.network === Network.MAINNET
         ? EXTENDED_PUBLIC_KEY_VERSIONS.xpub
         : EXTENDED_PUBLIC_KEY_VERSIONS.tpub;
   }
@@ -307,13 +307,13 @@ export function validateExtendedPublicKeyForNetwork(
 ): string {
   let requiredPrefix = "'xpub'";
   const requiresTpub =
-    network === Networks.TESTNET || network === Networks.REGTEST;
+    network === Network.TESTNET || network === Network.REGTEST;
   if (requiresTpub) {
     requiredPrefix += " or 'tpub'";
   }
   const prefix = extendedPublicKey.slice(0, 4);
   if (
-    (network === Networks.MAINNET && prefix !== "xpub") ||
+    (network === Network.MAINNET && prefix !== "xpub") ||
     (requiresTpub && prefix !== "tpub")
   ) {
     return `Extended public key must begin with ${requiredPrefix}.`;
@@ -584,7 +584,7 @@ export function deriveExtendedPublicKey(
   pubkey: string,
   chaincode: string,
   parentFingerprint: number,
-  network: BitcoinNetwork = Networks.MAINNET
+  network: BitcoinNetwork = Network.MAINNET
 ): string {
   const xpub = new ExtendedPublicKey({
     path: bip32Path,

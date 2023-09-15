@@ -6,7 +6,7 @@ import { networks } from "bitcoinjs-lib";
  * value to bitcoinjs.
  */
 /* eslint-disable no-shadow */
-export enum Networks {
+export enum Network {
   MAINNET = "mainnet",
   TESTNET = "testnet",
   REGTEST = "regtest",
@@ -21,9 +21,9 @@ export enum Networks {
  */
 export function networkData(network) {
   switch (network) {
-    case Networks.MAINNET:
+    case Network.MAINNET:
       return networks.bitcoin;
-    case Networks.TESTNET:
+    case Network.TESTNET:
       return networks.testnet;
     default:
       return networks.testnet;
@@ -35,9 +35,9 @@ export function networkData(network) {
  */
 export function networkLabel(network) {
   switch (network) {
-    case Networks.MAINNET:
+    case Network.MAINNET:
       return "Mainnet";
-    case Networks.TESTNET:
+    case Network.TESTNET:
       return "Testnet";
     default:
       return "Testnet";
@@ -52,12 +52,12 @@ export function getNetworkFromPrefix(prefix) {
     case "xpub":
     case "ypub":
     case "zpub":
-      return Networks.MAINNET;
+      return Network.MAINNET;
 
     case "tpub":
     case "upub":
     case "vpub":
-      return Networks.TESTNET;
+      return Network.TESTNET;
 
     default:
       throw new Error(`Unrecognized extended public key prefix ${prefix}`);
