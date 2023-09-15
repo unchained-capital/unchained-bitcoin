@@ -1,18 +1,14 @@
-import {encoding} from 'bufio';
+import { encoding } from "bufio";
 
 /**
  * This module provides functions and constants for the P2WSH address type.
- * 
+ *
  * @module p2wsh
  */
 
 /**
  * Address type constant for "pay-to-witness-script-hash" or (P2WSH)
  * addresses.
- * 
- * @constant
- * @type {string}
- * @default P2WSH
  */
 export const P2WSH = "P2WSH";
 
@@ -25,27 +21,25 @@ export const P2WSH = "P2WSH";
 function txinSize() {
   const PREVHASH_BYTES = 32;
   const PREV_INDEX_BYTES = 4;
-  const SCRIPT_LENGTH_BYTES = 1
-  const SEQUENCE_BYTES = 4
+  const SCRIPT_LENGTH_BYTES = 1;
+  const SEQUENCE_BYTES = 4;
 
-  return (PREVHASH_BYTES + 
-    PREV_INDEX_BYTES + 
-    SEQUENCE_BYTES + 
-    SCRIPT_LENGTH_BYTES
-  )
+  return (
+    PREVHASH_BYTES + PREV_INDEX_BYTES + SEQUENCE_BYTES + SCRIPT_LENGTH_BYTES
+  );
 }
 
 /**
- * @description Returns the approximate size of outputs in tx. 
+ * @description Returns the approximate size of outputs in tx.
  * Calculated by adding value field (8 bytes), field providing length
  * scriptPubkey and the script pubkey itself
- * @param {Number} [scriptPubkeySize = 34] size of script pubkey. 
+ * @param {Number} [scriptPubkeySize = 34] size of script pubkey.
  * Defaults to 34 which is the size of a P2WSH script pubkey and the
  * largest possible standard
  * @returns {Number} size of tx output (default: 43)
  */
 function txoutSize(scriptPubkeySize = 34) {
-  // per_output: value (8) + script length (1) + 
+  // per_output: value (8) + script length (1) +
   const VAL_BYTES = 8;
   const scriptLengthBytes = encoding.sizeVarint(scriptPubkeySize);
   // for P2WSH Locking script which is largest possible(34)
@@ -54,7 +48,7 @@ function txoutSize(scriptPubkeySize = 34) {
 
 /**
  * @description calculates size of redeem script given n pubkeys.
- * Calculation looks like: 
+ * Calculation looks like:
  * OP_M (1 byte) + size of each pubkey in redeem script (OP_DATA= 1 byte * N) +
  * pubkey size (33 bytes * N) + OP_N (1 byte) + OP_CHECKMULTISIG (1 byte)
  *  => 1 + (1 * N) + (33 * N) + 1 + 1
@@ -67,7 +61,9 @@ export function getRedeemScriptSize(n) {
   const opDataBytes = n; // 1 byte per pubkey in redeem script
   const pubkeyBytes = 33 * n;
   const OP_CHECKMULTISIG_BYTES = 1;
-  return OP_M_BYTES + opDataBytes + pubkeyBytes + OP_N_BYTES + OP_CHECKMULTISIG_BYTES;
+  return (
+    OP_M_BYTES + opDataBytes + pubkeyBytes + OP_N_BYTES + OP_CHECKMULTISIG_BYTES
+  );
 }
 
 /**
@@ -88,13 +84,15 @@ export function getWitnessSize(m, n) {
   const redeemScriptSize = getRedeemScriptSize(n);
   // total witness stack will be null bytes + each signature (m) + redeem script
   const WITNESS_ITEMS_COUNT = encoding.sizeVarint(1 + m + 1);
-  
-  return WITNESS_ITEMS_COUNT + 
-    OP_NULL_BYTES + 
-    opDataBytes + 
-    signaturesSize + 
-    REDEEM_SCRIPT_LENGTH + 
-    redeemScriptSize;
+
+  return (
+    WITNESS_ITEMS_COUNT +
+    OP_NULL_BYTES +
+    opDataBytes +
+    signaturesSize +
+    REDEEM_SCRIPT_LENGTH +
+    redeemScriptSize
+  );
 }
 
 /**
@@ -108,13 +106,13 @@ export function getWitnessSize(m, n) {
 export function calculateBase(inputsCount, outputsCount) {
   let total = 0;
   total += 4; // version
-  total += 4 // locktime
+  total += 4; // locktime
 
   total += encoding.sizeVarint(inputsCount); // inputs length
   total += inputsCount * txinSize();
-  total += encoding.sizeVarint(outputsCount); 
+  total += encoding.sizeVarint(outputsCount);
   total += outputsCount * txoutSize();
-  return total
+  return total;
 }
 
 export function calculateTotalWitnessSize({ numInputs, m, n }) {
@@ -123,14 +121,14 @@ export function calculateTotalWitnessSize({ numInputs, m, n }) {
   total += 1; // segwit marker
   total += 1; // segwit flag
 
-  total += encoding.sizeVarint(numInputs) // bytes for number of witnesses
-  total += numInputs * getWitnessSize(m, n) // add witness for each input
+  total += encoding.sizeVarint(numInputs); // bytes for number of witnesses
+  total += numInputs * getWitnessSize(m, n); // add witness for each input
 
   return total;
 }
 
 /**
- * @description Calculate virtual bytes or "vsize". 
+ * @description Calculate virtual bytes or "vsize".
  * vsize is equal three times "base size" of a tx w/o witness data, plus the
  * total size of all data, with the final result divided by scaling factor
  * of 4 and round up to the next integer. For example, if a transaction is
@@ -149,7 +147,7 @@ function calculateVSize(baseSize, witnessSize) {
 
 /**
  * Estimate the transaction virtual size (vsize) when spending inputs
- * from the same multisig P2WSH address. 
+ * from the same multisig P2WSH address.
  * @param {Object} config - configuration for the calculation
  * @param {number} config.numInputs - number of m-of-n multisig P2SH inputs
  * @param {number} config.numOutputs - number of outputs
