@@ -91,7 +91,7 @@ describe("outputs", () => {
 
     it("should return an error message when the output is too small", () => {
       expect(validateOutputAmount(100)).toMatch(/output amount is too small/i);
-      expect(validateOutputAmount(800, undefined, 1000)).toMatch(
+      expect(validateOutputAmount(800, undefined, new BigNumber(1000))).toMatch(
         /output amount is too small/i
       );
     });
@@ -132,7 +132,7 @@ describe("outputs", () => {
         expect(validateOutputAmount(100, 100000)).toMatch(
           /output amount is too small/i
         );
-        expect(validateOutputAmount(800, 100000, 1000)).toMatch(
+        expect(validateOutputAmount(800, 100000, new BigNumber(1000))).toMatch(
           /output amount is too small/i
         );
       });

@@ -32,7 +32,7 @@ import { validateAddress } from "./addresses";
  * @returns {string} empty if valid or corresponding validation message if not
  *
  */
-export function validateOutputs(network, outputs, inputsTotalSats) {
+export function validateOutputs(network, outputs, inputsTotalSats?) {
   if (!outputs || outputs.length === 0) {
     return "At least one output is required.";
   }
@@ -65,7 +65,7 @@ export function validateOutputs(network, outputs, inputsTotalSats) {
  * console.log(validateOutput(MAINNET, {amountSats: 100000, address: "3..."})); // ""
  * console.log(validateOutput(MAINNET, {amountSats: 100000, address: "3..."}, 10000)); // "Amount is too large."
  */
-export function validateOutput(network, output, inputsTotalSats) {
+export function validateOutput(network, output, inputsTotalSats?) {
   if (output.amountSats !== 0 && !output.amountSats) {
     return `Does not have an 'amountSats' property.`;
   }
@@ -91,7 +91,7 @@ export function validateOutput(network, output, inputsTotalSats) {
  * @default 546 Satoshis
  *
  */
-const DUST_LIMIT_SATS = BigNumber(546);
+const DUST_LIMIT_SATS = new BigNumber(546);
 
 /**
  * Validate the given output amount (in Satoshis).
@@ -118,10 +118,14 @@ const DUST_LIMIT_SATS = BigNumber(546);
  * console.log(validateOutputAmount(1000000, 100000) // "Output amount is too large."
  * console.log(validateOutputAmount(100000, 1000000) // ""
  */
-export function validateOutputAmount(amountSats, maxSats, minSats) {
+export function validateOutputAmount(
+  amountSats,
+  maxSats?,
+  minSats = DUST_LIMIT_SATS
+) {
   let a, its;
   try {
-    a = BigNumber(amountSats);
+    a = new BigNumber(amountSats);
   } catch (e) {
     return "Invalid output amount.";
   }
@@ -131,12 +135,12 @@ export function validateOutputAmount(amountSats, maxSats, minSats) {
   if (a.isLessThanOrEqualTo(ZERO)) {
     return "Output amount must be positive.";
   }
-  if (a.isLessThanOrEqualTo(minSats || DUST_LIMIT_SATS)) {
+  if (a.isLessThanOrEqualTo(minSats)) {
     return "Output amount is too small.";
   }
   if (maxSats !== undefined) {
     try {
-      its = BigNumber(maxSats);
+      its = new BigNumber(maxSats);
     } catch (e) {
       return "Invalid total input amount.";
     }
