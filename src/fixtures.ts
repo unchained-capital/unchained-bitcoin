@@ -1281,14 +1281,18 @@ const MULTISIGS_BASE = [
 ];
 
 const MULTISIGS = MULTISIGS_BASE.map((test) => {
+  let braidAwareMultisig = {};
   const multisig = generateMultisigFromPublicKeys(
     test.network,
     test.type,
     2,
     ...test.publicKeys
   );
-  multisig.braidDetails = braidConfig(test.braidDetails);
-  multisig.bip32Derivation = test.bip32Derivation;
+  braidAwareMultisig = {
+    ...multisig,
+    braidDetails: braidConfig(test.braidDetails),
+    bip32Derivation: test.bip32Derivation,
+  };
   return {
     ...test,
     ...{
@@ -1296,8 +1300,8 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
       utxos: test.utxos.map((utxo) => ({
         ...utxo,
         ...{
-          amountSats: BigNumber(utxo.amountSats).toString(),
-          multisig,
+          amountSats: new BigNumber(utxo.amountSats).toString(),
+          braidAwareMultisig,
         },
         bip32Path: test.bip32Path, // this only works because all of these fixtures are single address.
       })),
@@ -1306,15 +1310,15 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
         ...{
           outputs: test.transaction.outputs.map((output) => ({
             ...output,
-            ...{ amountSats: BigNumber(output.amountSats).toString() },
+            ...{ amountSats: new BigNumber(output.amountSats).toString() },
           })),
         },
       },
-      multisig,
+      braidAwareMultisig,
       multisigScript:
         test.type === P2SH
-          ? multisigRedeemScript(multisig)
-          : multisigWitnessScript(multisig),
+          ? multisigRedeemScript(braidAwareMultisig)
+          : multisigWitnessScript(braidAwareMultisig),
       multisigScriptOps:
         test.type === P2SH ? test.redeemScriptOps : test.witnessScriptOps,
       multisigScriptHex:

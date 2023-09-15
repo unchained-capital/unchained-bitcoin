@@ -5,10 +5,10 @@
  * @module inputs
  */
 
-import {validateHex} from './utils';
-import {multisigBraidDetails} from './multisig';
+import { validateHex } from "./utils";
+import { multisigBraidDetails } from "./multisig";
 
- /**
+/**
  * Represents a transaction input.
  *
  * The [`Multisig`]{@link module:multisig.MULTISIG} object represents
@@ -36,7 +36,7 @@ export function sortInputs(inputs) {
       if (input1.txid < input2.txid) {
         return -1;
       } else {
-        return ((input1.index < input2.index) ? -1 : 1);
+        return input1.index < input2.index ? -1 : 1;
       }
     }
   });
@@ -55,16 +55,24 @@ export function sortInputs(inputs) {
  * @param {boolean} [braidRequired] - inputs need to have braid details attached to them
  * @returns {string} empty if valid or corresponding validation message if not
  */
-export function validateMultisigInputs(inputs, braidRequired) {
-  if (!inputs || inputs.length === 0) { return "At least one input is required."; }
-  let utxoIDs = [];
+export function validateMultisigInputs(inputs, braidRequired = false) {
+  if (!inputs || inputs.length === 0) {
+    return "At least one input is required.";
+  }
+  let utxoIDs: string[] = [];
   for (let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
     const input = inputs[inputIndex];
-    if (braidRequired && input.multisig && !multisigBraidDetails(input.multisig)) {
-        return `At least one input cannot be traced back to its set of extended public keys.`;
+    if (
+      braidRequired &&
+      input.multisig &&
+      !multisigBraidDetails(input.multisig)
+    ) {
+      return `At least one input cannot be traced back to its set of extended public keys.`;
     }
     const error = validateMultisigInput(input);
-    if (error) { return error; }
+    if (error) {
+      return error;
+    }
     const utxoID = `${input.txid}:${input.index}`;
     if (utxoIDs.includes(utxoID)) {
       return `Duplicate input: ${utxoID}`;
@@ -92,12 +100,16 @@ export function validateMultisigInput(input) {
     return `Does not have a transaction ID ('txid') property.`;
   }
   let error = validateTransactionID(input.txid);
-  if (error) { return error; }
-  if (input.index !== 0 && (!input.index)) {
+  if (error) {
+    return error;
+  }
+  if (input.index !== 0 && !input.index) {
     return `Does not have a transaction index ('index') property.`;
   }
   error = validateTransactionIndex(input.index);
-  if (error) { return error; }
+  if (error) {
+    return error;
+  }
   if (!input.multisig) {
     return `Does not have a multisig object ('multisig') property.`;
   }
@@ -113,8 +125,8 @@ const TXID_LENGTH = 64;
  * @returns {string} empty if valid or corresponding validation message if not
  *
  */
-export function validateTransactionID(txid) {
-  if (txid === null || txid === undefined || txid === '') {
+export function validateTransactionID(txid?) {
+  if (txid === null || txid === undefined || txid === "") {
     return "TXID cannot be blank.";
   }
   let error = validateHex(txid);
@@ -124,7 +136,7 @@ export function validateTransactionID(txid) {
   if (txid.length !== TXID_LENGTH) {
     return `TXID is invalid (must be ${TXID_LENGTH}-characters)`;
   }
-  return '';
+  return "";
 }
 
 /**
@@ -134,8 +146,8 @@ export function validateTransactionID(txid) {
  * @returns {string} empty if valid or corresponding validation message if not
  *
  */
-export function validateTransactionIndex(indexString) {
-  if (indexString === null || indexString === undefined || indexString === '') {
+export function validateTransactionIndex(indexString?) {
+  if (indexString === null || indexString === undefined || indexString === "") {
     return "Index cannot be blank.";
   }
   const index = parseInt(indexString, 10);
