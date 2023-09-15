@@ -16,7 +16,6 @@
   "engines": {
     "node": ">=16"
   },
-  "types": "./lib/types",
   "devDependencies": {
     "@babel/cli": "^7.7.0",
     "@babel/core": "^7.7.2",
@@ -46,8 +45,8 @@
     "build-types": "tsc -p tsconfig.json",
     "build-types:watch": "tsc --watch",
     "check-types": "tsc -p tsconfig.json --noEmit --emitDeclarationOnly false",
-    "compile": "npm run build-types && babel --extensions .ts,.js --ignore '**/types' --ignore '**/*.test.js' --ignore '**/*.test.ts' -d lib/ src/",
-    "compile:watch": "npm run build-types:watch && babel --extensions .ts,.js --watch --ignore '**/*.test.js' --ignore '**/types' --ignore '**/*.test.ts' -d lib/ src/",
+    "compile": "npm run build-types && babel --extensions .ts,.js --ignore '**/*.test.js' --ignore '**/*.test.ts' -d lib/ src/",
+    "compile:watch": "npm run build-types:watch && babel --extensions .ts,.js --watch --ignore '**/*.test.js' --ignore '**/*.test.ts' -d lib/ src/",
     "coverage": "jest --coverage",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
