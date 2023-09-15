@@ -174,13 +174,13 @@ describe("braids", () => {
 
     it("should generate braid-aware multisig at index 0", () => {
       expect(deriveMultisigByIndex(defaultBraid, 0)).toEqual(
-        expect.objectContaining(MULTISIGS[0].multisig)
+        expect.objectContaining(MULTISIGS[0].braidAwareMultisig)
       );
     });
 
     it("should generate braid-aware multisig at path 0/0", () => {
       expect(deriveMultisigByPath(defaultBraid, "0/0")).toEqual(
-        expect.objectContaining(MULTISIGS[0].multisig)
+        expect.objectContaining(MULTISIGS[0].braidAwareMultisig)
       );
     });
 
