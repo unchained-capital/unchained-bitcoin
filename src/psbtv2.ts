@@ -14,7 +14,7 @@ import { Psbt } from "bitcoinjs-lib";
 
 import { validateHex, validBase64 } from "./utils";
 import { validateBIP32Path } from "./paths";
-import { PSBT_MAGIC_BYTES } from "./psbt.js";
+import { PSBT_MAGIC_BYTES } from "./psbt";
 
 /*
 Global Types

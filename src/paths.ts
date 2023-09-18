@@ -5,10 +5,10 @@
  * @module paths
  */
 
-import {MAINNET} from "./networks";
-import {P2SH} from "./p2sh";
-import {P2SH_P2WSH} from "./p2sh_p2wsh";
-import {P2WSH} from "./p2wsh";
+import { Network } from "./networks";
+import { P2SH } from "./p2sh";
+import { P2SH_P2WSH } from "./p2sh_p2wsh";
+import { P2WSH } from "./p2wsh";
 
 const HARDENING_OFFSET = Math.pow(2, 31);
 
@@ -46,9 +46,9 @@ export function hardenedBIP32Index(index) {
  * import {bip32PathToSequence} from "unchained-bitcoin";
  * console.log(bip32PathToSequence("m/45'/1/99")); // [2147483693, 1, 99]
  */
-export function bip32PathToSequence(pathString) {
-  const pathSegments = pathString.split("/").splice(1);
-  return pathSegments.map(pathSegment => {
+export function bip32PathToSequence(pathString): number[] {
+  const pathSegments: string[] = pathString.split("/").splice(1);
+  return pathSegments.map((pathSegment) => {
     if (pathSegment.substr(-1) === "'") {
       return parseInt(pathSegment.slice(0, -1), 10) + HARDENING_OFFSET;
     } else {
@@ -70,13 +70,18 @@ export function bip32PathToSequence(pathString) {
  * console.log(bip32SequenceToPath([2147483693, 1, 99])); // m/45'/1/99
  */
 export function bip32SequenceToPath(sequence) {
-  return "m/" + sequence.map((index) => {
-    if (index >= HARDENING_OFFSET) {
-      return `${(index - HARDENING_OFFSET)}'`;
-    } else {
-      return index.toString();
-    }
-  }).join('/');
+  return (
+    "m/" +
+    sequence
+      .map((index) => {
+        if (index >= HARDENING_OFFSET) {
+          return `${index - HARDENING_OFFSET}'`;
+        } else {
+          return index.toString();
+        }
+      })
+      .join("/")
+  );
 }
 
 /**
@@ -109,8 +114,8 @@ export function bip32SequenceToPath(sequence) {
  * console.log(validateBIP32Path("/0'/0", {mode: "unhardened")); // "BIP32 path cannot include hardened segments."
  * console.log(validateBIP32Path("/0/0", {mode: "unhardened")); // ""
  */
-export function validateBIP32Path(pathString, options) {
-  if (pathString === null || pathString === undefined || pathString === '') {
+export function validateBIP32Path(pathString, options?) {
+  if (pathString === null || pathString === undefined || pathString === "") {
     return "BIP32 path cannot be blank.";
   }
 
@@ -118,19 +123,19 @@ export function validateBIP32Path(pathString, options) {
     return "BIP32 path is invalid.";
   }
 
-  if (options && options.mode === 'hardened') {
+  if (options && options.mode === "hardened") {
     if (!pathString.match(BIP32_HARDENED_PATH_REGEX)) {
       return "BIP32 path must be fully-hardened.";
     }
   }
 
-  if (options && options.mode === 'unhardened') {
+  if (options && options.mode === "unhardened") {
     if (!pathString.match(BIP32_UNHARDENED_PATH_REGEX)) {
       return "BIP32 path cannot include hardened segments.";
     }
   }
 
-  const segmentStrings = pathString.toLowerCase().split('/');
+  const segmentStrings = pathString.toLowerCase().split("/");
 
   return validateBIP32PathSegments(segmentStrings.slice(1));
 }
@@ -139,11 +144,11 @@ function validateBIP32PathSegments(segmentStrings) {
   for (let i = 0; i < segmentStrings.length; i++) {
     const indexString = segmentStrings[i];
     const error = validateBIP32Index(indexString);
-    if (error !== '') {
+    if (error !== "") {
       return error;
     }
   }
-  return '';
+  return "";
 }
 
 /**
@@ -184,8 +189,8 @@ function validateBIP32PathSegments(segmentStrings) {
  * console.log(validateBIP32Index("2147483647")); // ""
  * console.log(validateBIP32Index("2147483647'")); // ""
  */
-export function validateBIP32Index(indexString, options) {
-  if (indexString === null || indexString === undefined || indexString === '') {
+export function validateBIP32Index(indexString, options?) {
+  if (indexString === null || indexString === undefined || indexString === "") {
     return "BIP32 index cannot be blank.";
   }
 
@@ -193,8 +198,7 @@ export function validateBIP32Index(indexString, options) {
     return "BIP32 index is invalid.";
   }
 
-  let numberString,
-    hardened;
+  let numberString, hardened;
   if (indexString.substr(indexString.length - 1) === "'") {
     numberString = indexString.substr(0, indexString.length - 1);
     hardened = true;
@@ -207,31 +211,35 @@ export function validateBIP32Index(indexString, options) {
   const numberError = "Invalid BIP32 index.";
   let number = parseInt(numberString, 10);
 
-  if (Number.isNaN(number) || number.toString().length !== numberString.length) {
+  if (
+    Number.isNaN(number) ||
+    number.toString().length !== numberString.length
+  ) {
     return numberError;
   }
 
   // allows up to 4294967295 or 2147483647'
-  if (number > (hardened ? MAX_BIP32_HARDENED_NODE_INDEX : MAX_BIP32_NODE_INDEX)) {
+  if (
+    number > (hardened ? MAX_BIP32_HARDENED_NODE_INDEX : MAX_BIP32_NODE_INDEX)
+  ) {
     return "BIP32 index is too high.";
   }
 
   // allows 0'-2147483647' or 2147483648-4294967295
-  if (options && options.mode === 'hardened') {
+  if (options && options.mode === "hardened") {
     if (!hardened && number <= MAX_BIP32_HARDENED_NODE_INDEX) {
       return "BIP32 index must be hardened.";
     }
   }
 
   // allows 0-2147483647
-  if (options && options.mode === 'unhardened') {
+  if (options && options.mode === "unhardened") {
     if (hardened || number > MAX_BIP32_HARDENED_NODE_INDEX) {
       return "BIP32 index cannot be hardened.";
     }
   }
 
-
-  return '';
+  return "";
 }
 
 /**
@@ -256,7 +264,7 @@ export function validateBIP32Index(indexString, options) {
  * console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'
  */
 export function multisigBIP32Root(addressType, network) {
-  const coinPath = (network === MAINNET ? "0'" : "1'");
+  const coinPath = network === Network.MAINNET ? "0'" : "1'";
   switch (addressType) {
     case P2SH:
       return `m/45'/${coinPath}/0'`;
@@ -282,10 +290,10 @@ export function multisigBIP32Root(addressType, network) {
  * console.log(multisigBIP32Path(P2SH, MAINNET, 0); // m/45'/0'/0'/0
  * console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'/4"
  */
-export function multisigBIP32Path(addressType, network, relativePath) {
+export function multisigBIP32Path(addressType, network, relativePath = "0") {
   const root = multisigBIP32Root(addressType, network);
   if (root) {
-    return root + `/${relativePath || "0"}`;
+    return root + `/${relativePath}`;
   }
   return null;
 }
@@ -316,7 +324,7 @@ export function getParentBIP32Path(bip32Path) {
  * console.log(getRelativeBIP32Path("m/45'/0'/0'", "m/45'/0'/0'/0/1/2"); // 0/1/2
  */
 export function getRelativeBIP32Path(parentBIP32Path, childBIP32Path) {
-  if (parentBIP32Path === childBIP32Path) return '';
+  if (parentBIP32Path === childBIP32Path) return "";
   // first validate the parentBIP32Path
   let validatedParent = validateBIP32Path(parentBIP32Path);
   if (validatedParent.length) return validatedParent;
@@ -324,7 +332,7 @@ export function getRelativeBIP32Path(parentBIP32Path, childBIP32Path) {
   let validatedChild = validateBIP32Path(childBIP32Path);
   if (validatedChild.length) return validatedChild;
   // check that childBIP32Path starts with parentBIP32Path
-  if (!childBIP32Path.startsWith(parentBIP32Path)) return `The provided bip32Path does not start with the chroot.`
+  if (!childBIP32Path.startsWith(parentBIP32Path)) return `The provided bip32Path does not start with the chroot.`;
   // then return the relative path beyond the parentBIP32Path.
 
   return childBIP32Path.slice(parentBIP32Path.length + 1);
