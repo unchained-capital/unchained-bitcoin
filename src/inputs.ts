@@ -47,7 +47,7 @@ export function validateMultisigInputs(inputs, braidRequired = false) {
       input.multisig &&
       !multisigBraidDetails(input.multisig)
     ) {
-      return `At least one input cannot be traced back to its set of extended public keys.`;
+      return "At least one input cannot be traced back to its set of extended public keys.";
     }
     const error = validateMultisigInput(input);
     if (error) {
@@ -73,21 +73,21 @@ export function validateMultisigInputs(inputs, braidRequired = false) {
  */
 export function validateMultisigInput(input) {
   if (!input.txid) {
-    return `Does not have a transaction ID ('txid') property.`;
+    return "Does not have a transaction ID ('txid') property.";
   }
   let error = validateTransactionID(input.txid);
   if (error) {
     return error;
   }
   if (input.index !== 0 && !input.index) {
-    return `Does not have a transaction index ('index') property.`;
+    return "Does not have a transaction index ('index') property.";
   }
   error = validateTransactionIndex(input.index);
   if (error) {
     return error;
   }
   if (!input.multisig) {
-    return `Does not have a multisig object ('multisig') property.`;
+    return "Does not have a multisig object ('multisig') property.";
   }
   return "";
 }
