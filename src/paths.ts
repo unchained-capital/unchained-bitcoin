@@ -263,7 +263,7 @@ export function validateBIP32Index(indexString, options?) {
  * console.log(multisigBIP32Root(P2SH, MAINNET)); // m/45'/0'/0'
  * console.log(multisigBIP32Root(P2SH_P2WSH, TESTNET); // m/48'/1'/0'/1'
  */
-export function multisigBIP32Root(addressType, network) {
+export function multisigBIP32Root(addressType, network: Network) {
   const coinPath = network === Network.MAINNET ? "0'" : "1'";
   switch (addressType) {
     case P2SH:
@@ -290,7 +290,11 @@ export function multisigBIP32Root(addressType, network) {
  * console.log(multisigBIP32Path(P2SH, MAINNET, 0); // m/45'/0'/0'/0
  * console.log(multisigBIP32Path(P2SH_P2WSH, TESTNET, "3'/4"); // m/48'/1'/0'/1'/3'/4"
  */
-export function multisigBIP32Path(addressType, network, relativePath = "0") {
+export function multisigBIP32Path(
+  addressType,
+  network: Network,
+  relativePath = "0"
+) {
   const root = multisigBIP32Root(addressType, network);
   if (root) {
     return root + `/${relativePath}`;

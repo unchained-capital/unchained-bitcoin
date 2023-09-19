@@ -17,7 +17,7 @@ const BECH32_ADDRESS_BODY_PATTERN = "[ac-hj-np-z02-9]+$";
  *
  * Address must be a valid address on the given bitcoin network.
  */
-export function validateAddress(address: string, network) {
+export function validateAddress(address: string, network: Network) {
   if (!address || address.trim() === "") {
     return "Address cannot be blank.";
   }

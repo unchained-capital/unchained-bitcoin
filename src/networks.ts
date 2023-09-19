@@ -19,7 +19,7 @@ export enum Network {
  *
  * This function is for internal use by this library.
  */
-export function networkData(network) {
+export function networkData(network: Network) {
   switch (network) {
     case Network.MAINNET:
       return networks.bitcoin;
@@ -33,7 +33,7 @@ export function networkData(network) {
 /**
  * Returns human-readable network label for the specified network.
  */
-export function networkLabel(network) {
+export function networkLabel(network: Network) {
   switch (network) {
     case Network.MAINNET:
       return "Mainnet";
@@ -47,7 +47,7 @@ export function networkLabel(network) {
 /**
  * given a prefix determine the network it indicates
  */
-export function getNetworkFromPrefix(prefix) {
+export function getNetworkFromPrefix(prefix: string) {
   switch (prefix.toLowerCase()) {
     case "xpub":
     case "ypub":
