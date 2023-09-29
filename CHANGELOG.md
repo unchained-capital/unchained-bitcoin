@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.6.0...unchained-bitcoin-v1.0.0) (2023-09-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* typescript and v1 ([#95](https://github.com/unchained-capital/unchained-bitcoin/issues/95))
+
+### Features
+
+* typescript and v1 ([#95](https://github.com/unchained-capital/unchained-bitcoin/issues/95)) ([c5abea1](https://github.com/unchained-capital/unchained-bitcoin/commit/c5abea1ca410324c2d4adf43d1a7d9812f086207))
+
 ## [0.6.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.5.1...unchained-bitcoin-v0.6.0) (2023-08-31)
 
 
