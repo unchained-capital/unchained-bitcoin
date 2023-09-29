@@ -261,7 +261,7 @@ export function signedMultisigTransaction(
 //  transactionSignatures.forEach((transactionSignature, transactionSignatureIndex) => {
 //    if (transactionSignature.length < inputs.length) {
 //      throw new Error(`Insufficient input signatures for transaction signature ${transactionSignatureIndex + 1}: require ${inputs.length}, received ${transactionSignature.length}.`);
-//    }d
+//    }
 //  });
 //  console.log(unsignedTransaction);
 
