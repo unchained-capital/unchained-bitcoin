@@ -31,7 +31,7 @@ import { sortInputs } from "./inputs";
 import { P2SH } from "./p2sh";
 import { P2SH_P2WSH } from "./p2sh_p2wsh";
 import { P2WSH } from "./p2wsh";
-import { TESTNET, MAINNET } from "./networks";
+import { Network } from "./networks";
 import { braidConfig } from "./braid";
 
 // Without this, BigNumber will report strings as exponentials. 16 places covers
@@ -39,24 +39,24 @@ import { braidConfig } from "./braid";
 BigNumber.config({ EXPONENTIAL_AT: 16 });
 
 const RECEIVING_ADDRESSES = {
-  [TESTNET]: {
+  [Network.TESTNET]: {
     [P2SH]: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
     [P2SH_P2WSH]: "2NE1LH35XT4YrdnEebk5oKMmRpGiYcUvpNR",
     [P2WSH]: "tb1q9hj5j7mh9f7t6cwdvz34nj6pyzva5ftj2ecarcdqph5wc3n49hyqchh3cg",
   },
-  [MAINNET]: {
+  [Network.MAINNET]: {
     [P2SH]: "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs",
     [P2SH_P2WSH]: "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs",
     [P2WSH]: "bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh",
   },
 };
 const CHANGE_ADDRESSES = {
-  [TESTNET]: {
+  [Network.TESTNET]: {
     [P2SH]: "2NB3tTnpcUanDenNhWbXxymTJhheWtj5Mu1",
     [P2SH_P2WSH]: "2MyCBSwFWSXpagqKtrnckNtNQBnKdUZRhKc",
     [P2WSH]: "tb1qhjtyry0qwm5l6v5v7y27hc6m60vm0d8exlr3cswdrxsgaygqvd2q5zsl0n",
   },
-  [MAINNET]: {
+  [Network.MAINNET]: {
     [P2SH]: "36NMegVbRPbMv9RC4Ge2aKLUQHYXKbyooZ",
     [P2SH_P2WSH]: "32M6VKsKw1X2EXFawpcHosMEhSxswLHRwX",
     [P2WSH]: "bc1qnzky4hcwcutvktfstp0u3kmtgxkjvscl25snvg45xu3ausv2lapqrvmkeh",
@@ -437,7 +437,7 @@ const NODES = {
 
 const BRAIDS = [
   {
-    network: TESTNET,
+    network: Network.TESTNET,
     addressType: P2SH,
     extendedPublicKeys: [
       NODES["m/45'/1'/100'"].open_source,
@@ -554,7 +554,7 @@ const BRAIDS = [
 
 const MULTISIGS_BASE = [
   {
-    network: TESTNET,
+    network: Network.TESTNET,
     type: P2SH,
     bip32Path: "m/45'/1'/100'/0/0",
     policyHmac:
@@ -605,12 +605,12 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET][P2SH],
+          address: RECEIVING_ADDRESSES[Network.TESTNET][P2SH],
           amountSats: "291590",
           value: 291590,
         },
         {
-          address: CHANGE_ADDRESSES[TESTNET][P2SH],
+          address: CHANGE_ADDRESSES[Network.TESTNET][P2SH],
           amountSats: "7535",
           value: 7535,
           bip32Derivation: [
@@ -687,7 +687,7 @@ const MULTISIGS_BASE = [
       },
     ],
     braidDetails: {
-      network: TESTNET,
+      network: Network.TESTNET,
       addressType: P2SH,
       extendedPublicKeys: [
         NODES["m/45'/1'/100'"].open_source,
@@ -697,7 +697,7 @@ const MULTISIGS_BASE = [
       index: "0",
     },
     changeBraidDetails: {
-      network: TESTNET,
+      network: Network.TESTNET,
       addressType: P2SH,
       extendedPublicKeys: [
         NODES["m/45'/1'/100'"].open_source,
@@ -719,7 +719,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: TESTNET,
+    network: Network.TESTNET,
     type: P2SH_P2WSH,
     bip32Path: "m/48'/1'/100'/1'/0/0",
     policyHmac:
@@ -767,11 +767,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET][P2SH_P2WSH],
+          address: RECEIVING_ADDRESSES[Network.TESTNET][P2SH_P2WSH],
           amountSats: "291590",
         },
         {
-          address: CHANGE_ADDRESSES[TESTNET][P2SH_P2WSH],
+          address: CHANGE_ADDRESSES[Network.TESTNET][P2SH_P2WSH],
           amountSats: "7922",
           value: 7922,
           bip32Derivation: [
@@ -816,7 +816,7 @@ const MULTISIGS_BASE = [
       ],
     },
     braidDetails: {
-      network: TESTNET,
+      network: Network.TESTNET,
       addressType: P2SH_P2WSH,
       extendedPublicKeys: [
         NODES["m/48'/1'/100'/1'"].open_source,
@@ -835,7 +835,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: TESTNET,
+    network: Network.TESTNET,
     type: P2WSH,
     bip32Path: "m/48'/1'/100'/2'/0/0",
     policyHmac:
@@ -881,11 +881,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[TESTNET][P2WSH],
+          address: RECEIVING_ADDRESSES[Network.TESTNET][P2WSH],
           amountSats: "291590",
         },
         {
-          address: CHANGE_ADDRESSES[TESTNET][P2WSH],
+          address: CHANGE_ADDRESSES[Network.TESTNET][P2WSH],
           amountSats: "8023",
           value: 8023,
           bip32Derivation: [
@@ -927,7 +927,7 @@ const MULTISIGS_BASE = [
       ],
     },
     braidDetails: {
-      network: TESTNET,
+      network: Network.TESTNET,
       addressType: P2WSH,
       extendedPublicKeys: [
         NODES["m/48'/1'/100'/2'"].open_source,
@@ -946,7 +946,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: MAINNET,
+    network: Network.MAINNET,
     type: P2SH,
     bip32Path: "m/45'/0'/100'/0/0",
     policyHmac:
@@ -990,11 +990,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET][P2SH],
+          address: RECEIVING_ADDRESSES[Network.MAINNET][P2SH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES[MAINNET][P2SH],
+          address: CHANGE_ADDRESSES[Network.MAINNET][P2SH],
           amountSats: "7535",
           value: 7535,
           bip32Derivation: [
@@ -1035,7 +1035,7 @@ const MULTISIGS_BASE = [
       ],
     },
     braidDetails: {
-      network: MAINNET,
+      network: Network.MAINNET,
       addressType: P2SH,
       extendedPublicKeys: [
         NODES["m/45'/0'/100'"].open_source,
@@ -1054,7 +1054,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: MAINNET,
+    network: Network.MAINNET,
     type: P2SH_P2WSH,
     bip32Path: "m/48'/0'/100'/1'/0/0",
     policyHmac:
@@ -1102,11 +1102,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET][P2SH_P2WSH],
+          address: RECEIVING_ADDRESSES[Network.MAINNET][P2SH_P2WSH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES[MAINNET][P2SH_P2WSH],
+          address: CHANGE_ADDRESSES[Network.MAINNET][P2SH_P2WSH],
           amountSats: "7922",
           value: 7922,
           bip32Derivation: [
@@ -1151,7 +1151,7 @@ const MULTISIGS_BASE = [
       ],
     },
     braidDetails: {
-      network: MAINNET,
+      network: Network.MAINNET,
       addressType: P2SH_P2WSH,
       extendedPublicKeys: [
         NODES["m/48'/0'/100'/1'"].open_source,
@@ -1170,7 +1170,7 @@ const MULTISIGS_BASE = [
   },
 
   {
-    network: MAINNET,
+    network: Network.MAINNET,
     type: P2WSH,
     bip32Path: "m/48'/0'/100'/2'/0/0",
     policyHmac:
@@ -1216,11 +1216,11 @@ const MULTISIGS_BASE = [
     transaction: {
       outputs: [
         {
-          address: RECEIVING_ADDRESSES[MAINNET][P2WSH],
+          address: RECEIVING_ADDRESSES[Network.MAINNET][P2WSH],
           amountSats: "21590",
         },
         {
-          address: CHANGE_ADDRESSES[MAINNET][P2WSH],
+          address: CHANGE_ADDRESSES[Network.MAINNET][P2WSH],
           amountSats: "8023",
           value: 8023,
           bip32Derivation: [
@@ -1261,7 +1261,7 @@ const MULTISIGS_BASE = [
       ],
     },
     braidDetails: {
-      network: MAINNET,
+      network: Network.MAINNET,
       addressType: P2WSH,
       extendedPublicKeys: [
         NODES["m/48'/0'/100'/2'"].open_source,
@@ -1281,14 +1281,18 @@ const MULTISIGS_BASE = [
 ];
 
 const MULTISIGS = MULTISIGS_BASE.map((test) => {
+  let braidAwareMultisig = {};
   const multisig = generateMultisigFromPublicKeys(
     test.network,
     test.type,
     2,
     ...test.publicKeys
   );
-  multisig.braidDetails = braidConfig(test.braidDetails);
-  multisig.bip32Derivation = test.bip32Derivation;
+  braidAwareMultisig = {
+    ...multisig,
+    braidDetails: braidConfig(test.braidDetails),
+    bip32Derivation: test.bip32Derivation,
+  };
   return {
     ...test,
     ...{
@@ -1296,8 +1300,9 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
       utxos: test.utxos.map((utxo) => ({
         ...utxo,
         ...{
-          amountSats: BigNumber(utxo.amountSats).toString(),
-          multisig,
+          amountSats: new BigNumber(utxo.amountSats).toString(),
+          multisig: braidAwareMultisig,
+          braidAwareMultisig,
         },
         bip32Path: test.bip32Path, // this only works because all of these fixtures are single address.
       })),
@@ -1306,15 +1311,16 @@ const MULTISIGS = MULTISIGS_BASE.map((test) => {
         ...{
           outputs: test.transaction.outputs.map((output) => ({
             ...output,
-            ...{ amountSats: BigNumber(output.amountSats).toString() },
+            ...{ amountSats: new BigNumber(output.amountSats).toString() },
           })),
         },
       },
-      multisig,
+      multisig: braidAwareMultisig,
+      braidAwareMultisig,
       multisigScript:
         test.type === P2SH
-          ? multisigRedeemScript(multisig)
-          : multisigWitnessScript(multisig),
+          ? multisigRedeemScript(braidAwareMultisig)
+          : multisigWitnessScript(braidAwareMultisig),
       multisigScriptOps:
         test.type === P2SH ? test.redeemScriptOps : test.witnessScriptOps,
       multisigScriptHex:
@@ -1378,11 +1384,11 @@ const TRANSACTIONS = MULTISIGS.map((test) =>
   //   ...{
   //     name: `Sign across ${TESTNET} 2-of-2 multisig address types`,
   //     description: `spends a UTXO from each ${TESTNET} 2-of-2 address type`,
-  //     network: TESTNET,
+  //     network: Network.TESTNET,
   //     segwit: true,
   //     outputs: [
   //       {
-  //         address: RECEIVING_ADDRESSES[TESTNET],
+  //         address: RECEIVING_ADDRESSES[Network.TESTNET],
   //         amountSats: BigNumber('291590'),
   //       }
   //     ],
@@ -1395,11 +1401,11 @@ const TRANSACTIONS = MULTISIGS.map((test) =>
   //   ...{
   //     name: `Sign across ${MAINNET} 2-of-2 multisig address types`,
   //     description: `spends a UTXO from each ${MAINNET} 2-of-2 address type`,
-  //     network: MAINNET,
+  //     network: Network.MAINNET,
   //     segwit: true,
   //     outputs: [
   //       {
-  //         address: RECEIVING_ADDRESSES[MAINNET],
+  //         address: RECEIVING_ADDRESSES[Network.MAINNET],
   //         amountSats: BigNumber('21590'),
   //       }
   //     ],

@@ -4,74 +4,26 @@ import { networks } from "bitcoinjs-lib";
  * This module exports network constants and provide some utility
  * functions for displaying the network name and passing the network
  * value to bitcoinjs.
- *
- * @module networks
  */
-
-/**
- * Constant corresponding to the Bitcoin mainnet.
- *
- * @constant
- * @type {string}
- * @default mainnet
- *
- */
-export const MAINNET = "mainnet";
-
-/**
- * Constant corresponding to the current Bitcoin testnet.
- *
- * @constant
- * @type {string}
- * @default testnet
- */
-export const TESTNET = "testnet";
-
-/**
- * Constant corresponding to a bitcoin regtest network
- *
- * @constant
- * @type {string}
- * @default regtest
- */
-export const REGTEST = "regtest";
-
-/**
- * Constant corresponding to a bitcoin signet network
- *
- * @constant
- * @type {string}
- * @default signet
- */
-export const SIGNET = "signet";
-
-/**
- * Enumeration of possible values for bitcoin networks ([MAINET]{@link module:networks.MAINNET}|[TESTNET]{@link module:networks.TESTNET}).
- *
- * @constant
- * @enum {string}
- * @default
- */
-export const NETWORKS = {
-  MAINNET,
-  TESTNET,
-  REGTEST,
-} as const;
+/* eslint-disable no-shadow */
+export enum Network {
+  MAINNET = "mainnet",
+  TESTNET = "testnet",
+  REGTEST = "regtest",
+  SIGNET = "signet",
+}
 
 /**
  * Returns bitcoinjs-lib network object corresponding to the given
  * network.
  *
  * This function is for internal use by this library.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @returns {Network} bitcoinjs-lib network object
  */
-export function networkData(network) {
+export function networkData(network: Network) {
   switch (network) {
-    case NETWORKS.MAINNET:
+    case Network.MAINNET:
       return networks.bitcoin;
-    case NETWORKS.TESTNET:
+    case Network.TESTNET:
       return networks.testnet;
     default:
       return networks.testnet;
@@ -80,18 +32,12 @@ export function networkData(network) {
 
 /**
  * Returns human-readable network label for the specified network.
- *
- * @param {module:networks.NETWORKS} network - bitcoin network
- * @returns {string} network label
- * @example
- * import {MAINNET} from "unchained-bitcoin";
- * console.log(networkLabel(MAINNET)); // "Mainnet"
  */
-export function networkLabel(network) {
+export function networkLabel(network: Network) {
   switch (network) {
-    case NETWORKS.MAINNET:
+    case Network.MAINNET:
       return "Mainnet";
-    case NETWORKS.TESTNET:
+    case Network.TESTNET:
       return "Testnet";
     default:
       return "Testnet";
@@ -99,21 +45,19 @@ export function networkLabel(network) {
 }
 
 /**
- * @description given a prefix determine the network it indicates
- * @param {string} prefix - extended public key prefix (e.g. xpub, tpub)
- * @returns {string} - string indicating network
+ * given a prefix determine the network it indicates
  */
-export function getNetworkFromPrefix(prefix) {
+export function getNetworkFromPrefix(prefix: string) {
   switch (prefix.toLowerCase()) {
     case "xpub":
     case "ypub":
     case "zpub":
-      return MAINNET;
+      return Network.MAINNET;
 
     case "tpub":
     case "upub":
     case "vpub":
-      return TESTNET;
+      return Network.TESTNET;
 
     default:
       throw new Error(`Unrecognized extended public key prefix ${prefix}`);

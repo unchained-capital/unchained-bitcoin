@@ -302,7 +302,6 @@
             "error",
             "never"
         ],
-        "valid-jsdoc": "error",
         "vars-on-top": "off",
         "wrap-iife": "error",
         "wrap-regex": "error",
