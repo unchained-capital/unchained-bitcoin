@@ -1,6 +1,6 @@
 /**
  * This module provides functions for creating URLs for Blockstream's
- * [block explorer]{@link https://blockstream.info}.
+ * [block explorer]{@link https://mempool.space}.
  *
  * This module does NOT provide implementations of HTTP requests which
  * fetch data from these URLs.
@@ -8,8 +8,8 @@
 
 import { Network } from "./networks";
 
-const BASE_URL_MAINNET = "https://blockstream.info";
-const BASE_URL_TESTNET = "https://blockstream.info/testnet";
+const BASE_URL_MAINNET = "https://mempool.space";
+const BASE_URL_TESTNET = "https://mempool.space/testnet";
 
 function blockExplorerBaseURL(network: Network) {
   return network === Network.TESTNET ? BASE_URL_TESTNET : BASE_URL_MAINNET;
