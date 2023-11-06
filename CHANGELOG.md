@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.0...unchained-bitcoin-v1.0.1) (2023-11-06)
+
+
+### Bug Fixes
+
+* auto publish to npm ([ada4f05](https://github.com/unchained-capital/unchained-bitcoin/commit/ada4f0570a9d73213c8a18a78c9892f42d8ad255))
+
 ## [1.0.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v0.6.0...unchained-bitcoin-v1.0.0) (2023-09-29)
 
 
