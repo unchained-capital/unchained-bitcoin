@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.1...unchained-bitcoin-v1.0.2) (2023-11-16)
+
+
+### Bug Fixes
+
+* update bitcoin-address-validation + include taproot address validate in tests ([facc253](https://github.com/unchained-capital/unchained-bitcoin/commit/facc253373029739590649e7dd1185fc2831955f))
+
 ## [1.0.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.0...unchained-bitcoin-v1.0.1) (2023-11-06)
 
 
