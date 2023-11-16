@@ -2,7 +2,7 @@
  * This module provides validation messages related to addresses.
  */
 
-import bitcoinAddressValidation from "bitcoin-address-validation";
+import { validate as bitcoinAddressValidation } from "bitcoin-address-validation";
 
 import { Network } from "./networks";
 

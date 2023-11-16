@@ -3,6 +3,7 @@ import * as multisig from "./multisig";
 import { Network } from "./networks";
 
 const P2PKH = "P2PKH";
+const P2TR = "P2TR";
 
 let ADDRESSES = {};
 ADDRESSES[Network.MAINNET] = {};
@@ -12,7 +13,10 @@ ADDRESSES[Network.MAINNET][(multisig as any).P2SH] = [
 ];
 ADDRESSES[Network.MAINNET][(multisig as any).P2WSH] = [
   "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
-  "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx",
+  "bc1qng72v5ceptk07htel0wcv6k27fkg6tmmd8887jr2l2yz5a5lnawqqeceya",
+];
+ADDRESSES[Network.MAINNET][P2TR] = [
+  "bc1pap0ck84srwp6my97h250ws73z3mq765nm2382gzcqcarx9lxjzrq4eqyp8",
 ];
 
 ADDRESSES[Network.TESTNET] = {};
@@ -23,8 +27,16 @@ ADDRESSES[Network.TESTNET][(multisig as any).P2SH] = [
 ADDRESSES[Network.TESTNET][(multisig as any).P2WSH] = [
   "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7",
 ];
+ADDRESSES[Network.TESTNET][P2TR] = [
+  "tb1p94dllzzcax4hs4zljaygq5trzzy79486uy72uqus24zzpkrkaeuqgfw9fy",
+];
 
-const ADDRESS_TYPES = [P2PKH, (multisig as any).P2SH, (multisig as any).P2WSH];
+const ADDRESS_TYPES = [
+  P2PKH,
+  (multisig as any).P2SH,
+  (multisig as any).P2WSH,
+  P2TR,
+];
 
 describe("addresses", () => {
   describe("validateAddress", () => {
