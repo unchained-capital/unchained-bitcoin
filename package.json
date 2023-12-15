@@ -1,6 +1,6 @@
 {
   "name": "unchained-bitcoin",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Unchained Capital's bitcoin utilities library.",
   "main": "lib/index.js",
   "repository": {

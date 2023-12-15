@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.2...unchained-bitcoin-v1.1.0) (2023-12-15)
+
+
+### Features
+
+* fix validateOutputAmount API for BigNumber ([9081171](https://github.com/unchained-capital/unchained-bitcoin/commit/90811716fa512c2bed9ce1235fbcb273550a57fa))
+
+
+### Bug Fixes
+
+* preserve backward compatibility ([9081171](https://github.com/unchained-capital/unchained-bitcoin/commit/90811716fa512c2bed9ce1235fbcb273550a57fa))
+
 ## [1.0.2](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.1...unchained-bitcoin-v1.0.2) (2023-11-16)
 
 
