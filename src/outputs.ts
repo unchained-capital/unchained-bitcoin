@@ -61,7 +61,7 @@ export function validateOutput(network, output, inputsTotalSats?) {
 /**
  * Lowest acceptable output amount in Satoshis.
  */
-const DUST_LIMIT_SATS = new BigNumber(546);
+const DUST_LIMIT_SATS = "546";
 
 /**
  * Validate the given output amount (in Satoshis).
@@ -74,11 +74,15 @@ const DUST_LIMIT_SATS = new BigNumber(546);
  *
  * - Cannot exceed the total input amount (this check is only run if
  *   `inputsTotalSats` is passed.
+ *
+ *   TODO: minSats accepting a BigNumber is only to maintain some backward
+ *   compatibility. Ideally, the arg would not expose this lib's dependencies to
+ *   the caller. It should be made to only accept number or string.
  */
 export function validateOutputAmount(
   amountSats,
-  maxSats?,
-  minSats = DUST_LIMIT_SATS
+  maxSats?: number | string,
+  minSats: number | string | BigNumber = DUST_LIMIT_SATS
 ) {
   let a, its;
   try {
