@@ -558,7 +558,7 @@ const MULTISIGS_BASE = [
     type: P2SH,
     bip32Path: "m/45'/1'/100'/0/0",
     policyHmac:
-      "6fb498be86e7accd2b264c6d129e2b1bf5edad95dbc194db962ca8958c4af0c9",
+      "fb633e6a50ff05a1a090e07f2586d11f04b4ee8052cd0ce9ed816f8c4446cdc3",
     publicKey:
       "02a8513d9931896d5d3afc8063148db75d8851fd1fc41b1098ba2a6a766db563d4",
     publicKeys: [
@@ -723,7 +723,7 @@ const MULTISIGS_BASE = [
     type: P2SH_P2WSH,
     bip32Path: "m/48'/1'/100'/1'/0/0",
     policyHmac:
-      "e472b8592c1543d3befc248b204d1403d7ed0fde10d12c96f09b3495cd4fb933",
+      "209c71790a3745bc398a86dc20bc058101f44e3c05fb4430907464555fca61d7",
     publicKey:
       "026aaa7c4697ff439bfd6c7a70abf66253b4e329654b41ee2ad21d68b854e4a422",
     publicKeys: [
@@ -839,7 +839,7 @@ const MULTISIGS_BASE = [
     type: P2WSH,
     bip32Path: "m/48'/1'/100'/2'/0/0",
     policyHmac:
-      "df0127563de3e9c98a9970f599b39c504e4b3ed77da208d315e5da511d9afabc",
+      "ff8e053e3417029696f0222355adb2b386a825c85a40fa4bb125501d59fef416",
     publicKey:
       "03bc34c50cf768f802290269c2ddabd086c73514c880cecb6db3f67676a4b72469",
     publicKeys: [
@@ -950,7 +950,7 @@ const MULTISIGS_BASE = [
     type: P2SH,
     bip32Path: "m/45'/0'/100'/0/0",
     policyHmac:
-      "ebe7154ae75d4117d9da0525a6e134881f4b171671724a24ce00d7569be9a16c",
+      "c9f3e4cb4ca50a9a7042e72d0099e2848431b7008773cd96f40bc406a71ceb33",
     publicKey:
       "02583c4776b51691f4e036c8e0eb160f3464a2de9ae4c6818b7945c78fc6bace79",
     publicKeys: [
