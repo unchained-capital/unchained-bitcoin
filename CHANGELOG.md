@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.2.0...unchained-bitcoin-v1.2.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* **fixtures:** fix hmac fixtures ([071467a](https://github.com/unchained-capital/unchained-bitcoin/commit/071467a5be288319fb92f65c3e990deb80e8e9ca))
+
 ## [1.2.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.1.0...unchained-bitcoin-v1.2.0) (2024-01-04)
 
 
