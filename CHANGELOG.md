@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.1.0...unchained-bitcoin-v1.2.0) (2024-01-04)
+
+
+### Features
+
+* fee error types ([1e1fe02](https://github.com/unchained-capital/unchained-bitcoin/commit/1e1fe02dc901f9db0b35ae1a95807b7e6289dc5e))
+
 ## [1.1.0](https://github.com/unchained-capital/unchained-bitcoin/compare/unchained-bitcoin-v1.0.2...unchained-bitcoin-v1.1.0) (2023-12-15)
 
 
