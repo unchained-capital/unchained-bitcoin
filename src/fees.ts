@@ -5,6 +5,8 @@
 
 import BigNumber from "bignumber.js";
 
+import { FeeValidationError } from "./types";
+
 import { P2SH, estimateMultisigP2SHTransactionVSize } from "./p2sh";
 import {
   P2SH_P2WSH,
@@ -28,7 +30,116 @@ const MAX_FEE_RATE_SATS_PER_VBYTE = new BigNumber(1000); // 1000 Sats/vbyte
 const MAX_FEE_SATS = new BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $10k
 
 /**
- * Validate the given transaction fee rate (in Satoshis/vbyte).
+ * Provide a readable message from a FeeValidationError for user display.
+ */
+export function getFeeErrorMessage(error: FeeValidationError | null) {
+  let errorMessage = "";
+
+  switch (error) {
+    case FeeValidationError.FEE_CANNOT_BE_NEGATIVE:
+      errorMessage = "Fee cannot be negative.";
+      break;
+
+    case FeeValidationError.FEE_RATE_CANNOT_BE_NEGATIVE:
+      errorMessage = "Fee rate cannot be negative.";
+      break;
+
+    case FeeValidationError.FEE_TOO_HIGH:
+      errorMessage = "Fee is too high.";
+      break;
+
+    case FeeValidationError.FEE_RATE_TOO_HIGH:
+      errorMessage = "Fee rate is too high.";
+      break;
+
+    case FeeValidationError.INPUT_AMOUNT_MUST_BE_POSITIVE:
+      errorMessage = "Total input amount must be positive.";
+      break;
+
+    case FeeValidationError.INVALID_FEE:
+      errorMessage = "Invalid fee.";
+      break;
+
+    case FeeValidationError.INVALID_FEE_RATE:
+      errorMessage = "Invalid fee rate.";
+      break;
+
+    case FeeValidationError.INVALID_INPUT_AMOUNT:
+      errorMessage = "Invalid total input amount.";
+      break;
+
+    default:
+      break;
+  }
+
+  return errorMessage;
+}
+
+/**
+ * Validate the given transaction fee and input sats. Returns a fee
+ * validation error type if invalid. Returns null if valid.
+ */
+export function checkFeeError(feeSats, inputsTotalSats) {
+  let fs, its;
+  try {
+    fs = new BigNumber(feeSats);
+  } catch (e) {
+    return FeeValidationError.INVALID_FEE;
+  }
+  if (!fs.isFinite()) {
+    return FeeValidationError.INVALID_FEE;
+  }
+  try {
+    its = new BigNumber(inputsTotalSats);
+  } catch (e) {
+    return FeeValidationError.INVALID_INPUT_AMOUNT;
+  }
+  if (!its.isFinite()) {
+    return FeeValidationError.INVALID_INPUT_AMOUNT;
+  }
+  if (fs.isLessThan(ZERO)) {
+    return FeeValidationError.FEE_CANNOT_BE_NEGATIVE;
+  }
+  if (its.isLessThanOrEqualTo(ZERO)) {
+    return FeeValidationError.INPUT_AMOUNT_MUST_BE_POSITIVE;
+  }
+  if (fs.isGreaterThan(its)) {
+    return FeeValidationError.FEE_TOO_HIGH;
+  }
+  if (fs.isGreaterThan(MAX_FEE_SATS)) {
+    return FeeValidationError.FEE_TOO_HIGH;
+  }
+  return null;
+}
+
+/**
+ * Validate the given transaction fee rate (sats/vByte). Returns a fee
+ * validation error type if invalid. Returns null if valid.
+ */
+export function checkFeeRateError(feeRateSatsPerVbyte) {
+  let fr: BigNumber;
+
+  try {
+    fr = new BigNumber(feeRateSatsPerVbyte);
+  } catch (e) {
+    return FeeValidationError.INVALID_FEE_RATE;
+  }
+  if (!fr.isFinite()) {
+    return FeeValidationError.INVALID_FEE_RATE;
+  }
+  if (fr.isLessThan(ZERO)) {
+    return FeeValidationError.FEE_RATE_CANNOT_BE_NEGATIVE;
+  }
+  if (fr.isGreaterThan(MAX_FEE_RATE_SATS_PER_VBYTE)) {
+    return FeeValidationError.FEE_RATE_TOO_HIGH;
+  }
+
+  return null;
+}
+
+/**
+ * Validate the given transaction fee rate (in Satoshis/vbyte). Returns an
+ * error message if invalid. Returns empty string if valid.
  *
  * - Must be a parseable as a number.
  *
@@ -38,22 +149,7 @@ const MAX_FEE_SATS = new BigNumber(2500000); // ~ 0.025 BTC ~ $250 if 1 BTC = $1
  *   `MAX_FEE_RATE_SATS_PER_VBYTE`.
  */
 export function validateFeeRate(feeRateSatsPerVbyte) {
-  let fr;
-  try {
-    fr = new BigNumber(feeRateSatsPerVbyte);
-  } catch (e) {
-    return "Invalid fee rate.";
-  }
-  if (!fr.isFinite()) {
-    return "Invalid fee rate.";
-  }
-  if (fr.isLessThan(ZERO)) {
-    return "Fee rate cannot be negative.";
-  }
-  if (fr.isGreaterThan(MAX_FEE_RATE_SATS_PER_VBYTE)) {
-    return "Fee rate is too high.";
-  }
-  return "";
+  return getFeeErrorMessage(checkFeeRateError(feeRateSatsPerVbyte));
 }
 
 /**
@@ -68,36 +164,7 @@ export function validateFeeRate(feeRateSatsPerVbyte) {
  * - Cannot be higher than the limit set by `MAX_FEE_SATS`.
  */
 export function validateFee(feeSats, inputsTotalSats) {
-  let fs, its;
-  try {
-    fs = new BigNumber(feeSats);
-  } catch (e) {
-    return "Invalid fee.";
-  }
-  if (!fs.isFinite()) {
-    return "Invalid fee.";
-  }
-  try {
-    its = new BigNumber(inputsTotalSats);
-  } catch (e) {
-    return "Invalid total input amount.";
-  }
-  if (!its.isFinite()) {
-    return "Invalid total input amount.";
-  }
-  if (fs.isLessThan(ZERO)) {
-    return "Fee cannot be negative.";
-  }
-  if (its.isLessThanOrEqualTo(ZERO)) {
-    return "Total input amount must be positive.";
-  }
-  if (fs.isGreaterThan(its)) {
-    return "Fee is too high.";
-  }
-  if (fs.isGreaterThan(MAX_FEE_SATS)) {
-    return "Fee is too high.";
-  }
-  return "";
+  return getFeeErrorMessage(checkFeeError(feeSats, inputsTotalSats));
 }
 
 /**
