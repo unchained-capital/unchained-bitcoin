@@ -141,7 +141,7 @@ export function checkFeeRateError(feeRateSatsPerVbyte) {
  * Validate the given transaction fee rate (in Satoshis/vbyte). Returns an
  * error message if invalid. Returns empty string if valid.
  *
- * - Must be a parseable as a number.
+ * - Must be parseable as a number.
  *
  * - Cannot be negative (zero is OK).
  *
